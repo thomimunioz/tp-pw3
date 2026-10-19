@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="RuteaYa.Entidades/RuteaYa.Entidades.csproj" />
+  <Project Path="RuteaYa.Logica/RuteaYa.Logica.csproj" />
+  <Project Path="RuteaYa.Tests/RuteaYa.Tests.csproj" />
+  <Project Path="RuteaYa.Web/RuteaYa.Web.csproj" />
+</Solution>
