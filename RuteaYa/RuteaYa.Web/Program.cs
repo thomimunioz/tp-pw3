@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using RuteaYa.Entidades.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<RuteaYaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));
+
 
 var app = builder.Build();
 
