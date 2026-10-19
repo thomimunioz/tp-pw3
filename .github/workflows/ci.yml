@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build-y-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar paquetes
+        run: dotnet restore RuteaYa/RuteaYa.slnx
+
+      - name: Compilar
+        run: dotnet build RuteaYa/RuteaYa.slnx --no-restore --configuration Release
+
+      - name: Correr tests
+        run: dotnet test RuteaYa/RuteaYa.slnx --no-build --configuration Release
