@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RuteaYaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));
 
+builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<RuteaYaContext>();
 
 var app = builder.Build();
 
@@ -21,7 +29,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
