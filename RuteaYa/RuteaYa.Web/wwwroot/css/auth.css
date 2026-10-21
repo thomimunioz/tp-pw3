@@ -1,40 +1,4 @@
-﻿    /* colores temas */
-    :root,
-    [data-theme="dark"] {
-        --bg-hero: #0f1a33;
-        --bg-panel: #0b1220;
-        --text: #ffffff;
-        --text-muted: #a3aec2;
-        --input-bg: #141f3a;
-        --input-border: #1f2d50;
-        --accent: #ff9340;
-        --accent-text: #1a1206;
-        --error: #ff6b6b;
-    }
-
-    [data-theme="light"] {
-        --bg-hero: #e8eefc;
-        --bg-panel: #ffffff;
-        --text: #0f1a33;
-        --text-muted: #5b667d;
-        --input-bg: #f3f6fc;
-        --input-border: #d4dcee;
-        --accent: #ff8a2b;
-        --accent-text: #1a1206;
-        --error: #d92d2d;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        font-family: "Space Grotesk", system-ui, sans-serif;
-        background: var(--bg-panel);
-        color: var(--text);
-    }
-    
+﻿
     .auth {
         display: grid;
         grid-template-columns: 1fr 1fr;

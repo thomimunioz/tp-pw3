@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
@@ -6,7 +8,14 @@ using RuteaYa.Entidades.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var politica = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+
+    options.Filters.Add(new AuthorizeFilter(politica));
+});
 builder.Services.AddDbContext<RuteaYaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));
 
