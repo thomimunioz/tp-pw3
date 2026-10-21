@@ -22,6 +22,10 @@ builder.Services.AddDbContext<RuteaYaContext>(options =>
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 {
     options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<RuteaYaContext>();

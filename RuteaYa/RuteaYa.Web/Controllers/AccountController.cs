@@ -17,10 +17,6 @@ namespace RuteaYa.Web.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
         //registro
         [AllowAnonymous]
         public IActionResult Registro()
