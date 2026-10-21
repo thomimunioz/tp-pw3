@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RuteaYa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/tema.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <script>
+            (function () {
+                var guardado = localStorage.getItem("tema");
+                var sistemaClaro = window.matchMedia("(prefers-color-scheme: light)").matches;
+                document.documentElement.setAttribute("data-theme", guardado || (sistemaClaro ? "light" : "dark"));
+            })();
+    </script>
+</head>
+<body>
+    <main class="auth">
+        <section class="auth__hero">
+            <span class="auth__brand">RuteaYa</span>
+            <div class="auth__claim">
+                <h1>Convertí tus viajes habituales en una oportunidad.</h1>
+                <p>Compartí el espacio libre de tus recorridos y ganá dinero llevando paquetes.</p>
+            </div>
+        </section>
+
+        <section class="auth__panel">
+            <button type="button" id="tema-toggle" class="theme-toggle" aria-label="Cambiar tema">◐</button>
+            <div class="auth__card">
+                @RenderBody()
+            </div>
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

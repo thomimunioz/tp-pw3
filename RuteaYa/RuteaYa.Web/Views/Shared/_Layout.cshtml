@@ -1,50 +1,75 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Identity
+@using RuteaYa.Entidades
+@inject UserManager<Usuario> UserManager
+@{
+    var usuario = await UserManager.GetUserAsync(User);
+    var nombreCompleto = usuario is null ? "" : $"{usuario.Nombre} {usuario.Apellido}";
+
+    var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    // cambiar estos a medida que vayamos avanzando con los controladores, esta a modo de suposicion
+    var items = new (string Texto, string Controlador)[]
+    {
+        ("Inicio", "Home"),
+        ("Mis viajes", "Viajes"),
+        ("Mis envíos", "Envios"),
+        ("Oportunidades", "Oportunidades"),
+        ("Optimizador", "Optimizador"),
+        ("Mis transportes", "Transportes"),
+        ("Historial", "Historial")
+    };
+}
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RuteaYa.Web</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/RuteaYa.Web.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - RuteaYa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/tema.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <script>
+        (function () {
+            var guardado = localStorage.getItem("tema");
+            var sistemaClaro = window.matchMedia("(prefers-color-scheme: light)").matches;
+            document.documentElement.setAttribute("data-theme", guardado || (sistemaClaro ? "light" : "dark"));
+        })();
+    </script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RuteaYa.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <div class="app">
+        <aside class="sidebar">
+            <a class="sidebar__brand" asp-controller="Home" asp-action="Index">RuteaYa</a>
+
+            <nav class="sidebar__nav">
+                @foreach (var item in items)
+                {
+                    var activo = item.Controlador == controladorActual;
+                    <a class="sidebar__link @(activo ? "is-active" : "")"
+                       asp-controller="@item.Controlador" asp-action="Index">@item.Texto</a>
+                }
+            </nav>
+
+            <div class="sidebar__user">
+                <div>
+                    <span class="sidebar__name">@nombreCompleto</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="link-btn">Cerrar sesión</button>
+                    </form>
                 </div>
+                <button type="button" id="tema-toggle" class="theme-btn" aria-label="Cambiar tema">◐</button>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        </aside>
+
+        <main class="content">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - RuteaYa.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
