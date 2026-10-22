@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
+using RuteaYa.Logica.Mapas;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,9 +24,18 @@ builder.Services.AddDbContext<RuteaYaContext>(options =>
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 {
     options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<RuteaYaContext>();
+
+builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+});
 
 var app = builder.Build();
 
