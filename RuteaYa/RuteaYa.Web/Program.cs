@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
+using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Mapas;
 
 
@@ -31,6 +32,8 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<RuteaYaContext>();
+
+builder.Services.AddScoped<IAccountServicios, AccountServicios>();
 
 builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
 {
