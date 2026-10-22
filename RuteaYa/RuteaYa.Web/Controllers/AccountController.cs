@@ -2,18 +2,19 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Entidades;
+using RuteaYa.Logica.Account;
 using RuteaYa.Web.Models;
 
 namespace RuteaYa.Web.Controllers
 {
     public class AccountController : Controller
     {
-    private readonly UserManager<Usuario> _userManager;
-    private readonly SignInManager<Usuario> _signInManager;
-        public AccountController(UserManager<Usuario> userManager,
-                          SignInManager<Usuario> signInManager)
+        private readonly IAccountServicios _accountServicios;
+        private readonly SignInManager<Usuario> _signInManager;
+        public AccountController(IAccountServicios accountServicios,
+                             SignInManager<Usuario> signInManager)
         {
-            _userManager = userManager;
+            _accountServicios = accountServicios;
             _signInManager = signInManager;
         }
 
@@ -31,25 +32,17 @@ namespace RuteaYa.Web.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var usuario = new Usuario
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                Nombre = model.Nombre,
-                Apellido = model.Apellido,
-                CreadoEn = DateTime.UtcNow
-            };
+            var resultado = await _accountServicios.RegistrarAsync(
+            model.Nombre, model.Apellido, model.Email, model.Password);
 
-            var resultado = await _userManager.CreateAsync(usuario, model.Password);
-
-            if (resultado.Succeeded)
+            if (resultado.Exito)
             {
-                await _signInManager.SignInAsync(usuario, isPersistent: false);
+                await _signInManager.SignInAsync(resultado.Usuario!, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
 
-            foreach (var error in resultado.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
+            foreach (var error in resultado.Errores)
+                ModelState.AddModelError(string.Empty, error);
 
             return View(model);
         }
@@ -70,14 +63,12 @@ namespace RuteaYa.Web.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var resultado = await _signInManager.PasswordSignInAsync(
-                model.Email,
-                model.Password,
-                model.Recordarme,
-                lockoutOnFailure: false);
+            var usuario = await _accountServicios.ValidarCredencialesAsync(model.Email, model.Password);
 
-            if (resultado.Succeeded)
+            if (usuario != null)
             {
+                await _signInManager.SignInAsync(usuario, model.Recordarme);
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
@@ -87,7 +78,6 @@ namespace RuteaYa.Web.Controllers
             ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos");
             return View(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
