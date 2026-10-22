@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="RuteaYa.Api/RuteaYa.Api.csproj" Id="ee6401df-16ea-4a51-8c3b-b4d0b34ac4de" />
   <Project Path="RuteaYa.Entidades/RuteaYa.Entidades.csproj" />
   <Project Path="RuteaYa.Logica/RuteaYa.Logica.csproj" />
   <Project Path="RuteaYa.Tests/RuteaYa.Tests.csproj" />
