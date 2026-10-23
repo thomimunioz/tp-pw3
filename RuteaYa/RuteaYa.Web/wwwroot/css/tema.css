@@ -1,29 +1,45 @@
-﻿/* colores temas */
+﻿/* ---------- Colores de la aplicación: para cambiar la paleta, tocar solo acá ---------- */
+
+/* Tema claro (por defecto) */
 :root,
-[data-theme="dark"] {
-    --bg-hero: #0f1a33;
-    --bg-panel: #0b1220;
-    --text: #ffffff;
-    --text-muted: #a3aec2;
-    --input-bg: #141f3a;
-    --input-border: #1f2d50;
-    --accent: #ff9340;
-    --accent-text: #1a1206;
-    --error: #ff6b6b;
-    --hover: rgba(255, 255, 255, 0.07);
+[data-theme="light"] {
+    --bg-panel: #F4F8FC;
+    --bg-card: #FFFFFF;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --border: #E2E8F0;
+    --accent: #E63946;
+    --accent-hover: #D90429;
+    --accent-text: #FFFFFF;
+    --error: #D90429;
+    --hover: rgba(15, 23, 42, 0.05);
+    /* menú lateral */
+    --sb-fondo: #EDF4FA;
+    --sb-borde: #D6E6F2;
+    --sb-hover: rgba(255, 255, 255, 0.65);
+    --sb-activo-fondo: #FFFFFF;
+    --sb-activo-texto: #E63946;
+    --sb-sombra: 0 4px 12px -2px rgba(230, 57, 70, 0.15);
 }
 
-[data-theme="light"] {
-    --bg-hero: #e8eefc;
-    --bg-panel: #ffffff;
-    --text: #0f1a33;
-    --text-muted: #5b667d;
-    --input-bg: #f3f6fc;
-    --input-border: #d4dcee;
-    --accent: #ff8a2b;
-    --accent-text: #1a1206;
-    --error: #d92d2d;
-    --hover: rgba(15, 26, 51, 0.06);
+/* Tema oscuro */
+[data-theme="dark"] {
+    --bg-panel: #0F172A;
+    --bg-card: #1E293B;
+    --text: #F1F5F9;
+    --text-muted: #94A3B8;
+    --border: #334155;
+    --accent: #F87171;
+    --accent-hover: #EF4444;
+    --accent-text: #0F172A;
+    --error: #FCA5A5;
+    --hover: rgba(255, 255, 255, 0.06);
+    --sb-fondo: #0D1527;
+    --sb-borde: #1E293B;
+    --sb-hover: rgba(30, 41, 59, 0.6);
+    --sb-activo-fondo: #334155;
+    --sb-activo-texto: #F87171;
+    --sb-sombra: none;
 }
 
 * {
@@ -32,7 +48,12 @@
 
 body {
     margin: 0;
-    font-family: "Space Grotesk", system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     background: var(--bg-panel);
     color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
 }
+
+    body.menu-abierto {
+        overflow: hidden;
+    }

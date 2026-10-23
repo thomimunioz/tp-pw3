@@ -9,40 +9,41 @@
 <form asp-action="Registro" method="post">
     <div asp-validation-summary="ModelOnly"></div>
 
-    <div class="form-row">
-        <div class="field">
-            <label asp-for="Nombre">Nombre</label>
-            <input asp-for="Nombre" autocomplete="given-name" />
-            <span asp-validation-for="Nombre"></span>
-        </div>
-        <div class="field">
-            <label asp-for="Apellido">Apellido</label>
-            <input asp-for="Apellido" autocomplete="family-name" />
-            <span asp-validation-for="Apellido"></span>
-        </div>
+    <div class="campo">
+        <label asp-for="Nombre">Nombre</label>
+        <input asp-for="Nombre" autocomplete="given-name" />
+        <span asp-validation-for="Nombre"></span>
     </div>
 
-    <div class="field">
+    <div class="campo">
+        <label asp-for="Apellido">Apellido</label>
+        <input asp-for="Apellido" autocomplete="family-name" />
+        <span asp-validation-for="Apellido"></span>
+    </div>
+
+    <div class="campo">
         <label asp-for="Email">Email</label>
         <input asp-for="Email" placeholder="tu@email.com" autocomplete="email" />
         <span asp-validation-for="Email"></span>
     </div>
 
-    <div class="field">
+    <div class="campo">
         <label asp-for="Password">Contraseña</label>
         <input asp-for="Password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
         <span asp-validation-for="Password"></span>
     </div>
 
-    <div class="field">
+    <div class="campo">
         <label asp-for="ConfirmarPassword">Confirmar contraseña</label>
         <input asp-for="ConfirmarPassword" autocomplete="new-password" />
         <span asp-validation-for="ConfirmarPassword"></span>
     </div>
 
-    <button type="submit" class="btn-auth">Crear cuenta</button>
+    <button type="submit" class="boton">Crear cuenta</button>
 
-    <p class="auth__alt">¿Ya tenés cuenta? <a asp-action="Login">Ingresar</a></p>
+    <p class="auth__alternativa">
+        ¿Ya tenés una cuenta? <a asp-action="Login">Ingresar</a>
+    </p>
 </form>
 
 @section Scripts {
