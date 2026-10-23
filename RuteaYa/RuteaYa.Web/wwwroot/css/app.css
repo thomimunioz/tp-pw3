@@ -1,124 +1,265 @@
-﻿.app {
+﻿/* ---------- Estructura general ---------- */
+.app {
     display: grid;
-    grid-template-columns: 235px 1fr;
+    grid-template-columns: 256px 1fr;
     min-height: 100vh;
 }
 
+.content {
+    min-width: 0;
+    padding: 2.5rem;
+}
+
+/* ---------- Íconos ---------- */
+.iconos {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.icono {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* el sol se ve en tema oscuro y la luna en tema claro */
+.icono-sol {
+    display: none;
+}
+
+[data-theme="dark"] .icono-sol {
+    display: block;
+}
+
+[data-theme="dark"] .icono-luna {
+    display: none;
+}
+
+/* ---------- Marca ---------- */
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.marca__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+/* ---------- Menú lateral ---------- */
 .sidebar {
     position: sticky;
     top: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1rem;
-    background: transparent;
-    border-right: 1px solid var(--input-border);
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--sb-fondo);
+    border-right: 1px solid var(--sb-borde);
 }
 
-.sidebar__brand {
-    padding: 0 0.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--text);
-    text-decoration: none;
+.sidebar__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .sidebar__nav {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    flex: 1;
+    gap: 0.375rem;
 }
 
 .sidebar__link {
-    padding: 0.65rem 0.75rem;
-    border-radius: 10px;
-    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border-left: 4px solid transparent;
+    border-radius: 0.75rem;
+    color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.95rem;
-    transition: background 0.15s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
     .sidebar__link:hover {
-        background: var(--hover);
+        background: var(--sb-hover);
+        color: var(--text);
     }
 
     .sidebar__link.is-active {
-        background: var(--nav-active);
-        box-shadow: inset 3px 0 0 var(--accent);
+        background: var(--sb-activo-fondo);
+        border-left-color: var(--sb-activo-texto);
+        color: var(--sb-activo-texto);
+        font-weight: 600;
+        box-shadow: var(--sb-sombra);
     }
 
+/* ---------- Recuadro del usuario ---------- */
 .sidebar__user {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.75rem;
     padding: 0.75rem;
-    border-radius: 10px;
-    background: var(--hover);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg-card);
 }
 
-.sidebar__name {
-    display: block;
+    .sidebar__user form {
+        margin: 0;
+    }
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+    background: var(--accent);
+    color: var(--accent-text);
     font-size: 0.85rem;
     font-weight: 700;
 }
 
-.link-btn {
+.sidebar__datos {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sidebar__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.btn-salir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     padding: 0;
     border: 0;
     background: none;
     color: var(--text-muted);
     font: inherit;
     font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
 }
 
-    .link-btn:hover {
-        color: var(--text);
-        text-decoration: underline;
+    .btn-salir .icono {
+        width: 0.9rem;
+        height: 0.9rem;
     }
 
-.theme-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--input-border);
-    background: var(--input-bg);
-    color: var(--text);
+    .btn-salir:hover {
+        color: var(--accent);
+    }
+
+/* ---------- Botón de ícono (tema y hamburguesa) ---------- */
+.btn-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.6rem;
+    background: none;
+    color: var(--text-muted);
     cursor: pointer;
 }
 
-.content {
-    padding: 2rem;
-    min-width: 0;
+    .btn-icono:hover {
+        background: var(--sb-hover);
+        color: var(--text);
+    }
+
+/* ---------- Barra superior y fondo oscuro (solo se ven en celular) ---------- */
+.topbar,
+.fondo-menu {
+    display: none;
 }
 
-/* En celular la barra lateral pasa a ser una barra superior */
+/* ---------- Responsive ---------- */
 @media (max-width: 800px) {
     .app {
         grid-template-columns: 1fr;
+        min-height: 0;
     }
 
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: var(--sb-fondo);
+        border-bottom: 1px solid var(--sb-borde);
+    }
+
+        .topbar .marca {
+            font-size: 1.25rem;
+        }
+
+    /* el menú pasa a ser un panel que entra desde la izquierda */
     .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid var(--input-border);
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        width: 16rem;
+        max-width: 85vw;
+        height: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
 
-    .sidebar__brand {
-        margin-bottom: 0.75rem;
-    }
+        .sidebar.is-open {
+            transform: translateX(0);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
 
-    .sidebar__nav {
-        flex-direction: row;
-        overflow-x: auto;
-        flex: none;
-        margin-bottom: 0.75rem;
-    }
-
-    .sidebar__link {
-        white-space: nowrap;
+    .fondo-menu.is-open {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(15, 23, 42, 0.5);
     }
 
     .content {

@@ -1,178 +1,219 @@
-﻿
-    .auth {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-height: 100vh;
-    }
+﻿/* ---------- Colores (para cambiar la paleta, tocar solo acá) ---------- */
+.auth-body {
+    --celeste-fondo: #F0F7FC;
+    --celeste-panel: #E8F3FA;
+    --celeste-borde: #C2E0FA;
+    --rojo: #E63946;
+    --rojo-hover: #D90429;
+    --texto: #0F172A;
+    --texto-suave: #475569;
+    --error: #D90429;
+    margin: 0;
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--celeste-fondo);
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+}
 
-    .auth__hero {
-        background: var(--bg-hero);
-        padding: 3rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    .auth__brand {
-        font-weight: 700;
-        font-size: 1.25rem;
-    }
+/* ---------- Estructura: dos mitades ---------- */
+.auth {
+    display: flex;
+    min-height: 100vh;
+}
+
+.auth__hero {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4rem;
+    background: var(--celeste-panel);
+    border-right: 1px solid var(--celeste-borde);
+}
+
+.auth__panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+}
+
+/* ---------- Mitad izquierda ---------- */
+.auth__brand {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.auth__ilustracion {
+    display: block;
+    width: 100%;
+    max-width: 32rem;
+    height: auto;
+    margin: 2rem auto;
+}
+
+.auth__claim {
+    max-width: 32rem;
+}
 
     .auth__claim h1 {
-        font-size: clamp(1.8rem, 3vw, 2.5rem);
-        line-height: 1.2;
-        max-width: 12em;
-        margin: 0 0 1rem;
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.75rem, 3.2vw, 3rem);
+        font-weight: 800;
+        line-height: 1.15;
     }
 
     .auth__claim p {
-        color: var(--text-muted);
-        max-width: 28em;
         margin: 0;
+        font-size: 1.125rem;
+        line-height: 1.6;
+        color: var(--texto-suave);
     }
 
-    .auth__panel {
-        position: relative;
-        background: var(--bg-panel);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
+/* ---------- Mitad derecha: formulario ---------- */
+.auth__card {
+    width: 100%;
+    max-width: 24rem;
+}
+
+    .auth__card h2 {
+        margin: 0 0 1.5rem;
+        font-size: 1.875rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
     }
 
-    .auth__card {
-        width: 100%;
-        max-width: 400px;
-    }
+.campo {
+    margin-bottom: 1.1rem;
+}
 
-        .auth__card h2 {
-            font-size: 1.75rem;
-            margin: 0 0 1.25rem;
-        }
-    /* form */
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-    }
-
-    .field {
-        margin-bottom: 1.1rem;
-    }
-
-        .field label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .field input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text);
-            font: inherit;
-        }
-
-            .field input::placeholder {
-                color: var(--text-muted);
-                opacity: 0.7;
-            }
-
-            .field input:focus {
-                outline: 2px solid var(--accent);
-                outline-offset: 1px;
-            }
-
-            .field input.input-validation-error {
-                border-color: var(--error);
-            }
-
-    .field-validation-error,
-    .validation-summary-errors {
-        color: var(--error);
-        font-size: 0.8rem;
-    }
-
-    .field-validation-error {
+    .campo label {
         display: block;
-        margin-top: 0.35rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 700;
     }
+
+    .campo input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #FFFFFF;
+        border: 1px solid var(--celeste-borde);
+        border-radius: 0.75rem;
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--texto);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+
+        .campo input::placeholder {
+            color: #94A3B8;
+        }
+
+        .campo input:focus {
+            outline: none;
+            border-color: var(--rojo);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
+        }
+
+        .campo input.input-validation-error {
+            border-color: var(--error);
+        }
+
+/* ---------- Casilla "Recordarme" ---------- */
+.recordarme {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+    font-size: 0.875rem;
+    color: var(--texto-suave);
+}
+
+    .recordarme input {
+        width: 1rem;
+        height: 1rem;
+        margin: 0;
+        accent-color: var(--rojo);
+    }
+
+/* ---------- Mensajes de error ---------- */
+.field-validation-error {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--error);
+}
+
+.validation-summary-errors {
+    font-size: 0.8rem;
+    color: var(--error);
+}
 
     .validation-summary-errors ul {
         margin: 0 0 1rem;
         padding-left: 1.1rem;
     }
 
-    .btn-auth {
-        width: 100%;
-        padding: 0.85rem;
-        border: 0;
-        border-radius: 10px;
-        background: var(--accent);
-        color: var(--accent-text);
-        font: inherit;
+/* ---------- Botón y link inferior ---------- */
+.boton {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.9rem 1.5rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background: var(--rojo);
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.15);
+}
+
+    .boton:hover {
+        background: var(--rojo-hover);
+    }
+
+.auth__alternativa {
+    margin: 1.25rem 0 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--texto-suave);
+}
+
+    .auth__alternativa a {
+        margin-left: 0.25rem;
         font-weight: 700;
-        cursor: pointer;
+        color: var(--texto);
+        text-decoration: none;
     }
 
-        .btn-auth:hover {
-            filter: brightness(1.08);
-        }
-
-    .auth__alt {
-        text-align: center;
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-
-        .auth__alt a {
-            color: var(--text);
-            font-weight: 700;
+        .auth__alternativa a:hover {
             text-decoration: underline;
         }
-    /* tema  */
-    .theme-toggle {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.25rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--input-border);
-        background: var(--input-bg);
-        color: var(--text);
-        font-size: 1.1rem;
-        cursor: pointer;
-    }
-    /* responsive */
-    @media (max-width: 900px) {
-        .auth {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-        }
 
-        .auth__hero {
-            padding: 1.25rem 1.5rem;
-        }
-
-        .auth__claim {
-            display: none;
-        }
-
-        .auth__panel {
-            align-items: flex-start;
-            padding-top: 2rem;
-        }
+/* responsive */
+@media (max-width: 900px) {
+    .auth__hero {
+        display: none;
     }
 
-    @media (max-width: 480px) {
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
+    .auth__panel {
+        padding: 2rem 1.25rem;
     }
+
+    .auth__card h2 {
+        font-size: 1.625rem;
+        margin-bottom: 1.25rem;
+    }
+}
