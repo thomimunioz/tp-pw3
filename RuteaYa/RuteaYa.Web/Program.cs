@@ -6,6 +6,7 @@ using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Mapas;
+using RuteaYa.Logica.Envios;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,7 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 .AddEntityFrameworkStores<RuteaYaContext>();
 
 builder.Services.AddScoped<IAccountServicios, AccountServicios>();
+builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
 
 builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
 {
