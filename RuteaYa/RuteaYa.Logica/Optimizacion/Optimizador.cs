@@ -2,13 +2,17 @@ namespace RuteaYa.Logica.Optimizacion;
 
 public static class Optimizador
 {
-    
+    private const int MAX_CANDIDATOS = 15;
     public static ResultadoOptimizacion Optimizar(
         List<CandidatoEnvio> candidatos,
         int maxPaquetes,
         decimal pesoMaxKg,
         decimal desvioMaxKm)
     {
+        if (candidatos.Count > MAX_CANDIDATOS)
+        {
+            candidatos = candidatos.OrderByDescending(c => c.Pago).Take(MAX_CANDIDATOS).ToList();
+        }
         // Generar todas las combinaciones posibles de candidatos
         var combinaciones = new List<List<CandidatoEnvio>>();
         GenerarCombinaciones(candidatos, 0, new List<CandidatoEnvio>(), combinaciones);
