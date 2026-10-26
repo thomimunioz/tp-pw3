@@ -13,6 +13,12 @@ namespace RuteaYa.Web.Controllers
         }
 
         [AllowAnonymous]
+        public IActionResult NoEncontrado()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

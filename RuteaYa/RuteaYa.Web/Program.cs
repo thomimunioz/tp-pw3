@@ -37,10 +37,17 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 builder.Services.AddScoped<IAccountServicios, AccountServicios>();
 builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
 
-builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))
 {
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
-});
+    builder.Services.AddScoped<IGeocodificador, GeocodificadorFalso>();
+}
+else
+{
+    builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+    });
+}
 
 var app = builder.Build();
 
@@ -52,6 +59,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/NoEncontrado");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
