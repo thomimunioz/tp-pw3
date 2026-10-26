@@ -4,50 +4,57 @@
     ViewData["Title"] = "Nuevo envío";
 }
 
-<div class="envio-container">
-    <header class="envio-header">
+<div class="form-tarjeta">
+    <div class="form-tarjeta__encabezado">
+        <svg class="icono"><use href="#i-package" /></svg>
         <h1>Nuevo envío</h1>
-        <p>Publicá un paquete que necesita ser transportado.</p>
-    </header>
+        <a asp-action="Index" class="form-tarjeta__cerrar" aria-label="Cerrar">
+            <svg class="icono"><use href="#i-x" /></svg>
+        </a>
+    </div>
+    <p class="form-tarjeta__subtitulo">Publicá un paquete que necesita ser transportado.</p>
 
-    <form asp-action="Crear" method="post" class="envio-form">
-        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <form asp-action="Crear" method="post" class="form-envio">
+        <div asp-validation-summary="ModelOnly"></div>
 
-        <!-- Fila 1: Origen y destino. -->
-        <div class="form-row-2">
-            <div class="field">
-                <label asp-for="OrigenDirrecion">Origen</label>
-                <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" />
-                <span asp-validation-for="OrigenDirrecion" class="field-validation-error"></span>
-            </div>
-            <div class="field">
-                <label asp-for="DestinoDireccion">Destino</label>
-                <input asp-for="DestinoDireccion" placeholder="¿A dónde llega?" />
-                <span asp-validation-for="DestinoDireccion" class="field-validation-error"></span>
-            </div>
+        <div class="form-campo">
+            <label asp-for="OrigenDirrecion">Origen</label>
+            <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" />
+            <span asp-validation-for="OrigenDirrecion"></span>
         </div>
 
-        <!-- Fila 2: Fecha, peso y monto. -->
-        <div class="form-row-3">
-            <div class="field">
-                <label asp-for="FechaLimite">Fecha</label>
-                <input asp-for="FechaLimite" type="date" />
-                <span asp-validation-for="FechaLimite" class="field-validation-error"></span>
-            </div>
-            <div class="field">
-                <label asp-for="Peso">Peso (kg)</label>
-                <input asp-for="Peso" type="number" step="0.1" min="0.1" placeholder="Ej: 2.5" />
-                <span asp-validation-for="Peso" class="field-validation-error"></span>
-            </div>
-            <div class="field">
+        <div class="form-campo">
+            <label asp-for="DestinoDireccion">Destino</label>
+            <input asp-for="DestinoDireccion" placeholder="¿A dónde llega?" />
+            <span asp-validation-for="DestinoDireccion"></span>
+        </div>
+
+        <div class="form-campo">
+            <label asp-for="Descripcion">Descripción</label>
+            <input asp-for="Descripcion" placeholder="Ej: zapatillas, documentos, ropa..." />
+            <span asp-validation-for="Descripcion"></span>
+        </div>
+
+        <div class="form-fila">
+            <div class="form-campo">
                 <label asp-for="Monto">Monto ofrecido ($)</label>
                 <input asp-for="Monto" type="number" step="any" min="1" placeholder="Ej: 4000" />
-                <span asp-validation-for="Monto" class="field-validation-error"></span>
+                <span asp-validation-for="Monto"></span>
+            </div>
+            <div class="form-campo">
+                <label asp-for="FechaLimite">Fecha</label>
+                <input asp-for="FechaLimite" type="date" />
+                <span asp-validation-for="FechaLimite"></span>
             </div>
         </div>
 
-        <!-- Fila 3: Tamaño del paquete (selector tipo chips). -->
-        <div class="field">
+        <div class="form-campo">
+            <label asp-for="Peso">Peso (kg)</label>
+            <input asp-for="Peso" type="number" step="0.1" min="0.1" placeholder="Ej: 2.5" />
+            <span asp-validation-for="Peso"></span>
+        </div>
+
+        <div class="form-campo">
             <label>Tamaño</label>
             <div class="tamano-selector">
                 <label class="tamano-chip">
@@ -63,179 +70,19 @@
                     <span>Grande</span>
                 </label>
             </div>
-            <span asp-validation-for="tamano" class="field-validation-error"></span>
+            <span asp-validation-for="tamano"></span>
         </div>
 
-        <!-- Fila 4: Descripción. -->
-        <div class="field">
-            <label asp-for="Descripcion">Descripción</label>
-            <input asp-for="Descripcion" placeholder="Ej: zapatillas, documentos, ropa..." />
-            <span asp-validation-for="Descripcion" class="field-validation-error"></span>
-        </div>
-
-        <!-- Botones de acción. -->
-        <div class="form-actions">
-            <a asp-controller="Home" asp-action="Index" class="btn-cancelar">Cancelar</a>
-            <button type="submit" class="btn-guardar">Publicar envío</button>
+        <div class="form-acciones">
+            <a asp-action="Index" class="btn-form btn-form--secundario">Cancelar</a>
+            <button type="submit" class="btn-form btn-form--primario">Publicar envío</button>
         </div>
     </form>
 </div>
 
-<style>
-    .envio-container {
-        max-width: 860px;
-        margin: 0 auto;
-    }
-
-    .envio-header {
-        margin-bottom: 2rem;
-    }
-
-    .envio-header h1 {
-        font-size: 2rem;
-        margin: 0 0 0.4rem;
-        font-weight: 700;
-    }
-
-    .envio-header p {
-        color: var(--text-muted);
-        margin: 0;
-        font-size: 1rem;
-    }
-
-    .envio-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-    }
-
-    .form-row-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-    }
-
-    .form-row-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1.25rem;
-    }
-
-    .field {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .field label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--text);
-    }
-
-    .field input {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border-radius: 10px;
-        border: 1px solid var(--input-border);
-        background: var(--input-bg);
-        color: var(--text);
-        font: inherit;
-        outline: none;
-    }
-
-    .field input:focus {
-        border-color: var(--accent);
-    }
-
-    .tamano-selector {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    .tamano-chip {
-        cursor: pointer;
-    }
-
-    .tamano-chip input {
-        display: none;
-    }
-
-    .tamano-chip span {
-        display: inline-block;
-        padding: 0.6rem 1.25rem;
-        border-radius: 999px;
-        border: 1px solid var(--input-border);
-        background: var(--input-bg);
-        color: var(--text);
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-    }
-
-    .tamano-chip input:checked + span {
-        background: var(--text);
-        color: var(--bg-panel);
-        border-color: var(--text);
-        font-weight: 700;
-    }
-
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .btn-cancelar {
-        padding: 0.75rem 1.5rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        font-weight: 500;
-        border-radius: 10px;
-        transition: color 0.2s;
-    }
-
-    .btn-cancelar:hover {
-        color: var(--text);
-    }
-
-    .btn-guardar {
-        padding: 0.85rem 2rem;
-        background: #0f1a33;
-        color: #ffffff;
-        border: 1px solid #1f2d50;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: transform 0.1s ease, filter 0.2s ease;
-    }
-
-    [data-theme="dark"] .btn-guardar {
-        background: #ffffff;
-        color: #0b1220;
-        border: none;
-    }
-
-    .btn-guardar:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-    }
-
-    .field-validation-error, .validation-summary-errors {
-        color: var(--error);
-        font-size: 0.8rem;
-        margin-top: 0.35rem;
-    }
-
-    @@media (max-width: 768px) {
-        .form-row-2, .form-row-3 {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
