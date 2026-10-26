@@ -266,3 +266,109 @@
         padding: 1.25rem;
     }
 }
+
+/* ---------- Página de error ---------- */
+.pagina-error {
+    max-width: 32rem;
+    margin: 4rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.pagina-error__icono {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--error) 12%, transparent);
+    color: var(--error);
+}
+
+    .pagina-error__icono .icono {
+        width: 2rem;
+        height: 2rem;
+    }
+
+.pagina-error p {
+    color: var(--text-muted);
+}
+
+.pagina-error__boton {
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .pagina-error__boton:hover {
+        background: var(--accent-hover);
+    }
+
+.pagina-error__codigo {
+    font-size: 0.8rem;
+}
+
+/* ---------- Inicio ---------- */
+.inicio {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.inicio h1 {
+    margin: 0;
+}
+
+.inicio p {
+    margin: 0.25rem 0 0;
+    color: var(--text-muted);
+}
+
+.accesos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.acceso {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg-card);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+    .acceso:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+.acceso__icono {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+}
+
+.acceso__titulo {
+    font-weight: 700;
+}
+
+.acceso__texto {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}

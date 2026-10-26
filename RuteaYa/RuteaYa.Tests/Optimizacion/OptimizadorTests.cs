@@ -32,7 +32,7 @@ public class OptimizadorTests
         var candidatos = new List<CandidatoEnvio>
         {
             Candidato(1, 1000m, 11m, 1m),
-            Candidato(2, 2000, 12m, 2m)
+            Candidato(2, 2000m, 12m, 2m)
         };
 
         //Act
@@ -84,4 +84,23 @@ public class OptimizadorTests
         var elegido = Assert.Single(resultado.Seleccionados);
         Assert.Equal(2, elegido.EnvioId);
     }
+
+    [Fact]
+    public void Optimizar_MasDeQuinceCandidatos_SoloConsideraLosQuinceQueMasPagan()
+    {
+        // Arrange
+        var candidatos = new List<CandidatoEnvio>();
+        for (int i = 1; i <= 20; i++)
+        {
+            candidatos.Add(Candidato(i, i * 100m, 1m, 0.1m));
+        }
+
+        // Act
+        var resultado = Optimizador.Optimizar(candidatos, maxPaquetes: 20, pesoMaxKg: 100m, desvioMaxKm: 100m);
+
+        // Assert
+        Assert.Equal(15, resultado.Seleccionados.Count);
+        Assert.DoesNotContain(resultado.Seleccionados, c => c.EnvioId <= 5);
+    }
+
 }
