@@ -1,0 +1,47 @@
+﻿@model List<RuteaYa.Entidades.Viaje>
+
+@{
+    ViewData["Title"] = "Mis viajes";
+}
+
+<h2 class="mb-4">Mis viajes</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">
+        No tenés viajes cargados.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var viaje in Model)
+                {
+                    <tr>
+                        <td>@viaje.OrigenDir</td>
+                        <td>@viaje.DestinoDir</td>
+                        <td>
+                            @if (viaje.Activo)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactivo</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
