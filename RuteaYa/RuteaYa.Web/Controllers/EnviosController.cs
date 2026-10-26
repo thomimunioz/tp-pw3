@@ -20,9 +20,29 @@ namespace RuteaYa.Web.Controllers {
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(EstadoEnvio? estado)
         {
-            return RedirectToAction(nameof(Crear));
+            var usuario = await _userManager.GetUserAsync(User);
+            if (usuario == null)
+            {
+                return Challenge();
+            }
+
+            // si alguien escribe a mano ?estado=99 en la URL, lo tratamos como "Todos".
+            if (estado.HasValue && Enum.IsDefined(typeof(EstadoEnvio), estado.Value) == false)
+            {
+                estado = null;
+            }
+
+            var envios = await _envioServicios.ListarAsync(usuario.Id, estado);
+
+            var model = new MisEnviosViewModel
+            {
+                EstadoSeleccionado = estado,
+                Envios = envios
+            };
+
+            return View(model);
         }
 
         [HttpGet]
@@ -85,7 +105,52 @@ namespace RuteaYa.Web.Controllers {
             }
 
             TempData["MensajeExito"] = "¡Tu envío fue publicado con éxito y ya está disponible buscando conductor!.";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Detalle(int id)
+        {
+            var usuario = await _userManager.GetUserAsync(User);
+            if (usuario == null)
+            {
+                return Challenge();
+            }
+
+            var envio = await _envioServicios.ObtenerDetalleAsync(usuario.Id, id);
+            if (envio == null)
+            {
+                return NotFound();
+            }
+
+            return View(envio);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancelar(int id)
+        {
+            var usuario = await _userManager.GetUserAsync(User);
+            if (usuario == null)
+            {
+                return Challenge();
+            }
+
+            var resultado = await _envioServicios.CancelarAsync(usuario.Id, id);
+
+            if (resultado.NoEncontrado)
+            {
+                return NotFound();
+            }
+
+            if (resultado.ResultadoExitoso)
+            {
+                TempData["MensajeExito"] = "El envío fue cancelado.";
+            }
+            else
+            {
+                TempData["MensajeError"] = resultado.Error;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,0 +1,74 @@
+﻿@using RuteaYa.Web.Models.Envios
+@model RuteaYa.Web.Models.Envios.MisEnviosViewModel
+
+@{
+    ViewData["Title"] = "Mis envíos";
+}
+
+<div class="pagina">
+    <div class="envios-header">
+        <div>
+            <h1>Mis envíos</h1>
+            <p>Seguí el estado de lo que enviaste.</p>
+        </div>
+        <a asp-action="Crear" class="btn-nuevo">
+            <svg class="icono"><use href="#i-plus" /></svg>
+            Nuevo envío
+        </a>
+    </div>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alerta alerta-exito">@TempData["MensajeExito"]</div>
+    }
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alerta alerta-error">@TempData["MensajeError"]</div>
+    }
+
+    <div class="filtros">
+        <a asp-action="Index"
+           class="filtro @(Model.EstadoSeleccionado == null ? "activo" : "")">Todos</a>
+
+        @foreach (EstadoEnvio estado in Enum.GetValues(typeof(EstadoEnvio)))
+        {
+            <a asp-action="Index" asp-route-estado="@((int)estado)"
+               class="filtro @(Model.EstadoSeleccionado == estado ? "activo" : "")">@estado.Texto()</a>
+        }
+    </div>
+
+    <div class="lista-envios">
+        @if (Model.Envios.Count == 0)
+        {
+            <p>No tenés envíos en esta categoría.</p>
+        }
+
+        @foreach (var envio in Model.Envios)
+        {
+            <div class="envio-fila">
+                <div>
+                    <div class="envio-ruta">@envio.OrigenDir → @envio.DestinoDir</div>
+                    <div class="envio-info">@envio.Descripcion · <strong>$@envio.Monto.ToString("#,##0.##")</strong></div>
+                </div>
+                <div class="envio-acciones">
+                    <span class="estado estado-@envio.Estado.ToString().ToLower()">@envio.Estado.Texto()</span>
+                    <a asp-action="Detalle" asp-route-id="@envio.Id" class="btn-detalle">Ver detalle</a>
+                    @if (envio.PuedeCancelar)
+                    {
+                        <form asp-action="Cancelar" asp-route-id="@envio.Id" method="post" class="form-cancelar">
+                            <button type="submit" class="btn-cancelar">Cancelar</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/envios.js" asp-append-version="true"></script>
+}

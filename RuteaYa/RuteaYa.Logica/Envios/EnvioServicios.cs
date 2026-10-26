@@ -1,11 +1,12 @@
-﻿using RuteaYa.Logica.Mapas;
+﻿using Microsoft.EntityFrameworkCore;
+using RuteaYa.Entidades;
+using RuteaYa.Entidades.Data;
+using RuteaYa.Entidades.Enums;
+using RuteaYa.Logica.Envios.Dtos;
+using RuteaYa.Logica.Mapas;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RuteaYa.Entidades.Enums;
-using RuteaYa.Logica.Envios.Dtos;
-using RuteaYa.Entidades;
-using RuteaYa.Entidades.Data;
 
 namespace RuteaYa.Logica.Envios {
 
@@ -132,12 +133,116 @@ namespace RuteaYa.Logica.Envios {
                 errores.Add("La descripción no puede superar los 500 caracteres.");
               }
 
-            if(dto.Monto <= 0)
+            if(dto.Monto < 1)
             {
                 errores.Add("El monto ofrecido debe ser mayor a $0.");
             }
 
             return errores;
+        }
+        public async Task<List<EnvioListadoDto>> ListarAsync(int usuarioId, EstadoEnvio? estado)
+        {
+            var consulta = _context.Envios
+                .AsNoTracking()             //solo va a leer
+                .Where(e => e.UsuarioId == usuarioId); //envios del usuario
+
+            if (estado.HasValue)
+            {
+                consulta = consulta.Where(e => e.Estado == estado.Value);
+            }
+
+            var envios = await consulta
+                .OrderByDescending(e => e.CreadoEn)
+                .ToListAsync();
+
+            return envios.Select(e => new EnvioListadoDto
+            {
+                Id = e.Id,
+                OrigenDir = e.OrigenDir,
+                DestinoDir = e.DestinoDir,
+                Descripcion = e.Descripcion,
+                Monto = e.Monto,
+                Estado = e.Estado,
+                FechaLimite = e.FechaLimite,
+                PuedeCancelar = PuedeCancelar(e.Estado)
+            }).ToList();
+        }
+
+        private static bool PuedeCancelar(EstadoEnvio estado)
+        {
+            return estado == EstadoEnvio.BuscandoConductor
+                || estado == EstadoEnvio.ConductorAsignado;
+        }
+
+        public async Task<EnvioDetalleDto?> ObtenerDetalleAsync(int usuarioId, int envioId)
+        {
+            var envio = await _context.Envios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == envioId && e.UsuarioId == usuarioId);
+
+            if (envio == null)
+            {
+                return null;
+            }
+
+            return new EnvioDetalleDto
+            {
+                Id = envio.Id,
+                OrigenDir = envio.OrigenDir,
+                DestinoDir = envio.DestinoDir,
+                Descripcion = envio.Descripcion,
+                Monto = envio.Monto,
+                PesoKg = envio.PesoKg,
+                Tamano = envio.Tamano,
+                Estado = envio.Estado,
+                FechaLimite = envio.FechaLimite,
+                CreadoEn = envio.CreadoEn,
+                PuedeCancelar = PuedeCancelar(envio.Estado)
+            };
+        }
+        public async Task<ResultadoCancelarEnvio> CancelarAsync(int usuarioId, int envioId)
+        {
+            var envio = await _context.Envios
+                .Include(e => e.Asignacion)
+                .FirstOrDefaultAsync(e => e.Id == envioId && e.UsuarioId == usuarioId);
+
+            if (envio == null)
+            {
+                return ResultadoCancelarEnvio.NoExiste();
+            }
+
+            if (PuedeCancelar(envio.Estado) == false)
+            {
+                return ResultadoCancelarEnvio.Fallido(
+                    "Solo se pueden cancelar envíos que estén buscando conductor o con conductor asignado.");
+            }
+
+            var estadoAnterior = envio.Estado;
+            envio.Estado = EstadoEnvio.Cancelado;
+
+            if (envio.Asignacion != null)
+            {
+                _context.Remove(envio.Asignacion);
+            }
+
+            envio.Historial.Add(new EnvioEstadoHistorial
+            {
+                EstadoAnterior = estadoAnterior,
+                EstadoNuevo = EstadoEnvio.Cancelado,
+                Fecha = DateTime.Now
+            });
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return ResultadoCancelarEnvio.Fallido(
+                    "El envío cambió mientras lo cancelabas (por ejemplo, un conductor lo aceptó). Revisá su estado e intentá de nuevo.");
+            }
+
+            return ResultadoCancelarEnvio.Exitoso();
         }
     }
 }
