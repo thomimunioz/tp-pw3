@@ -372,3 +372,104 @@
     font-size: 0.875rem;
     color: var(--text-muted);
 }
+
+/* ---------- Página 404 ---------- */
+.pagina-404 {
+    max-width: 34rem;
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.pagina-404__mapa {
+    width: 100%;
+    max-width: 20rem;
+    height: auto;
+}
+
+.pagina-404__ruta {
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 2 12;
+    animation: ruta-avanza 1s linear infinite;
+}
+
+@keyframes ruta-avanza {
+    to {
+        stroke-dashoffset: -14;
+    }
+}
+
+.pagina-404__inicio {
+    fill: var(--text);
+}
+
+.pagina-404__pin path {
+    fill: var(--accent);
+}
+
+.pagina-404__pin circle {
+    fill: var(--bg-card);
+}
+
+.pagina-404__codigo {
+    margin: 0;
+    font-size: clamp(4rem, 14vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+}
+
+.pagina-404 h1 {
+    margin: 0;
+}
+
+.pagina-404 p {
+    color: var(--text-muted);
+}
+
+.pagina-404__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.pagina-404__boton {
+    padding: 0.65rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background: var(--accent);
+    color: var(--accent-text);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .pagina-404__boton:hover {
+        background: var(--accent-hover);
+    }
+
+.pagina-404__boton--secundario {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+    .pagina-404__boton--secundario:hover {
+        background: var(--hover);
+    }
+
+@media (prefers-reduced-motion: reduce) {
+    .pagina-404__ruta {
+        animation: none;
+    }
+}
