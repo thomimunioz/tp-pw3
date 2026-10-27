@@ -1,6 +1,27 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using RuteaYa.Entidades
+@inject UserManager<Usuario> UserManager
+@{
     ViewData["Title"] = "Inicio";
+    var usuario = await UserManager.GetUserAsync(User);
 }
 
-<h1>Inicio</h1>
-<p>Prueba home index.</p>
+<div class="inicio">
+    <div>
+        <h1>Hola, @usuario?.Nombre</h1>
+        <p>¿Qué querés hacer hoy?</p>
+    </div>
+
+    <div class="accesos">
+        <a class="acceso" asp-controller="Envios" asp-action="Crear">
+            <span class="acceso__icono"><svg class="icono"><use href="#i-plus" /></svg></span>
+            <span class="acceso__titulo">Publicar un envío</span>
+            <span class="acceso__texto">Cargá un paquete para que un conductor lo lleve.</span>
+        </a>
+        <a class="acceso" asp-controller="Envios" asp-action="Index">
+            <span class="acceso__icono"><svg class="icono"><use href="#i-package" /></svg></span>
+            <span class="acceso__titulo">Mis envíos</span>
+            <span class="acceso__texto">Seguí el estado de lo que enviaste.</span>
+        </a>
+    </div>
+</div>
