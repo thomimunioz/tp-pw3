@@ -41,11 +41,11 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 
 builder.Services.AddScoped<IAccountServicios, AccountServicios>();
 builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
-<<<<<<< HEAD
+
 builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
-=======
+
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
->>>>>>> 54584fca3de7ab8ff7ffba65c77bf7129219b47a
+
 
 if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))
 {
