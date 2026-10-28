@@ -22,6 +22,18 @@ public class ViajeServicios : IViajeServicios
             .ToListAsync();
     }
 
+    public async Task<Viaje?> ObtenerDetallePorUsuarioAsync(int viajeId, int usuarioId)
+    {
+        return await _context.Viajes
+            .AsNoTracking()
+            .Where(v => v.Id == viajeId && v.UsuarioId == usuarioId)
+            .Include(v => v.Dias)
+            .Include(v => v.Paradas)
+            .Include(v => v.Asignaciones)
+                .ThenInclude(a => a.Envio)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, string? paradasIntermedias)
     {
         ArgumentNullException.ThrowIfNull(viaje);

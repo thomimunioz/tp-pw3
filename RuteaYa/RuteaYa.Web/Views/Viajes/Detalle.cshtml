@@ -1,0 +1,244 @@
+﻿
+@model RuteaYa.Web.ViewModels.ViajeDetalleViewModel
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/viaje-detalle.css" asp-append-version="true" />
+}
+
+@{
+    ViewData["Title"] = "Detalle del viaje";
+    var diasTexto = Model.Dias.Count > 0
+        ? string.Join(", ", Model.Dias)
+        : "Sin días configurados";
+}
+
+<div class="viaje-detalle__encabezado d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <p class="text-uppercase text-secondary fw-semibold mb-1">
+            Mis viajes
+        </p>
+        <h2 class="mb-1">Detalle del viaje</h2>
+        <p class="text-secondary mb-0">
+            Información del recorrido y de los paquetes asignados.
+        </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        @if (Model.Activo)
+        {
+            <span class="badge bg-success rounded-pill">Activo</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary rounded-pill">Inactivo</span>
+        }
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Volver a Mis viajes
+        </a>
+    </div>
+</div>
+
+<div class="viaje-detalle__grid row g-4">
+    <div class="col-lg-7">
+        <section class="viaje-panel card h-100">
+            <div class="card-body">
+                <h3 class="viaje-panel__titulo h5 mb-4">
+                    Recorrido
+                </h3>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="d-flex flex-column align-items-center pt-1">
+                        <span class="rounded-circle bg-success"
+                              style="width: 12px; height: 12px;"></span>
+
+                        <span class="border-start border-2 border-secondary-subtle flex-grow-1 my-1"
+                              style="min-height: 36px;"></span>
+
+                        <span class="rounded-circle bg-danger"
+                              style="width: 12px; height: 12px;"></span>
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <div class="mb-4">
+                            <div class="small text-secondary mb-1">
+                                ORIGEN
+                            </div>
+                            <div class="fw-semibold">
+                                @Model.OrigenDir
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="small text-secondary mb-1">
+                                DESTINO
+                            </div>
+                            <div class="fw-semibold">
+                                @Model.DestinoDir
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="h6 mt-4 mb-3">
+                    Paradas intermedias
+                </h4>
+
+                @if (Model.Paradas.Any())
+                {
+                    <ol class="list-group list-group-numbered list-group-flush">
+                        @foreach (var parada in Model.Paradas.OrderBy(p => p.Orden))
+                        {
+                            <li class="list-group-item px-0 bg-transparent">
+                                @parada.Direccion
+                            </li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <p class="text-secondary mb-0">
+                        Este viaje no tiene paradas intermedias.
+                    </p>
+                }
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-5">
+        <section class="viaje-panel card mb-4">
+            <div class="card-body">
+                <h3 class="viaje-panel__titulo h5 mb-3">
+                    Días y horarios
+                </h3>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-5 text-secondary fw-normal">Días</dt>
+                    <dd class="col-sm-7">@diasTexto</dd>
+
+                    <dt class="col-sm-5 text-secondary fw-normal">Salida</dt>
+                    <dd class="col-sm-7">@Model.HoraSalida</dd>
+
+                    <dt class="col-sm-5 text-secondary fw-normal">Llegada</dt>
+                    <dd class="col-sm-7">@Model.HoraLlegada</dd>
+                </dl>
+            </div>
+        </section>
+
+        <section class="viaje-panel card">
+            <div class="card-body">
+                <h3 class="viaje-panel__titulo h5 mb-3">
+                    Capacidad del viaje
+                </h3>
+
+                <dl class="row mb-0">
+                    <dt class="col-7 text-secondary fw-normal">
+                        Máximo de paquetes
+                    </dt>
+                    <dd class="col-5 text-end">
+                        @Model.MaxPaquetes
+                    </dd>
+
+                    <dt class="col-7 text-secondary fw-normal">
+                        Peso máximo
+                    </dt>
+                    <dd class="col-5 text-end">
+                        @Model.PesoMaxKg.ToString("0.##") kg
+                    </dd>
+
+                    <dt class="col-7 text-secondary fw-normal">
+                        Desvío máximo
+                    </dt>
+                    <dd class="col-5 text-end">
+                        @Model.DesvioMaxKm.ToString("0.##") km
+                    </dd>
+
+                    @if (Model.DistanciaKm > 0)
+                    {
+                        <dt class="col-7 text-secondary fw-normal">
+                            Distancia estimada
+                        </dt>
+                        <dd class="col-5 text-end">
+                            @Model.DistanciaKm.ToString("0.##") km
+                        </dd>
+                    }
+
+                    @if (Model.DuracionMin > 0)
+                    {
+                        <dt class="col-7 text-secondary fw-normal">
+                            Duración estimada
+                        </dt>
+                        <dd class="col-5 text-end">
+                            @Model.DuracionMin min
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </section>
+    </div>
+</div>
+
+<section class="viaje-panel viaje-panel--paquetes card mt-4">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <h3 class="viaje-panel__titulo h5 mb-1">
+                    Paquetes asignados
+                </h3>
+                <p class="text-secondary mb-0">
+                    Paquetes que ya están vinculados a este viaje.
+                </p>
+            </div>
+
+            <span class="badge bg-body-secondary text-body rounded-pill">
+                @Model.PaquetesAsignados.Count paquete(s)
+            </span>
+        </div>
+
+        @if (Model.PaquetesAsignados.Any())
+        {
+            <div class="table-responsive">
+                <table class="viaje-tabla table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Paquete</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Peso</th>
+                            <th>Tamaño</th>
+                            <th>Fecha del viaje</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var paquete in Model.PaquetesAsignados)
+                        {
+                            <tr>
+                                <td>#@paquete.Id</td>
+                                <td>@paquete.OrigenDir</td>
+                                <td>@paquete.DestinoDir</td>
+                                <td>@paquete.PesoKg.ToString("0.##") kg</td>
+                                <td>@paquete.Tamano</td>
+                                <td>@paquete.FechaViaje.ToString("dd/MM/yyyy")</td>
+                                <td>@paquete.Estado</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <p class="fw-semibold mb-1">
+                    Todavía no hay paquetes asignados
+                </p>
+                <p class="text-secondary mb-0">
+                    Cuando se asigne un paquete a este viaje,
+                    va a aparecer acá.
+                </p>
+            </div>
+        }
+    </div>
+</section>

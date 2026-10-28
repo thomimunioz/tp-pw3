@@ -1,0 +1,131 @@
+.viaje-detalle__encabezado {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.viaje-detalle__encabezado h2 {
+    color: var(--text);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.viaje-detalle__encabezado .text-secondary,
+.viaje-panel .text-secondary {
+    color: var(--text-muted) !important;
+}
+
+.viaje-detalle__encabezado .btn-outline-secondary {
+    border-color: var(--border);
+    color: var(--text);
+    border-radius: .7rem;
+    font-weight: 600;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.viaje-detalle__encabezado .btn-outline-secondary:hover {
+    background: var(--hover);
+    border-color: var(--text-muted);
+    color: var(--text);
+}
+
+.viaje-panel {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .045) !important;
+    overflow: hidden;
+}
+
+.viaje-panel .card-body {
+    padding: clamp(1.15rem, 2vw, 1.65rem);
+}
+
+.viaje-panel__titulo {
+    color: var(--text);
+    font-weight: 750;
+    letter-spacing: -.02em;
+}
+
+.viaje-panel dl dt {
+    padding-top: .35rem;
+    padding-bottom: .35rem;
+    font-size: .9rem;
+}
+
+.viaje-panel dl dd {
+    padding-top: .35rem;
+    padding-bottom: .35rem;
+    margin-bottom: .35rem;
+    color: var(--text);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.viaje-panel .list-group-item {
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.viaje-tabla {
+    color: var(--text);
+    --bs-table-color: var(--text);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--border);
+    margin-top: .5rem;
+}
+
+.viaje-tabla thead th {
+    padding: .9rem .85rem;
+    background: var(--bg-panel);
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-size: .76rem;
+    font-weight: 750;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.viaje-tabla tbody td {
+    padding: .95rem .85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.viaje-tabla tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.viaje-tabla tbody tr:hover {
+    background: var(--hover);
+}
+
+.viaje-panel--paquetes .badge {
+    padding: .5rem .75rem;
+    font-weight: 700;
+}
+
+@media (max-width: 767.98px) {
+    .viaje-detalle__encabezado {
+        align-items: flex-start !important;
+    }
+
+    .viaje-detalle__encabezado > .d-flex {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .viaje-detalle__encabezado .btn-outline-secondary {
+        margin-left: auto;
+    }
+
+    .viaje-panel .card-body {
+        padding: 1.1rem;
+    }
+
+    .viaje-tabla {
+        font-size: .9rem;
+    }
+}
