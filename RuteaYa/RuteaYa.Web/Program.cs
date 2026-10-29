@@ -7,12 +7,9 @@ using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Envios;
-
+using RuteaYa.Logica.Transportes;
 using RuteaYa.Logica.Viajes;
-
 using RuteaYa.Logica.Oportunidades;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,9 +38,8 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 
 builder.Services.AddScoped<IAccountServicios, AccountServicios>();
 builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
-
+builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
 builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
-
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
 
 
@@ -81,6 +77,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
