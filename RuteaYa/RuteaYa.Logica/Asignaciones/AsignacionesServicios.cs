@@ -73,9 +73,29 @@ namespace RuteaYa.Logica.Asignaciones
                 AsignadoEn = DateTime.UtcNow
             });
 
+            _context.Add(new EnvioEstadoHistorial
+            {
+                EnvioId = envio.Id,
+                EstadoAnterior = envio.Estado,
+                EstadoNuevo = EstadoEnvio.ConductorAsignado,
+                Fecha = DateTime.UtcNow
+            });
+
             envio.Estado = EstadoEnvio.ConductorAsignado;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return ResultadoAceptar.YaTomado;
+            }
+            catch (DbUpdateException)
+            {
+                return ResultadoAceptar.YaTomado;
+            }
+
             return ResultadoAceptar.Exito;
         }
     }
