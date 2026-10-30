@@ -121,7 +121,8 @@ public class OportunidadesServicios : IOportunidadesServicios
             TiempoExtraMin = CalculadoraDistancias.MinutosDeViaje(desvio),
             GananciaPorKm = desvio > 0 ? Math.Round(envio.Monto / desvio, 2) : envio.Monto,
             PaquetesDisponibles = viaje.MaxPaquetes - asignadosEseDia.Count,
-            PesoDisponibleKg = viaje.PesoMaxKg - asignadosEseDia.Sum(a => a.Envio.PesoKg)
+            PesoDisponibleKg = viaje.PesoMaxKg - asignadosEseDia.Sum(a => a.Envio.PesoKg),
+            Compatibilidad = CalcularCompatibilidad(desvio, viaje.DesvioMaxKm)
         };
     }
 
@@ -175,6 +176,14 @@ public class OportunidadesServicios : IOportunidadesServicios
 
         }
         return null;   
+    }
+    private static NivelCompatibilidad CalcularCompatibilidad(decimal desvio, decimal desvioMax)
+    {
+        decimal proporcion = desvioMax > 0 ? desvio / desvioMax : 0;
+
+        if (proporcion <= 0.34m) return NivelCompatibilidad.MuyCompatible;
+        if (proporcion <= 0.67m) return NivelCompatibilidad.Compatible;
+        return NivelCompatibilidad.MuchoDesvio;
     }
 
 }

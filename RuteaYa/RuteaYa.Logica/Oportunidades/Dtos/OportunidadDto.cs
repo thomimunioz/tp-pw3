@@ -17,4 +17,5 @@ public class OportunidadDto
     public int TiempoHabitualMin { get; set; }
     public int PaquetesDisponibles { get; set; }
     public decimal PesoDisponibleKg { get; set; }
+    public NivelCompatibilidad Compatibilidad { get; set; }
 }
