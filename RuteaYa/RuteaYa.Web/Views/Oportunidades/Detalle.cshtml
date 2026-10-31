@@ -1,0 +1,63 @@
+﻿@model RuteaYa.Web.Models.DetalleOportunidadViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Detalle de oportunidad";
+    var ar = new CultureInfo("es-AR");
+    var o = Model.Oportunidad;
+}
+
+<div class="oportunidades">
+    <header class="cabecera cabecera--fila">
+        <div>
+            <h1>Detalle de oportunidad</h1>
+            <p>@o.OrigenDireccion → @o.DestinoDireccion</p>
+        </div>
+        <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Volver</a>
+    </header>
+
+    <div class="detalle">
+        <section class="panel">
+            <h2>Ruta habitual vs. con el envío</h2>
+            <dl class="filas">
+                <div class="fila"><dt>Fecha del viaje</dt><dd>@o.FechaViaje.ToString("dd/MM/yyyy")</dd></div>
+                <div class="fila"><dt>Distancia habitual</dt><dd>@o.DistanciaHabitualKm.ToString("0.0", ar) km</dd></div>
+                <div class="fila"><dt>Distancia con el envío</dt><dd>@o.DistanciaConEnvioKm.ToString("0.0", ar) km</dd></div>
+                <div class="fila"><dt>Desvío</dt><dd>@o.DesvioKm.ToString("0.0", ar) km</dd></div>
+                <div class="fila"><dt>Tiempo habitual</dt><dd>@o.TiempoHabitualMin min</dd></div>
+                <div class="fila"><dt>Tiempo adicional</dt><dd>+@o.TiempoExtraMin min</dd></div>
+                <div class="fila"><dt>Peso del envío</dt><dd>@o.PesoKg.ToString("0.##", ar) kg</dd></div>
+                <div class="fila">
+                    <dt>Capacidad disponible del viaje</dt>
+                    <dd>@o.PesoDisponibleKg.ToString("0.##", ar) kg · @o.PaquetesDisponibles paquetes</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="panel panel--pago">
+            <span class="pago__etiqueta">Pago</span>
+            <strong class="pago__monto">$@o.Pago.ToString("N0", ar)</strong>
+            @if (o.DesvioKm > 0)
+            {
+                <span class="pago__km">$@o.GananciaPorKm.ToString("N0", ar) por km adicional</span>
+            }
+            else
+            {
+                <span class="pago__km">Sin desvío: no suma kilómetros a tu ruta</span>
+            }
+
+            <form asp-action="Aceptar" method="post"
+                  data-confirmar="¿Aceptar este envío para tu viaje?">
+                <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                <input type="hidden" name="envioId" value="@o.EnvioId" />
+                <button type="submit" class="btn btn--primario">Aceptar envío</button>
+            </form>
+        </section>
+    </div>
+</div>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/oportunidades.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/oportunidades.js" asp-append-version="true"></script>
+}

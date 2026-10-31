@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
+using RuteaYa.Logica.Mapas;
 
 namespace RuteaYa.Logica.Viajes;
 
 public class ViajeServicios : IViajeServicios
 {
     private readonly RuteaYaContext _context;
+    private readonly IGeocodificador _geocodificador;
 
-    public ViajeServicios(RuteaYaContext context)
+    public ViajeServicios(RuteaYaContext context, IGeocodificador geocodificador)
     {
         _context = context;
+        _geocodificador = geocodificador;
     }
 
     public async Task<List<Viaje>> ObtenerPorUsuarioAsync(int usuarioId)
@@ -54,6 +57,18 @@ public class ViajeServicios : IViajeServicios
             });
         }
 
+        var origen = await _geocodificador.GeocodificarAsync(viaje.OrigenDir);
+        var destino = await _geocodificador.GeocodificarAsync(viaje.DestinoDir);
+        if (origen == null || destino == null)
+        {
+            throw new InvalidOperationException("No se pudo ubicar el origen o el destino.");
+        }
+
+        viaje.OrigenLat = origen.Lat;
+        viaje.OrigenLng = origen.Lng;
+        viaje.DestinoLat = destino.Lat;
+        viaje.DestinoLng = destino.Lng;
+
         if (!string.IsNullOrWhiteSpace(paradasIntermedias))
         {
             var origenNormalizado = viaje.OrigenDir?.Trim();
@@ -79,6 +94,14 @@ public class ViajeServicios : IViajeServicios
 
             foreach (var parada in paradas)
             {
+                var coord = await _geocodificador.GeocodificarAsync(parada.Direccion);
+                if (coord == null)
+                {
+                    throw new InvalidOperationException($"No se pudo ubicar la parada {parada.Direccion}.");
+                }
+
+                parada.Lat = coord.Lat;
+                parada.Lng = coord.Lng;
                 viaje.Paradas.Add(parada);
             }
         }
