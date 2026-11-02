@@ -5,11 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
-using RuteaYa.Logica.Mapas;
+using RuteaYa.Logica.Asignaciones;
 using RuteaYa.Logica.Envios;
+using RuteaYa.Logica.Mapas;
+using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Transportes;
 using RuteaYa.Logica.Viajes;
-using RuteaYa.Logica.Oportunidades;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
 builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
 builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
+builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
 
 
 if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))
