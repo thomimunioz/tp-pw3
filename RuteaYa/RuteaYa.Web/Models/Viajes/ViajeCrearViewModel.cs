@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RuteaYa.Web.ViewModels;
+namespace RuteaYa.Web.Models.Viajes;
 
 public class ViajeCrearViewModel : IValidatableObject
 {

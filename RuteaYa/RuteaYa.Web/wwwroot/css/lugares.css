@@ -1,0 +1,26 @@
+﻿/* Lista de sugerencias de lugares. Usa las variables de tema.css, así respeta modo claro y oscuro. */
+.lugares-lista {
+    position: absolute;
+    z-index: 1000;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    list-style: none;
+    max-height: 240px;
+    overflow-y: auto;
+    background: var(--bg-card);
+    color: inherit;
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+}
+
+.lugares-item {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+    .lugares-item:hover,
+    .lugares-item--activo {
+        background: color-mix(in srgb, var(--accent) 15%, var(--bg-card));
+    }
