@@ -19,13 +19,13 @@
 
         <div class="form-campo">
             <label asp-for="OrigenDirrecion">Origen</label>
-            <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" />
+            <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")"/>
             <span asp-validation-for="OrigenDirrecion"></span>
         </div>
 
         <div class="form-campo">
             <label asp-for="DestinoDireccion">Destino</label>
-            <input asp-for="DestinoDireccion" placeholder="¿A dónde llega?" />
+            <input asp-for="DestinoDireccion" placeholder="¿A dónde llega?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
             <span asp-validation-for="DestinoDireccion"></span>
         </div>
 
@@ -82,8 +82,10 @@
 
 @section Estilos {
     <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lugares.css" asp-append-version="true" />
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/lugares.js" asp-append-version="true"></script>
 }

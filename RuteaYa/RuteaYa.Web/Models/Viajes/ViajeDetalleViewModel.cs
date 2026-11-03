@@ -1,6 +1,6 @@
 ﻿using RuteaYa.Entidades;
 
-namespace RuteaYa.Web.ViewModels;
+namespace RuteaYa.Web.Models.Viajes;
 
 public class ViajeDetalleViewModel
 {

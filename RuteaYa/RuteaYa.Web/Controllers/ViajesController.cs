@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Entidades;
 using RuteaYa.Logica.Viajes;
-using RuteaYa.Web.ViewModels;
+using RuteaYa.Web.Models.Viajes;
 
 namespace RuteaYa.Web.Controllers;
 

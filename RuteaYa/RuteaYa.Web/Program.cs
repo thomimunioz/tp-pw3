@@ -7,6 +7,7 @@ using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Asignaciones;
 using RuteaYa.Logica.Envios;
+using RuteaYa.Logica.Lugares;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Transportes;
@@ -56,6 +57,13 @@ else
         client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
     });
 }
+
+builder.Services.AddHttpClient<ISugeridorLugares, PhotonSugeridorLugares>(cliente =>
+{
+    cliente.BaseAddress = new Uri("https://photon.komoot.io/");
+    cliente.Timeout = TimeSpan.FromSeconds(5);
+    cliente.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa-TP-UNLaM/1.0");
+});
 
 var app = builder.Build();
 
