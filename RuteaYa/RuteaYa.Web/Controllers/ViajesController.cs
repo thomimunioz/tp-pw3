@@ -1,9 +1,10 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Entidades;
-using RuteaYa.Logica.Viajes;
+using RuteaYa.Logica.Servicios;
+using RuteaYa.Web.Models;
 using RuteaYa.Web.Models.Viajes;
+using System.Security.Claims;
 
 namespace RuteaYa.Web.Controllers;
 
@@ -131,11 +132,98 @@ public class ViajesController : Controller
             Activo = true
         };
 
-        await _viajeServicios.CrearViajeAsync(viaje, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
+        // ACÁ ESTÁ LA SOLUCIÓN DEL ERROR AL CREAR
+        try
+        {
+            await _viajeServicios.CrearViajeAsync(viaje, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Ataja el error del mapa y lo manda a la vista
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(modelo);
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado al guardar.");
+            return View(modelo);
+        }
+    }
 
-        return RedirectToAction(nameof(Index));
+    // --- ACÁ EMPIEZAN LOS MÉTODOS DE EDICIÓN ---
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var usuario = await _userManager.GetUserAsync(User);
+        if (usuario == null) return Challenge();
+
+        // 1. Buscamos el viaje en la base de datos
+        var viajeDb = await _viajeServicios.ObtenerPorIdAsync(id, usuario.Id);
+        if (viajeDb == null) return NotFound();
+
+        // 2. Traducimos la Entidad al ViewModel para mandarlo a la pantalla
+        var modelo = new ViajeEditarViewModel
+        {
+            Id = viajeDb.Id,
+            OrigenDir = viajeDb.OrigenDir,
+            DestinoDir = viajeDb.DestinoDir,
+            HoraSalida = viajeDb.HoraSalida,
+            HoraLlegada = viajeDb.HoraLlegada,
+            MaxPaquetes = viajeDb.MaxPaquetes,
+            PesoMaxKg = viajeDb.PesoMaxKg,
+            DesvioMaxKm = viajeDb.DesvioMaxKm,
+            DiasSeleccionados = viajeDb.Dias.Select(d => (int)d.DiaSemana).ToList(),
+            // Unimos las paradas con coma para que el usuario las edite fácil en la caja de texto
+            ParadasIntermedias = viajeDb.Paradas.Any() ? string.Join(", ", viajeDb.Paradas.OrderBy(p => p.Orden).Select(p => p.Direccion)) : string.Empty
+        };
+
+        return View(modelo);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, ViajeEditarViewModel modelo)
+    {
+        if (id != modelo.Id) return BadRequest();
+
+        if (!ModelState.IsValid) return View(modelo);
+
+        var usuario = await _userManager.GetUserAsync(User);
+        if (usuario == null) return Challenge();
+
+        try
+        {
+            // Empaquetamos solo los datos modificables en un objeto temporal
+            var viajeActualizado = new Viaje
+            {
+                Id = modelo.Id,
+                OrigenDir = modelo.OrigenDir.Trim(),
+                DestinoDir = modelo.DestinoDir.Trim(),
+                HoraSalida = modelo.HoraSalida,
+                HoraLlegada = modelo.HoraLlegada,
+                MaxPaquetes = modelo.MaxPaquetes,
+                PesoMaxKg = modelo.PesoMaxKg,
+                DesvioMaxKm = modelo.DesvioMaxKm
+            };
+
+            // Mandamos todo al servicio
+            await _viajeServicios.EditarViajeAsync(viajeActualizado, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
+
+            // Si salió todo bien, lo devolvemos a la lista de "Mis viajes"
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Si las coordenadas fallan, pintamos el error en rojo en la pantalla
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(modelo);
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(string.Empty, "Ocurrió un error al actualizar el viaje.");
+            return View(modelo);
+        }
     }
 }
-
-
-

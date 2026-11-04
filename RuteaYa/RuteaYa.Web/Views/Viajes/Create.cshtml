@@ -4,115 +4,105 @@
     ViewData["Title"] = "Crear viaje";
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 rounded-4 bg-body-tertiary">
-                <div class="card-body p-4 p-lg-5">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div>
-                            <p class="text-uppercase text-secondary fw-semibold mb-1">Viajes</p>
-                            <h2 class="mb-0">Nuevo viaje</h2>
-                        </div>
-                    </div>
+<div class="form-tarjeta">
+    <div class="form-tarjeta__encabezado">
+        <svg class="icono"><use href="#i-navigation" /></svg>
+        <h1>Nuevo viaje</h1>
+        <a asp-action="Index" class="form-tarjeta__cerrar" aria-label="Cerrar">
+            <svg class="icono"><use href="#i-x" /></svg>
+        </a>
+    </div>
+    <p class="form-tarjeta__subtitulo">Registrá un recorrido habitual.</p>
 
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <form asp-action="Create" method="post" class="form-envio">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="OrigenDir" class="form-label">Origen</label>
-                                <input asp-for="OrigenDir" class="form-control bg-body border-secondary-subtle" placeholder="Ej: Av. Rivadavia 1234" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
-                                <span asp-validation-for="OrigenDir" class="text-danger d-block mt-1"></span>
-                            </div>
+        <div class="form-campo">
+            <label asp-for="OrigenDir">Origen</label>
+            <input asp-for="OrigenDir" placeholder="¿Desde dónde salís?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+            <span asp-validation-for="OrigenDir"></span>
+        </div>
 
-                            <div class="col-md-6">
-                                <label asp-for="DestinoDir" class="form-label">Destino</label>
-                                <input asp-for="DestinoDir" class="form-control bg-body border-secondary-subtle" placeholder="Ej: Calle Falsa 4321" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
-                                <span asp-validation-for="DestinoDir" class="text-danger d-block mt-1"></span>
-                            </div>
-                        </div>
+        <div class="form-campo">
+            <label asp-for="DestinoDir">Destino</label>
+            <input asp-for="DestinoDir" placeholder="¿A dónde llegás?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+            <span asp-validation-for="DestinoDir"></span>
+        </div>
 
-                        <div class="mb-3">
-                            <label asp-for="ParadasIntermedias" class="form-label">Paradas intermedias</label>
-                            <input asp-for="ParadasIntermedias" class="form-control bg-body border-secondary-subtle" placeholder="Separadas por coma, ej: San Martín 145, Belgrano 77" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
-                            <span asp-validation-for="ParadasIntermedias" class="text-danger d-block mt-1"></span>
-                        </div>
+        <div class="form-campo">
+            <label asp-for="ParadasIntermedias">Paradas intermedias (opcional, separadas por coma)</label>
+            <input asp-for="ParadasIntermedias" placeholder="Ej: Morón, Ramos Mejía" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+            <span asp-validation-for="ParadasIntermedias"></span>
+        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Días de la semana</label>
-                            <div class="d-flex flex-wrap gap-2 p-3 border rounded-3 bg-body-secondary">
-                                @foreach (var dia in new[]
-                                {
-                                    new { Value = 1, Label = "L" },
-                                    new { Value = 2, Label = "M" },
-                                    new { Value = 3, Label = "X" },
-                                    new { Value = 4, Label = "J" },
-                                    new { Value = 5, Label = "V" },
-                                    new { Value = 6, Label = "S" },
-                                    new { Value = 0, Label = "D" }
-                                })
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="DiasSeleccionados"
-                                               value="@dia.Value"
-                                               id="dia-@dia.Value"
-                                               @(Model.DiasSeleccionados.Contains(dia.Value) ? "checked" : null) />
-                                        <label class="form-check-label" for="dia-@dia.Value">@dia.Label</label>
-                                    </div>
-                                }
-                            </div>
-                            <span asp-validation-for="DiasSeleccionados" class="text-danger d-block mt-1"></span>
-                        </div>
+        <div class="form-campo">
+            <label>Días de la semana</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
+                @foreach (var dia in new[]
+                {
+                    new { Value = 1, Label = "L" },
+                    new { Value = 2, Label = "M" },
+                    new { Value = 3, Label = "X" },
+                    new { Value = 4, Label = "J" },
+                    new { Value = 5, Label = "V" },
+                    new { Value = 6, Label = "S" },
+                    new { Value = 0, Label = "D" }
+                })
+                {
+                    <label class="tamano-chip" style="display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.8rem; cursor: pointer;">
+                        <input type="checkbox"
+                               name="DiasSeleccionados"
+                               value="@dia.Value"
+                               id="dia-create-@dia.Value"
+                        @(Model.DiasSeleccionados != null && Model.DiasSeleccionados.Contains(dia.Value) ? "checked" : null) />
+                        <span>@dia.Label</span>
+                    </label>
+                }
+            </div>
+            <span asp-validation-for="DiasSeleccionados"></span>
+        </div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="HoraSalida" class="form-label">Hora de salida</label>
-                                <input asp-for="HoraSalida" type="time" class="form-control bg-body border-secondary-subtle" />
-                                <span asp-validation-for="HoraSalida" class="text-danger d-block mt-1"></span>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label asp-for="HoraLlegada" class="form-label">Hora de llegada</label>
-                                <input asp-for="HoraLlegada" type="time" class="form-control bg-body border-secondary-subtle" />
-                                <span asp-validation-for="HoraLlegada" class="text-danger d-block mt-1"></span>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label asp-for="MaxPaquetes" class="form-label">Máximo de paquetes</label>
-                                <input asp-for="MaxPaquetes" class="form-control bg-body border-secondary-subtle" min="1" />
-                                <span asp-validation-for="MaxPaquetes" class="text-danger d-block mt-1"></span>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label asp-for="PesoMaxKg" class="form-label">Peso máximo (kg)</label>
-                                <input asp-for="PesoMaxKg" class="form-control bg-body border-secondary-subtle" step="0.1" min="0.1" />
-                                <span asp-validation-for="PesoMaxKg" class="text-danger d-block mt-1"></span>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label asp-for="DesvioMaxKm" class="form-label">Desvío máximo (km)</label>
-                                <input asp-for="DesvioMaxKm" class="form-control bg-body border-secondary-subtle" step="0.1" min="0" />
-                                <span asp-validation-for="DesvioMaxKm" class="text-danger d-block mt-1"></span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Guardar viaje</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="form-fila">
+            <div class="form-campo">
+                <label asp-for="HoraSalida">Hora de salida</label>
+                <input asp-for="HoraSalida" type="time" />
+                <span asp-validation-for="HoraSalida"></span>
+            </div>
+            <div class="form-campo">
+                <label asp-for="HoraLlegada">Hora de llegada</label>
+                <input asp-for="HoraLlegada" type="time" />
+                <span asp-validation-for="HoraLlegada"></span>
             </div>
         </div>
-    </div>
+
+        <div class="form-fila">
+            <div class="form-campo">
+                <label asp-for="MaxPaquetes">Máximo de paquetes</label>
+                <input asp-for="MaxPaquetes" type="number" min="1" />
+                <span asp-validation-for="MaxPaquetes"></span>
+            </div>
+            <div class="form-campo">
+                <label asp-for="PesoMaxKg">Peso máximo (kg)</label>
+                <input asp-for="PesoMaxKg" type="number" step="0.1" min="0.1" />
+                <span asp-validation-for="PesoMaxKg"></span>
+            </div>
+        </div>
+
+        <div class="form-campo">
+            <label asp-for="DesvioMaxKm">Desvío máximo (km)</label>
+            <input asp-for="DesvioMaxKm" type="number" step="0.1" min="0" />
+            <span asp-validation-for="DesvioMaxKm"></span>
+        </div>
+
+        <div class="form-acciones" style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+            <a asp-action="Index" class="btn-form btn-form--secundario" style="text-decoration: none; text-align: center;">Cancelar</a>
+            <button type="submit" class="btn-form btn-form--primario">Guardar viaje</button>
+        </div>
+    </form>
 </div>
 
 @section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/lugares.css" asp-append-version="true" />
 }
 

@@ -10,8 +10,9 @@ using RuteaYa.Logica.Envios;
 using RuteaYa.Logica.Lugares;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Oportunidades;
+using RuteaYa.Logica.Servicios;
 using RuteaYa.Logica.Transportes;
-using RuteaYa.Logica.Viajes;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

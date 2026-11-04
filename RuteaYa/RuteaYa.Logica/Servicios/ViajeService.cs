@@ -3,7 +3,7 @@ using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Mapas;
 
-namespace RuteaYa.Logica.Viajes;
+namespace RuteaYa.Logica.Servicios;
 
 public class ViajeServicios : IViajeServicios
 {
@@ -109,7 +109,97 @@ public class ViajeServicios : IViajeServicios
         _context.Viajes.Add(viaje);
         await _context.SaveChangesAsync();
     }
+
+    // --- ACÁ EMPIEZAN LOS MÉTODOS NUEVOS ---
+
+    public async Task<Viaje?> ObtenerPorIdAsync(int id, int usuarioId)
+    {
+        return await _context.Viajes
+            .Include(v => v.Dias)
+            .Include(v => v.Paradas)
+            .FirstOrDefaultAsync(v => v.Id == id && v.UsuarioId == usuarioId);
+    }
+
+    public async Task EditarViajeAsync(Viaje viajeActualizado, List<int> diasSeleccionados, string? paradasIntermedias)
+    {
+        // 1. Buscamos el viaje original
+        var viajeDb = await _context.Viajes
+            .Include(v => v.Dias)
+            .Include(v => v.Paradas)
+            .FirstOrDefaultAsync(v => v.Id == viajeActualizado.Id);
+
+        if (viajeDb == null) throw new Exception("Viaje no encontrado");
+
+        // 2. Si el usuario modificó el Origen, buscamos las nuevas coordenadas
+        if (viajeDb.OrigenDir != viajeActualizado.OrigenDir)
+        {
+            var origen = await _geocodificador.GeocodificarAsync(viajeActualizado.OrigenDir);
+            if (origen == null) throw new InvalidOperationException("No se pudo ubicar el nuevo origen.");
+            viajeDb.OrigenLat = origen.Lat;
+            viajeDb.OrigenLng = origen.Lng;
+            viajeDb.OrigenDir = viajeActualizado.OrigenDir;
+        }
+
+        // 3. Si modificó el Destino, buscamos las nuevas coordenadas
+        if (viajeDb.DestinoDir != viajeActualizado.DestinoDir)
+        {
+            var destino = await _geocodificador.GeocodificarAsync(viajeActualizado.DestinoDir);
+            if (destino == null) throw new InvalidOperationException("No se pudo ubicar el nuevo destino.");
+            viajeDb.DestinoLat = destino.Lat;
+            viajeDb.DestinoLng = destino.Lng;
+            viajeDb.DestinoDir = viajeActualizado.DestinoDir;
+        }
+
+        // 4. Actualizamos los datos numéricos y de horarios
+        viajeDb.HoraSalida = viajeActualizado.HoraSalida;
+        viajeDb.HoraLlegada = viajeActualizado.HoraLlegada;
+        viajeDb.MaxPaquetes = viajeActualizado.MaxPaquetes;
+        viajeDb.PesoMaxKg = viajeActualizado.PesoMaxKg;
+        viajeDb.DesvioMaxKm = viajeActualizado.DesvioMaxKm;
+
+        // 5. Reemplazamos los días
+        _context.ViajeDias.RemoveRange(viajeDb.Dias);
+        var diasUnicos = diasSeleccionados.Where(d => Enum.IsDefined(typeof(DayOfWeek), d)).Distinct().ToList();
+        foreach (var dia in diasUnicos)
+        {
+            viajeDb.Dias.Add(new ViajeDia
+            {
+                Viaje = viajeDb,
+                DiaSemana = (DayOfWeek)dia
+            });
+        }
+
+        // 6. Reemplazamos las paradas calculando coordenadas nuevas
+        _context.Paradas.RemoveRange(viajeDb.Paradas);
+        if (!string.IsNullOrWhiteSpace(paradasIntermedias))
+        {
+            var origenNorm = viajeDb.OrigenDir?.Trim();
+            var destinoNorm = viajeDb.DestinoDir?.Trim();
+
+            var nuevasParadas = paradasIntermedias
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(p => !string.Equals(p, origenNorm, StringComparison.OrdinalIgnoreCase) &&
+                            !string.Equals(p, destinoNorm, StringComparison.OrdinalIgnoreCase))
+                .Select((direccion, indice) => new Parada
+                {
+                    Viaje = viajeDb,
+                    Orden = indice + 1,
+                    Direccion = direccion
+                }).ToList();
+
+            foreach (var parada in nuevasParadas)
+            {
+                var coord = await _geocodificador.GeocodificarAsync(parada.Direccion);
+                if (coord == null) throw new InvalidOperationException($"No se pudo ubicar la parada {parada.Direccion}.");
+
+                parada.Lat = coord.Lat;
+                parada.Lng = coord.Lng;
+                viajeDb.Paradas.Add(parada);
+            }
+        }
+
+        // 7. Guardamos en la base de datos
+        await _context.SaveChangesAsync();
+    }
 }
-
-
-
