@@ -129,3 +129,144 @@
         font-size: .9rem;
     }
 }
+
+/* Mapa del recorrido */
+.viaje-mapa {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+}
+
+.viaje-mapa__encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.viaje-mapa__encabezado h3 {
+    margin: 0 0 .35rem;
+    color: var(--text);
+    font-size: 1.2rem;
+    font-weight: 750;
+}
+
+.viaje-mapa__encabezado p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: .9rem;
+}
+
+.viaje-mapa__leyenda {
+    flex-shrink: 0;
+    padding: .35rem .65rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: .75rem;
+    font-weight: 650;
+}
+
+.viaje-mapa__contenedor {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 390px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: .85rem;
+    background: var(--bg-panel);
+}
+
+.viaje-mapa__estado {
+    display: grid;
+    height: 100%;
+    margin: 0;
+    place-items: center;
+    color: var(--text-muted);
+}
+
+.viaje-mapa__mensaje {
+    min-height: 1.25rem;
+    margin: .65rem 0 0;
+    color: var(--text-muted);
+    font-size: .85rem;
+}
+
+.viaje-mapa__mensaje:empty {
+    display: none;
+}
+
+.viaje-mapa__referencias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: .85rem;
+    color: var(--text-muted);
+    font-size: .82rem;
+}
+
+.viaje-mapa__referencias span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.viaje-mapa__punto {
+    display: inline-block;
+    width: .65rem;
+    height: .65rem;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, .2);
+}
+
+.viaje-mapa__punto--origen { background: #10b981; }
+.viaje-mapa__punto--parada { background: #4f46e5; }
+.viaje-mapa__punto--destino { background: #ef4444; }
+
+.viaje-mapa__marcador {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 2px 7px rgba(15, 23, 42, .3);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 800;
+    transform: rotate(-45deg);
+}
+
+.viaje-mapa__marcador span {
+    transform: rotate(45deg);
+}
+
+.viaje-mapa__marcador--origen { background: #10b981; }
+.viaje-mapa__marcador--parada { background: #4f46e5; }
+.viaje-mapa__marcador--destino { background: #ef4444; }
+
+.viaje-mapa .leaflet-popup-content-wrapper,
+.viaje-mapa .leaflet-popup-tip {
+    background: var(--bg-card);
+    color: var(--text);
+}
+
+.viaje-mapa .leaflet-popup-content {
+    margin: .7rem .85rem;
+}
+
+@media (max-width: 767.98px) {
+    .viaje-mapa {
+        padding: 1rem;
+    }
+
+    .viaje-mapa__contenedor {
+        height: 320px;
+    }
+
+    .viaje-mapa__encabezado {
+        flex-direction: column;
+    }
+}

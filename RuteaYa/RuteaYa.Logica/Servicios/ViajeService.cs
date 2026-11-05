@@ -2,6 +2,7 @@
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Mapas;
+using RuteaYa.Logica.Servicios.Dtos;
 
 namespace RuteaYa.Logica.Servicios;
 
@@ -35,6 +36,42 @@ public class ViajeServicios : IViajeServicios
             .Include(v => v.Asignaciones)
                 .ThenInclude(a => a.Envio)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<ViajeRecorridoDto?> ObtenerRecorridoPorUsuarioAsync(int viajeId, int usuarioId)
+    {
+        var viaje = await _context.Viajes
+            .AsNoTracking()
+            .Where(v => v.Id == viajeId && v.UsuarioId == usuarioId)
+            .Select(v => new ViajeRecorridoDto
+            {
+                Id = v.Id,
+                Origen = new PuntoRecorridoDto
+                {
+                    Direccion = v.OrigenDir,
+                    Latitud = v.OrigenLat,
+                    Longitud = v.OrigenLng
+                },
+                Destino = new PuntoRecorridoDto
+                {
+                    Direccion = v.DestinoDir,
+                    Latitud = v.DestinoLat,
+                    Longitud = v.DestinoLng
+                },
+                Paradas = v.Paradas
+                    .OrderBy(p => p.Orden)
+                    .Select(p => new PuntoRecorridoDto
+                    {
+                        Direccion = p.Direccion,
+                        Latitud = p.Lat,
+                        Longitud = p.Lng,
+                        Orden = p.Orden
+                    })
+                    .ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        return viaje;
     }
 
     public async Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, string? paradasIntermedias)

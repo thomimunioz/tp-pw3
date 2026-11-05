@@ -57,6 +57,31 @@
         }
     </div>
 
+    <!-- Mapa del recorrido: los puntos se obtienen desde la API JSON. -->
+    <section class="form-tarjeta viaje-mapa" aria-labelledby="titulo-mapa">
+        <div class="viaje-mapa__encabezado">
+            <div>
+                <h3 id="titulo-mapa">Mapa del recorrido</h3>
+                <p>Ubicación del origen, las paradas intermedias y el destino.</p>
+            </div>
+            <span class="viaje-mapa__leyenda">OpenStreetMap</span>
+        </div>
+
+        <div id="mapa-recorrido"
+             class="viaje-mapa__contenedor"
+             data-url="@Url.Content("~/api/viajes/" + Model.Id + "/recorrido")"
+             role="region"
+             aria-label="Mapa interactivo del recorrido del viaje">
+            <p class="viaje-mapa__estado">Cargando mapa...</p>
+        </div>
+        <p id="mapa-recorrido-estado" class="viaje-mapa__mensaje" role="status" aria-live="polite"></p>
+        <div class="viaje-mapa__referencias" aria-label="Referencias del mapa">
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--origen"></i> Origen</span>
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--parada"></i> Paradas</span>
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--destino"></i> Destino</span>
+        </div>
+    </section>
+
     <!-- Tarjeta 2: Días y Horarios -->
     <div class="form-tarjeta" style="margin-bottom: 1.5rem;">
         <h3 style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #334155); padding-bottom: 0.5rem;">Días y horarios</h3>
@@ -107,4 +132,15 @@
 
 @section Estilos {
     <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <link rel="stylesheet" href="~/css/viaje-detalle.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="~/js/viaje-detalle.js" asp-append-version="true"></script>
 }
