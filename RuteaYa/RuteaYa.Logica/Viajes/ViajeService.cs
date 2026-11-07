@@ -4,7 +4,7 @@ using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Servicios.Dtos;
 
-namespace RuteaYa.Logica.Servicios;
+namespace RuteaYa.Logica.Viajes;
 
 public class ViajeServicios : IViajeServicios
 {

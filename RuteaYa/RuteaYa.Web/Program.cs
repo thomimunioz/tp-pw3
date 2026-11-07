@@ -6,11 +6,12 @@ using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Asignaciones;
+using RuteaYa.Logica.Dashboard;
 using RuteaYa.Logica.Envios;
 using RuteaYa.Logica.Lugares;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Oportunidades;
-using RuteaYa.Logica.Servicios;
+using RuteaYa.Logica.Viajes;
 using RuteaYa.Logica.Transportes;
 
 
@@ -45,6 +46,7 @@ builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
 builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
 builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
+builder.Services.AddScoped<IDashboardServicios, DashboardServicios>();
 
 
 if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))

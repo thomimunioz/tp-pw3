@@ -1,7 +1,7 @@
 ﻿using RuteaYa.Entidades;
 using RuteaYa.Logica.Servicios.Dtos;
 
-namespace RuteaYa.Logica.Servicios;
+namespace RuteaYa.Logica.Viajes;
 
 public interface IViajeServicios
 {

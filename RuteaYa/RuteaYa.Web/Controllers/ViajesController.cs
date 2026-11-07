@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Entidades;
-using RuteaYa.Logica.Servicios;
+using RuteaYa.Logica.Viajes;
 using RuteaYa.Web.Models;
 using RuteaYa.Web.Models.Viajes;
 using System.Security.Claims;

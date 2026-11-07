@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
-using RuteaYa.Logica.Servicios;
+using RuteaYa.Logica.Viajes;
 using RuteaYa.Tests.Envios;
 
 namespace RuteaYa.Tests.Viajes
