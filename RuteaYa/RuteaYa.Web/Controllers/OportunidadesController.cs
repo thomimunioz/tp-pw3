@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Logica.Asignaciones;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Oportunidades.Dtos;
-using RuteaYa.Logica.Servicios;
+using RuteaYa.Logica.Viajes;
 using RuteaYa.Web.Models;
 
 namespace RuteaYa.Web.Controllers
