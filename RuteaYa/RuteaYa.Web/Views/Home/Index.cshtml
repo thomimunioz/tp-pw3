@@ -32,7 +32,7 @@
         </div>
         <div class="dash__acciones">
             <a class="dash__boton dash__boton--secundario" asp-controller="Envios" asp-action="Crear">Nuevo envío</a>
-            <a class="dash__boton" asp-controller="Viajes" asp-action="Crear">Nuevo viaje</a>
+            <a class="dash__boton" asp-controller="Viajes" asp-action="Create">Nuevo viaje</a>
         </div>
     </header>
 
@@ -98,9 +98,7 @@
             }
 
             <div class="panel__pie">
-                <span>@Model.ProximosViajes @(Model.ProximosViajes == 1 ? "viaje activo" : "viajes activos") en cola</span>
-                <a class="panel__enlace" asp-controller="Viajes" asp-action="Index">Administrar rutas →</a>
-            </div>
+                <span>@Model.ProximosViajes @(Model.ProximosViajes == 1 ? "viaje activo" : "viajes activos") en cola</span>            </div>
         </div>
 
         <div class="panel">
