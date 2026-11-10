@@ -1,0 +1,299 @@
+﻿/* ---------- Estructura ---------- */
+.oportunidades {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 72rem;
+}
+
+.cabecera h1 {
+    margin: 0;
+}
+
+.cabecera p {
+    margin: 0.25rem 0 0;
+    color: var(--text-muted);
+}
+
+.cabecera--fila {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* ---------- Avisos (TempData) ---------- */
+.aviso {
+    padding: 0.8rem 1rem;
+    border: 1px solid;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.aviso--exito {
+    color: var(--estado-ok);
+    border-color: var(--estado-ok);
+    background: color-mix(in srgb, var(--estado-ok) 10%, transparent);
+}
+
+.aviso--error {
+    color: var(--estado-cancelado);
+    border-color: var(--estado-cancelado);
+    background: color-mix(in srgb, var(--estado-cancelado) 10%, transparent);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn--primario {
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+    .btn--primario:hover {
+        background: var(--accent-hover);
+    }
+
+.btn--secundario {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+    .btn--secundario:hover {
+        background: var(--hover);
+    }
+
+/* ---------- Ordenar por ---------- */
+.orden {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.orden__etiqueta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.orden__opciones {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-card);
+}
+
+.orden__opcion {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .orden__opcion:hover {
+        background: var(--hover);
+    }
+
+    .orden__opcion.is-active {
+        background: var(--accent);
+        color: var(--accent-text);
+    }
+
+/* ---------- Lista ---------- */
+.lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tarjeta {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg-card);
+}
+
+.tarjeta__ruta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+    .tarjeta__ruta span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+.tarjeta__pago {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.tarjeta__acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .tarjeta__acciones form {
+        margin: 0;
+    }
+
+.vacio {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 2rem;
+    border: 1px dashed var(--border);
+    border-radius: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* ---------- Etiqueta de compatibilidad ---------- */
+.badge {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge--ok {
+    color: var(--estado-ok);
+    border-color: color-mix(in srgb, var(--estado-ok) 40%, transparent);
+    background: color-mix(in srgb, var(--estado-ok) 10%, transparent);
+}
+
+.badge--medio {
+    color: var(--estado-asignado);
+    border-color: color-mix(in srgb, var(--estado-asignado) 40%, transparent);
+    background: color-mix(in srgb, var(--estado-asignado) 10%, transparent);
+}
+
+.badge--alerta {
+    color: var(--estado-espera);
+    border-color: color-mix(in srgb, var(--estado-espera) 40%, transparent);
+    background: color-mix(in srgb, var(--estado-espera) 10%, transparent);
+}
+
+/* ---------- Detalle ---------- */
+.detalle {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.panel {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    background: var(--bg-card);
+}
+
+    .panel h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1.05rem;
+    }
+
+.filas {
+    margin: 0;
+}
+
+.fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+    .fila:last-child {
+        border-bottom: 0;
+    }
+
+    .fila dt {
+        color: var(--text-muted);
+    }
+
+    .fila dd {
+        margin: 0;
+        font-weight: 700;
+        text-align: right;
+    }
+
+.panel--pago {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: color-mix(in srgb, var(--estado-ok) 10%, var(--bg-card));
+    border-color: color-mix(in srgb, var(--estado-ok) 35%, var(--border));
+}
+
+.pago__etiqueta {
+    font-size: 0.85rem;
+    color: var(--estado-ok);
+}
+
+.pago__monto {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    color: var(--estado-ok);
+}
+
+.pago__km {
+    font-size: 0.9rem;
+    color: var(--estado-ok);
+}
+
+.panel--pago form {
+    margin: 0.75rem 0 0;
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 800px) {
+    .tarjeta {
+        grid-template-columns: 1fr auto;
+    }
+
+    .tarjeta__acciones {
+        grid-column: 1 / -1;
+    }
+
+    .detalle {
+        grid-template-columns: 1fr;
+    }
+}

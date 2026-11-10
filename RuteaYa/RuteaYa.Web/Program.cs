@@ -5,7 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
 using RuteaYa.Logica.Account;
+using RuteaYa.Logica.Asignaciones;
+using RuteaYa.Logica.Dashboard;
+using RuteaYa.Logica.Envios;
+using RuteaYa.Logica.Lugares;
 using RuteaYa.Logica.Mapas;
+using RuteaYa.Logica.Oportunidades;
+using RuteaYa.Logica.Viajes;
+using RuteaYa.Logica.Transportes;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,10 +41,31 @@ builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
 .AddEntityFrameworkStores<RuteaYaContext>();
 
 builder.Services.AddScoped<IAccountServicios, AccountServicios>();
+builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
+builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
+builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
+builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
+builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
+builder.Services.AddScoped<IDashboardServicios, DashboardServicios>();
 
-builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+
+if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))
 {
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+    builder.Services.AddScoped<IGeocodificador, GeocodificadorFalso>();
+}
+else
+{
+    builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+    });
+}
+
+builder.Services.AddHttpClient<ISugeridorLugares, PhotonSugeridorLugares>(cliente =>
+{
+    cliente.BaseAddress = new Uri("https://photon.komoot.io/");
+    cliente.Timeout = TimeSpan.FromSeconds(5);
+    cliente.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa-TP-UNLaM/1.0");
 });
 
 var app = builder.Build();
@@ -50,6 +78,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/NoEncontrado");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
@@ -61,6 +90,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

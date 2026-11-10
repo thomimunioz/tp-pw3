@@ -1,6 +1,134 @@
-﻿@{
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Identity
+@using RuteaYa.Entidades
+@using RuteaYa.Logica.Dashboard
+@model DashboardDto
+@inject UserManager<Usuario> UserManager
+@{
     ViewData["Title"] = "Inicio";
+    var usuario = await UserManager.GetUserAsync(User);
+    var es = CultureInfo.GetCultureInfo("es-AR");
+
+    (string clase, string texto) Estado(EstadoEnvio e) => e switch
+    {
+        EstadoEnvio.BuscandoConductor => ("espera", "Buscando conductor"),
+        EstadoEnvio.ConductorAsignado => ("asignado", "Conductor asignado"),
+        EstadoEnvio.Retirado => ("curso", "Retirado"),
+        EstadoEnvio.EnCamino => ("curso", "En camino"),
+        EstadoEnvio.Entregado => ("ok", "Entregado"),
+        _ => ("cancelado", "Cancelado")
+    };
 }
 
-<h1>Inicio</h1>
-<p>Prueba home index.</p>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dash">
+    <header class="dash__cabecera">
+        <div>
+            <h1>Hola, @usuario?.Nombre</h1>
+            <p>Esto pasa con tus viajes y envíos.</p>
+        </div>
+        <div class="dash__acciones">
+            <a class="dash__boton dash__boton--secundario" asp-controller="Envios" asp-action="Crear">Nuevo envío</a>
+            <a class="dash__boton" asp-controller="Viajes" asp-action="Create">Nuevo viaje</a>
+        </div>
+    </header>
+
+     <section class="dash__kpis">
+        <div class="kpi">
+            <div class="kpi__cabecera">
+                <span>Próximos viajes</span>
+                <span class="kpi__icono"><svg class="icono"><use href="#i-map" /></svg></span>
+            </div>
+            <div class="kpi__fila">
+                <span class="kpi__valor" data-contar="@Model.ProximosViajes">@Model.ProximosViajes</span>
+                <span class="kpi__chip kpi__chip--ok">Activo</span>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__cabecera">
+                <span>Envíos pendientes</span>
+                <span class="kpi__icono"><svg class="icono"><use href="#i-package" /></svg></span>
+            </div>
+            <div class="kpi__fila">
+                <span class="kpi__valor" data-contar="@Model.EnviosPendientes">@Model.EnviosPendientes</span>
+                <span class="kpi__chip kpi__chip--espera">En curso</span>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__cabecera">
+                <span>Oportunidades</span>
+                <span class="kpi__icono"><svg class="icono"><use href="#i-sparkles" /></svg></span>
+            </div>
+            <div class="kpi__fila">
+                <span class="kpi__valor" data-contar="@Model.Oportunidades">@Model.Oportunidades</span>
+                <span class="kpi__chip kpi__chip--curso">Disponibles</span>
+            </div>
+        </div>
+        <div class="kpi kpi--destacado">
+            <div class="kpi__cabecera">
+                <span>Potencial del mes</span>
+                <span class="kpi__icono"><svg class="icono"><use href="#i-dollar" /></svg></span>
+            </div>
+            <span class="kpi__valor">@Model.PotencialMes.ToString("C0", es)</span>
+        </div>
+    </section>
+
+    <section class="dash__paneles">
+        <div class="panel">
+            <div class="panel__cabecera">
+                <div>
+                    <h2>Próximos viajes</h2>
+                    <p class="panel__sub">Rutas programadas</p>
+                </div>
+                <a class="panel__enlace" asp-controller="Viajes" asp-action="Index">Ver todos</a>
+            </div>
+
+            @foreach (var v in Model.Viajes)
+            {
+                <div class="item">
+                    <div>
+                        <div class="item__ruta">@v.Origen → @v.Destino</div>
+                        <div class="item__meta">@v.Dias · @v.Horario</div>
+                    </div>
+                    <span class="estado estado--ok">Activo</span>
+                </div>
+            }
+
+            <div class="panel__pie">
+                <span>@Model.ProximosViajes @(Model.ProximosViajes == 1 ? "viaje activo" : "viajes activos") en cola</span>            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel__cabecera">
+                <div>
+                    <h2>Envíos pendientes</h2>
+                    <p class="panel__sub">Estado de tus paquetes solicitados</p>
+                </div>
+            </div>
+
+            @foreach (var e in Model.Envios)
+            {
+                var (clase, texto) = Estado(e.Estado);
+                <div class="item">
+                    <div>
+                        <div class="item__ruta">@e.Origen → @e.Destino</div>
+                        <div class="item__meta">
+                            <span class="item__tag">@e.Descripcion</span>
+                            <span class="item__monto">@e.Monto.ToString("C0", es)</span>
+                        </div>
+                    </div>
+                    <span class="estado estado--@clase">@texto</span>
+                </div>
+            }
+
+            <a class="dash__boton dash__boton--secundario panel__boton" asp-controller="Viajes" asp-action="Index">Ver oportunidades</a>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+}

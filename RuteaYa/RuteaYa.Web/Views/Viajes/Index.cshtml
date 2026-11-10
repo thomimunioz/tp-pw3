@@ -1,0 +1,53 @@
+﻿@model List<RuteaYa.Entidades.Viaje>
+
+@{
+    ViewData["Title"] = "Mis viajes";
+}
+
+<div class="pagina">
+    <div class="envios-header">
+        <div>
+            <h1>Mis viajes</h1>
+            <p>Tus recorridos habituales.</p>
+        </div>
+        <a asp-action="Create" class="btn-form btn-form--primario" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: auto; padding: 0.6rem 1.2rem;">
+            <svg class="icono"><use href="#i-plus" /></svg>
+            Nuevo viaje
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="detalle-card" style="text-align: center; padding: 2rem;">
+            <p style="margin: 0; color: var(--text-muted, #94a3b8);">No tenés viajes cargados.</p>
+        </div>
+    }
+    else
+    {
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            @foreach (var viaje in Model)
+            {
+                <div class="detalle-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; margin-bottom: 0;">
+                    <div>
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">@viaje.OrigenDir → @viaje.DestinoDir</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted, #94a3b8);">
+                            Estado: @(viaje.Activo ? "Activo" : "Inactivo")
+                        </span>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <a asp-action="Detalle" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Editar</a>
+                        @if (viaje.Activo)
+                        {
+                            <a asp-controller="Oportunidades" asp-action="Index" asp-route-viajeId="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Oportunidades</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+}

@@ -1,21 +1,35 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RuteaYa.Logica.Dashboard;
 using RuteaYa.Web.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace RuteaYa.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IDashboardServicios _dashboard;
+
+        public HomeController(IDashboardServicios dashboard)
+        {
+            _dashboard = dashboard;
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var dto = await _dashboard.ObtenerAsync(usuarioId);
+            return View(dto);
+        }
+
+        [AllowAnonymous]
+        public IActionResult NoEncontrado()
         {
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

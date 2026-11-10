@@ -1,0 +1,96 @@
+﻿@model RuteaYa.Web.Models.OportunidadesIndexViewModel
+@using System.Globalization
+@using RuteaYa.Logica.Oportunidades.Dtos
+@{
+    ViewData["Title"] = "Oportunidades";
+    var ar = new CultureInfo("es-AR");
+}
+
+@functions {
+    static (string Clase, string Texto) Nivel(NivelCompatibilidad nivel) => nivel switch
+    {
+        NivelCompatibilidad.MuyCompatible => ("ok", "Muy compatible"),
+        NivelCompatibilidad.Compatible => ("medio", "Compatible"),
+        _ => ("alerta", "Mucho desvío")
+    };
+}
+
+<div class="oportunidades">
+    <header class="cabecera">
+        <h1>Oportunidades</h1>
+        <p>Envíos compatibles con @Model.Titulo</p>
+    </header>
+
+    @if (TempData["Exito"] is string exito)
+    {
+        <div class="aviso aviso--exito" role="status">@exito</div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="aviso aviso--error" role="alert">@error</div>
+    }
+
+    <nav class="orden" aria-label="Ordenar oportunidades">
+        <span class="orden__etiqueta">Ordenar por</span>
+        <div class="orden__opciones">
+            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Ganancia ? "is-active" : "")"
+               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+               asp-route-orden="@OrdenOportunidades.Ganancia">Ganancia</a>
+            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Desvio ? "is-active" : "")"
+               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+               asp-route-orden="@OrdenOportunidades.Desvio">Desvío</a>
+            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Compatibilidad ? "is-active" : "")"
+               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+               asp-route-orden="@OrdenOportunidades.Compatibilidad">Compatibilidad</a>
+        </div>
+    </nav>
+
+    @if (!Model.Oportunidades.Any())
+    {
+        <div class="vacio">
+            <strong>No hay envíos compatibles por ahora</strong>
+            <span>Cuando alguien publique un envío que entre en tu ruta, lo vas a ver acá.</span>
+        </div>
+    }
+    else
+    {
+        <ul class="lista">
+            @foreach (var o in Model.Oportunidades)
+            {
+                var nivel = Nivel(o.Compatibilidad);
+                <li class="tarjeta">
+                    <div class="tarjeta__ruta">
+                        <strong>@o.OrigenDireccion → @o.DestinoDireccion</strong>
+                        <span>
+                            @o.PesoKg.ToString("0.##", ar) kg · desvío @o.DesvioKm.ToString("0.0", ar) km ·
+                            @o.FechaViaje.ToString("dd/MM/yyyy")
+                        </span>
+                    </div>
+
+                    <span class="badge badge--@nivel.Clase">@nivel.Texto</span>
+
+                    <span class="tarjeta__pago">$@o.Pago.ToString("N0", ar)</span>
+
+                    <div class="tarjeta__acciones">
+                        <a class="btn btn--secundario" asp-action="Detalle"
+                           asp-route-viajeId="@Model.ViajeId" asp-route-envioId="@o.EnvioId">Ver detalle</a>
+
+                        <form asp-action="Aceptar" method="post"
+                              data-confirmar="¿Aceptar este envío para tu viaje?">
+                            <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                            <input type="hidden" name="envioId" value="@o.EnvioId" />
+                            <button type="submit" class="btn btn--primario">Aceptar</button>
+                        </form>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/oportunidades.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/oportunidades.js" asp-append-version="true"></script>
+}

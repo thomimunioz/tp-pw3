@@ -1,0 +1,30 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 320" fill="none">
+  <defs>
+    <g id="pin">
+      <path d="M15 0C6.7 0 0 6.7 0 15c0 11.2 15 25 15 25s15-13.8 15-25C30 6.7 23.3 0 15 0Z" fill="#E63946"/>
+      <circle cx="15" cy="13" r="5" fill="#FFFFFF"/>
+    </g>
+  </defs>
+
+  <!-- Edificios del fondo -->
+  <rect x="50" y="130" width="40" height="150" rx="2" fill="#D6EAFA"/>
+  <rect x="210" y="80" width="55" height="200" rx="2" fill="#D6EAFA"/>
+  <rect x="390" y="90" width="50" height="190" rx="2" fill="#D6EAFA"/>
+
+  <!-- Edificios del frente -->
+  <rect x="30" y="160" width="50" height="120" rx="2" fill="#C2E0FA"/>
+  <rect x="95" y="140" width="55" height="140" rx="2" fill="#B3D8FA"/>
+  <rect x="160" y="110" width="60" height="170" rx="2" fill="#C2E0FA"/>
+  <rect x="275" y="130" width="65" height="150" rx="2" fill="#B3D8FA"/>
+  <rect x="360" y="150" width="55" height="130" rx="2" fill="#C2E0FA"/>
+
+  <line x1="10" y1="280" x2="490" y2="280" stroke="#B3D8FA" stroke-width="2"/>
+
+  <!-- Ruta -->
+  <path d="M75 160Q140 70 215 50T425 120" stroke="#FFFFFF" stroke-width="3.5" stroke-dasharray="6 6" stroke-linecap="round"/>
+
+  <!-- Pins -->
+  <use href="#pin" transform="translate(60 135)"/>
+  <use href="#pin" transform="translate(200 25)"/>
+  <use href="#pin" transform="translate(410 95)"/>
+</svg>

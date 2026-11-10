@@ -1,0 +1,61 @@
+﻿@using RuteaYa.Web.Models.Envios
+@model RuteaYa.Logica.Envios.Dtos.EnvioDetalleDto
+
+@{
+    ViewData["Title"] = "Detalle del envío";
+}
+
+<div class="pagina pagina--angosta">
+    <div class="envios-header">
+        <div>
+            <h1>Detalle del envío</h1>
+            <p>@Model.OrigenDir → @Model.DestinoDir</p>
+        </div>
+        <a asp-action="Index" class="btn-volver">
+            <svg class="icono"><use href="#i-arrow-left" /></svg>
+            Volver
+        </a>
+    </div>
+
+    <div class="detalle-card">
+        <div class="detalle-ruta">
+            <div>
+                <span>Origen</span>
+                <strong>@Model.OrigenDir</strong>
+            </div>
+            <div>
+                <span>Destino</span>
+                <strong>@Model.DestinoDir</strong>
+            </div>
+        </div>
+
+        <div class="detalle-datos">
+            <div class="detalle-fila"><span>Descripción</span><strong>@Model.Descripcion</strong></div>
+            <div class="detalle-fila">
+                <span>Estado</span>
+                <span class="estado estado-@Model.Estado.ToString().ToLower()">@Model.Estado.Texto()</span>
+            </div>
+            <div class="detalle-fila detalle-fila--monto"><span>Monto</span><strong>$@Model.Monto.ToString("#,##0.##")</strong></div>
+            <div class="detalle-fila"><span>Peso</span><strong>@Model.PesoKg kg</strong></div>
+            <div class="detalle-fila"><span>Tamaño</span><strong>@Model.Tamano.Texto()</strong></div>
+            <div class="detalle-fila"><span>Fecha límite</span><strong>@Model.FechaLimite.ToString("dd/MM/yyyy")</strong></div>
+        </div>
+
+        @if (Model.PuedeCancelar)
+        {
+            <div class="detalle-acciones">
+                <form asp-action="Cancelar" asp-route-id="@Model.Id" method="post" class="form-cancelar">
+                    <button type="submit" class="btn-cancelar">Cancelar envío</button>
+                </form>
+            </div>
+        }
+    </div>
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/envios.js" asp-append-version="true"></script>
+}

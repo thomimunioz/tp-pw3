@@ -1,0 +1,146 @@
+﻿@model RuteaYa.Web.Models.Viajes.ViajeDetalleViewModel
+
+@{
+    ViewData["Title"] = "Detalle del viaje";
+}
+
+<div class="pagina pagina--angosta">
+    <div class="envios-header">
+        <div>
+            <h1>Detalle del viaje</h1>
+            <p>Información del recorrido y paquetes asignados.</p>
+        </div>
+        <a asp-action="Index" class="btn-form btn-form--secundario" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; width: auto; padding: 0.5rem 1rem;">
+            <svg class="icono"><use href="#i-arrow-left" /></svg>
+            Volver
+        </a>
+    </div>
+
+    <!-- Estado del viaje -->
+    <div style="margin-bottom: 1.5rem;">
+        @if (Model.Activo)
+        {
+            <span style="background-color: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 500;">Activo</span>
+        }
+        else
+        {
+            <span style="background-color: #64748b; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 500;">Inactivo</span>
+        }
+    </div>
+
+    <!-- Tarjeta 1: Recorrido -->
+    <div class="form-tarjeta" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #334155); padding-bottom: 0.5rem;">Recorrido</h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Origen</span>
+                <strong style="font-size: 1rem;">@Model.OrigenDir</strong>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Destino</span>
+                <strong style="font-size: 1rem;">@Model.DestinoDir</strong>
+            </div>
+        </div>
+
+        @if (Model.Paradas != null && Model.Paradas.Any())
+        {
+            <div style="margin-top: 1rem;">
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.4rem;">Paradas intermedias</span>
+                <ul style="margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.3rem;">
+                    @foreach (var parada in Model.Paradas.OrderBy(p => p.Orden))
+                    {
+                        <li>@parada.Direccion</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+
+    <!-- Mapa del recorrido: los puntos se obtienen desde la API JSON. -->
+    <section class="form-tarjeta viaje-mapa" aria-labelledby="titulo-mapa">
+        <div class="viaje-mapa__encabezado">
+            <div>
+                <h3 id="titulo-mapa">Mapa del recorrido</h3>
+                <p>Ubicación del origen, las paradas intermedias y el destino.</p>
+            </div>
+            <span class="viaje-mapa__leyenda">OpenStreetMap</span>
+        </div>
+
+        <div id="mapa-recorrido"
+             class="viaje-mapa__contenedor"
+             data-url="@Url.Content("~/api/viajes/" + Model.Id + "/recorrido")"
+             role="region"
+             aria-label="Mapa interactivo del recorrido del viaje">
+            <p class="viaje-mapa__estado">Cargando mapa...</p>
+        </div>
+        <p id="mapa-recorrido-estado" class="viaje-mapa__mensaje" role="status" aria-live="polite"></p>
+        <div class="viaje-mapa__referencias" aria-label="Referencias del mapa">
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--origen"></i> Origen</span>
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--parada"></i> Paradas</span>
+            <span><i class="viaje-mapa__punto viaje-mapa__punto--destino"></i> Destino</span>
+        </div>
+    </section>
+
+    <!-- Tarjeta 2: Días y Horarios -->
+    <div class="form-tarjeta" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #334155); padding-bottom: 0.5rem;">Días y horarios</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Días</span>
+                <span>@(Model.Dias != null && Model.Dias.Any() ? string.Join(", ", Model.Dias) : "Sin días especificados")</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Salida</span>
+                    <strong>@Model.HoraSalida</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Llegada</span>
+                    <strong>@Model.HoraLlegada</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta 3: Capacidad y Restricciones -->
+    <div class="form-tarjeta" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #334155); padding-bottom: 0.5rem;">Capacidad del viaje</h3>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Máx. Paquetes</span>
+                <strong style="font-size: 1.1rem;">@Model.MaxPaquetes</strong>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Peso Máximo</span>
+                <strong style="font-size: 1.1rem;">@Model.PesoMaxKg kg</strong>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Desvío Máximo</span>
+                <strong style="font-size: 1.1rem;">@Model.DesvioMaxKm km</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas inferiores -->
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-form btn-form--primario" style="text-decoration: none; width: auto; padding: 0.5rem 1.5rem;">Editar este viaje</a>
+    </div>
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <link rel="stylesheet" href="~/css/viaje-detalle.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="~/js/viaje-detalle.js" asp-append-version="true"></script>
+}

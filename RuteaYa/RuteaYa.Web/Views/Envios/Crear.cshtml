@@ -1,0 +1,91 @@
+﻿@using RuteaYa.Entidades.Enums
+@model RuteaYa.Web.Models.Envios.CrearEnvioViewModel
+@{
+    ViewData["Title"] = "Nuevo envío";
+}
+
+<div class="form-tarjeta">
+    <div class="form-tarjeta__encabezado">
+        <svg class="icono"><use href="#i-package" /></svg>
+        <h1>Nuevo envío</h1>
+        <a asp-action="Index" class="form-tarjeta__cerrar" aria-label="Cerrar">
+            <svg class="icono"><use href="#i-x" /></svg>
+        </a>
+    </div>
+    <p class="form-tarjeta__subtitulo">Publicá un paquete que necesita ser transportado.</p>
+
+    <form asp-action="Crear" method="post" class="form-envio">
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <div class="form-campo">
+            <label asp-for="OrigenDirrecion">Origen</label>
+            <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")"/>
+            <span asp-validation-for="OrigenDirrecion"></span>
+        </div>
+
+        <div class="form-campo">
+            <label asp-for="DestinoDireccion">Destino</label>
+            <input asp-for="DestinoDireccion" placeholder="¿A dónde llega?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+            <span asp-validation-for="DestinoDireccion"></span>
+        </div>
+
+        <div class="form-campo">
+            <label asp-for="Descripcion">Descripción</label>
+            <input asp-for="Descripcion" placeholder="Ej: zapatillas, documentos, ropa..." />
+            <span asp-validation-for="Descripcion"></span>
+        </div>
+
+        <div class="form-fila">
+            <div class="form-campo">
+                <label asp-for="Monto">Monto ofrecido ($)</label>
+                <input asp-for="Monto" type="number" step="any" min="1" placeholder="Ej: 4000" />
+                <span asp-validation-for="Monto"></span>
+            </div>
+            <div class="form-campo">
+                <label asp-for="FechaLimite">Fecha</label>
+                <input asp-for="FechaLimite" type="date" />
+                <span asp-validation-for="FechaLimite"></span>
+            </div>
+        </div>
+
+        <div class="form-campo">
+            <label asp-for="Peso">Peso (kg)</label>
+            <input asp-for="Peso" type="number" step="0.1" min="0.1" placeholder="Ej: 2.5" />
+            <span asp-validation-for="Peso"></span>
+        </div>
+
+        <div class="form-campo">
+            <label>Tamaño</label>
+            <div class="tamano-selector">
+                <label class="tamano-chip">
+                    <input type="radio" asp-for="tamano" value="@((byte)TamanoPaquete.Pequeno)" checked />
+                    <span>Pequeño</span>
+                </label>
+                <label class="tamano-chip">
+                    <input type="radio" asp-for="tamano" value="@((byte)TamanoPaquete.Mediano)" />
+                    <span>Mediano</span>
+                </label>
+                <label class="tamano-chip">
+                    <input type="radio" asp-for="tamano" value="@((byte)TamanoPaquete.Grande)" />
+                    <span>Grande</span>
+                </label>
+            </div>
+            <span asp-validation-for="tamano"></span>
+        </div>
+
+        <div class="form-acciones">
+            <a asp-action="Index" class="btn-form btn-form--secundario">Cancelar</a>
+            <button type="submit" class="btn-form btn-form--primario">Publicar envío</button>
+        </div>
+    </form>
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lugares.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/lugares.js" asp-append-version="true"></script>
+}
