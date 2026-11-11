@@ -77,6 +77,42 @@
         background: var(--hover);
     }
 
+/* ---------- Selector de viaje ---------- */
+.selector {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.selector__select {
+    flex: 1;
+    min-width: 0;
+    max-width: 36rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--bg-card);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .selector__select:hover {
+        background: var(--hover);
+    }
+
+    .selector__select:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+.vacio__accion {
+    align-self: center;
+    margin-top: 0.75rem;
+}
 /* ---------- Ordenar por ---------- */
 .orden {
     display: flex;
@@ -85,7 +121,8 @@
     gap: 0.75rem;
 }
 
-.orden__etiqueta {
+.orden__etiqueta,
+.selector__etiqueta {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -295,5 +332,9 @@
 
     .detalle {
         grid-template-columns: 1fr;
+    }
+    .selector__select {
+        max-width: none;
+        width: 100%;
     }
 }
