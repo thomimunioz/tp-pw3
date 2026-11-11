@@ -1,6 +1,7 @@
 ﻿@model RuteaYa.Web.Models.OportunidadesIndexViewModel
 @using System.Globalization
 @using RuteaYa.Logica.Oportunidades.Dtos
+@using RuteaYa.Logica.Viajes
 @{
     ViewData["Title"] = "Oportunidades";
     var ar = new CultureInfo("es-AR");
@@ -13,12 +14,33 @@
         NivelCompatibilidad.Compatible => ("medio", "Compatible"),
         _ => ("alerta", "Mucho desvío")
     };
+
+    static string NombreDia(DayOfWeek dia) => dia switch
+    {
+        DayOfWeek.Monday => "Lun",
+        DayOfWeek.Tuesday => "Mar",
+        DayOfWeek.Wednesday => "Mié",
+        DayOfWeek.Thursday => "Jue",
+        DayOfWeek.Friday => "Vie",
+        DayOfWeek.Saturday => "Sáb",
+        _ => "Dom"
+    };
+
+    // Texto de cada opción del select: "Origen → Destino · Lun, Mié · 08:00"
+    static string TextoViaje(ViajeOpcionDto v)
+    {
+        var dias = string.Join(", ", v.Dias.OrderBy(d => ((int)d + 6) % 7).Select(NombreDia));
+        return $"{v.OrigenDir} → {v.DestinoDir} · {dias} · {v.HoraSalida:HH\\:mm}";
+    }
 }
 
 <div class="oportunidades">
     <header class="cabecera">
         <h1>Oportunidades</h1>
-        <p>Envíos compatibles con @Model.Titulo</p>
+        @if (!Model.SinViajes)
+        {
+            <p>Envíos compatibles con @Model.Titulo</p>
+        }
     </header>
 
     @if (TempData["Exito"] is string exito)
@@ -30,61 +52,84 @@
         <div class="aviso aviso--error" role="alert">@error</div>
     }
 
-    <nav class="orden" aria-label="Ordenar oportunidades">
-        <span class="orden__etiqueta">Ordenar por</span>
-        <div class="orden__opciones">
-            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Ganancia ? "is-active" : "")"
-               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
-               asp-route-orden="@OrdenOportunidades.Ganancia">Ganancia</a>
-            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Desvio ? "is-active" : "")"
-               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
-               asp-route-orden="@OrdenOportunidades.Desvio">Desvío</a>
-            <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Compatibilidad ? "is-active" : "")"
-               asp-action="Index" asp-route-viajeId="@Model.ViajeId"
-               asp-route-orden="@OrdenOportunidades.Compatibilidad">Compatibilidad</a>
-        </div>
-    </nav>
-
-    @if (!Model.Oportunidades.Any())
+    @if (Model.SinViajes)
     {
         <div class="vacio">
-            <strong>No hay envíos compatibles por ahora</strong>
-            <span>Cuando alguien publique un envío que entre en tu ruta, lo vas a ver acá.</span>
+            <strong>No tenés viajes cargados</strong>
+            <span>Cargá un viaje para empezar a ver los envíos que entran en tu recorrido.</span>
+            <a class="btn btn--primario vacio__accion" asp-controller="Viajes" asp-action="Create">Nuevo viaje</a>
         </div>
     }
     else
     {
-        <ul class="lista">
-            @foreach (var o in Model.Oportunidades)
-            {
-                var nivel = Nivel(o.Compatibilidad);
-                <li class="tarjeta">
-                    <div class="tarjeta__ruta">
-                        <strong>@o.OrigenDireccion → @o.DestinoDireccion</strong>
-                        <span>
-                            @o.PesoKg.ToString("0.##", ar) kg · desvío @o.DesvioKm.ToString("0.0", ar) km ·
-                            @o.FechaViaje.ToString("dd/MM/yyyy")
-                        </span>
-                    </div>
+        <form class="selector" method="get" asp-action="Index" id="selector-viaje">
+            <label class="selector__etiqueta" for="viajeId">Viaje</label>
+            <select class="selector__select" id="viajeId" name="viajeId" data-autoenviar>
+                @foreach (var v in Model.Viajes)
+                {
+                    <option value="@v.Id" selected="@(v.Id == Model.ViajeId)">@TextoViaje(v)</option>
+                }
+            </select>
+            <input type="hidden" name="orden" value="@Model.Orden" />
+            <noscript><button type="submit" class="btn btn--secundario">Ver</button></noscript>
+        </form>
 
-                    <span class="badge badge--@nivel.Clase">@nivel.Texto</span>
+        <nav class="orden" aria-label="Ordenar oportunidades">
+            <span class="orden__etiqueta">Ordenar por</span>
+            <div class="orden__opciones">
+                <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Ganancia ? "is-active" : "")"
+                   asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+                   asp-route-orden="@OrdenOportunidades.Ganancia">Ganancia</a>
+                <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Desvio ? "is-active" : "")"
+                   asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+                   asp-route-orden="@OrdenOportunidades.Desvio">Desvío</a>
+                <a class="orden__opcion @(Model.Orden == OrdenOportunidades.Compatibilidad ? "is-active" : "")"
+                   asp-action="Index" asp-route-viajeId="@Model.ViajeId"
+                   asp-route-orden="@OrdenOportunidades.Compatibilidad">Compatibilidad</a>
+            </div>
+        </nav>
 
-                    <span class="tarjeta__pago">$@o.Pago.ToString("N0", ar)</span>
+        @if (!Model.Oportunidades.Any())
+        {
+            <div class="vacio">
+                <strong>No hay envíos compatibles por ahora</strong>
+                <span>Cuando alguien publique un envío que entre en tu ruta, lo vas a ver acá.</span>
+            </div>
+        }
+        else
+        {
+            <ul class="lista">
+                @foreach (var o in Model.Oportunidades)
+                {
+                    var nivel = Nivel(o.Compatibilidad);
+                    <li class="tarjeta">
+                        <div class="tarjeta__ruta">
+                            <strong>@o.OrigenDireccion → @o.DestinoDireccion</strong>
+                            <span>
+                                @o.PesoKg.ToString("0.##", ar) kg · desvío @o.DesvioKm.ToString("0.0", ar) km ·
+                                @o.FechaViaje.ToString("dd/MM/yyyy")
+                            </span>
+                        </div>
 
-                    <div class="tarjeta__acciones">
-                        <a class="btn btn--secundario" asp-action="Detalle"
-                           asp-route-viajeId="@Model.ViajeId" asp-route-envioId="@o.EnvioId">Ver detalle</a>
+                        <span class="badge badge--@nivel.Clase">@nivel.Texto</span>
 
-                        <form asp-action="Aceptar" method="post"
-                              data-confirmar="¿Aceptar este envío para tu viaje?">
-                            <input type="hidden" name="viajeId" value="@Model.ViajeId" />
-                            <input type="hidden" name="envioId" value="@o.EnvioId" />
-                            <button type="submit" class="btn btn--primario">Aceptar</button>
-                        </form>
-                    </div>
-                </li>
-            }
-        </ul>
+                        <span class="tarjeta__pago">$@o.Pago.ToString("N0", ar)</span>
+
+                        <div class="tarjeta__acciones">
+                            <a class="btn btn--secundario" asp-action="Detalle"
+                               asp-route-viajeId="@Model.ViajeId" asp-route-envioId="@o.EnvioId">Ver detalle</a>
+
+                            <form asp-action="Aceptar" method="post"
+                                  data-confirmar="¿Aceptar este envío para tu viaje?">
+                                <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                                <input type="hidden" name="envioId" value="@o.EnvioId" />
+                                <button type="submit" class="btn btn--primario">Aceptar</button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
     }
 </div>
 @section Estilos {
