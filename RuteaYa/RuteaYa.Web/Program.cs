@@ -44,6 +44,7 @@ builder.Services.AddScoped<IAccountServicios, AccountServicios>();
 builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
 builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
 builder.Services.AddScoped<IViajeServicios, ViajeServicios>();
+builder.Services.AddScoped<IViajeSelectorServicios, ViajeSelectorServicios>();
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
 builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
 builder.Services.AddScoped<IDashboardServicios, DashboardServicios>();

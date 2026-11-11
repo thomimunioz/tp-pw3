@@ -13,32 +13,45 @@ namespace RuteaYa.Web.Controllers
         private readonly IOportunidadesServicios _oportunidades;
         private readonly IAsignacionesServicios _asignaciones;
         private readonly IViajeServicios _viajes;
+        private readonly IViajeSelectorServicios _selector;
 
         public OportunidadesController(IOportunidadesServicios oportunidades,
                                        IAsignacionesServicios asignaciones,
-                                       IViajeServicios viajes)
+                                       IViajeServicios viajes,
+                                       IViajeSelectorServicios selector)
         {
             _oportunidades = oportunidades;
             _asignaciones = asignaciones;
             _viajes = viajes;
+            _selector = selector;
         }
 
         private int UsuarioId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         [HttpGet]
-        public async Task<IActionResult> Index(int viajeId, OrdenOportunidades orden = OrdenOportunidades.Ganancia)
+        public async Task<IActionResult> Index(int? viajeId, OrdenOportunidades orden = OrdenOportunidades.Ganancia)
         {
-            var viaje = await _viajes.ObtenerDetallePorUsuarioAsync(viajeId, UsuarioId);
-            var lista = await _oportunidades.BuscarAsync(UsuarioId, viajeId);
+            var viajes = await _selector.ObtenerActivosAsync(UsuarioId);
+
+            if (viajes.Count == 0)
+                return View(new OportunidadesIndexViewModel { Orden = orden });
+
+            var id = viajeId ?? await _selector.ObtenerViajeIdPorDefectoAsync(UsuarioId, DateTime.Now);
+            if (id == null)
+                return NotFound();
+
+            var viaje = await _viajes.ObtenerDetallePorUsuarioAsync(id.Value, UsuarioId);
+            var lista = await _oportunidades.BuscarAsync(UsuarioId, id.Value);
 
             if (viaje == null || lista == null)
                 return NotFound();
 
             var modelo = new OportunidadesIndexViewModel
             {
-                ViajeId = viajeId,
+                ViajeId = id.Value,
                 Titulo = $"{viaje.OrigenDir} → {viaje.DestinoDir}",
                 Orden = orden,
+                Viajes = viajes,
                 Oportunidades = OrdenadorOportunidades.Ordenar(lista, orden)
             };
 
