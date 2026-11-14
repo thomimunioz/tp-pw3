@@ -6,3 +6,9 @@ document.querySelectorAll("form[data-confirmar]").forEach(function (form) {
         }
     });
 });
+// Al cambiar de viaje en el select, recarga la lista con ese viaje
+document.querySelectorAll("select[data-autoenviar]").forEach(function (select) {
+    select.addEventListener("change", function () {
+        select.form.submit();
+    });
+});
