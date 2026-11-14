@@ -13,6 +13,7 @@ using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Viajes;
 using RuteaYa.Logica.Transportes;
+using RuteaYa.Web.Datos;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +71,12 @@ builder.Services.AddHttpClient<ISugeridorLugares, PhotonSugeridorLugares>(client
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    await DatosDemo.SembrarAsync(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
