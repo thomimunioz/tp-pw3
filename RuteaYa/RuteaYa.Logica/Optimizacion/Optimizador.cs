@@ -3,6 +3,8 @@ namespace RuteaYa.Logica.Optimizacion;
 public static class Optimizador
 {
     private const int MAX_CANDIDATOS = 15;
+    private const int MAX_PARA_MOSTRAR = 2;
+
     public static ResultadoOptimizacion Optimizar(
         List<CandidatoEnvio> candidatos,
         int maxPaquetes,
@@ -16,29 +18,81 @@ public static class Optimizador
         // Generar todas las combinaciones posibles de candidatos
         var combinaciones = new List<List<CandidatoEnvio>>();
         GenerarCombinaciones(candidatos, 0, new List<CandidatoEnvio>(), combinaciones);
-        var mejorCombinacion = new ResultadoOptimizacion();
-        foreach (var combinacion in combinaciones)
+
+        // Separar las combinaciones en válidas y descartadas
+        var validas = new List<Combinacion>();
+        var descartadas = new List<Combinacion>();
+        foreach (var envios in combinaciones)
         {
-            if (combinacion.Count <= maxPaquetes)
+            if (envios.Count == 0)
             {
-                var pesoTotal = combinacion.Sum(c => c.PesoKg);
-                var desvioTotal = combinacion.Sum(c => c.DesvioKm);
-                if (pesoTotal <= pesoMaxKg && desvioTotal <= desvioMaxKm)
-                {
-                    var gananciaTotal = combinacion.Sum(c => c.Pago);
-                    if (gananciaTotal > mejorCombinacion.GananciaTotal || (gananciaTotal == mejorCombinacion.GananciaTotal && desvioTotal < mejorCombinacion.DesvioTotalKm))
-                    {
-                        mejorCombinacion.Seleccionados = combinacion;
-                        mejorCombinacion.GananciaTotal = gananciaTotal;
-                        mejorCombinacion.PesoTotalKg = pesoTotal;
-                        mejorCombinacion.DesvioTotalKm = desvioTotal;
-                    }
-                }
+                continue;
+            }
+
+            var combinacion = new Combinacion
+            {
+                Envios = envios,
+                GananciaTotal = envios.Sum(c => c.Pago),
+                PesoTotalKg = envios.Sum(c => c.PesoKg),
+                DesvioTotalKm = envios.Sum(c => c.DesvioKm)
+            };
+            combinacion.MotivoDescarte = MotivoDescarte(combinacion, maxPaquetes, pesoMaxKg, desvioMaxKm);
+
+            if (combinacion.MotivoDescarte == null)
+            {
+                validas.Add(combinacion);
+            }
+            else
+            {
+                descartadas.Add(combinacion);
             }
         }
-        return mejorCombinacion;
+
+        // Mayor ganancia primero; si empatan, la de menor desvío
+        var ordenadas = validas
+            .OrderByDescending(c => c.GananciaTotal)
+            .ThenBy(c => c.DesvioTotalKm)
+            .ToList();
+
+        var resultado = new ResultadoOptimizacion();
+        var mejor = ordenadas.FirstOrDefault();
+        if (mejor != null)
+        {
+            resultado.Seleccionados = mejor.Envios;
+            resultado.GananciaTotal = mejor.GananciaTotal;
+            resultado.PesoTotalKg = mejor.PesoTotalKg;
+            resultado.DesvioTotalKm = mejor.DesvioTotalKm;
+        }
+
+        resultado.Alternativas = ordenadas.Skip(1).Take(MAX_PARA_MOSTRAR).ToList();
+
+        // Solo interesan las que pagarían más que la elegida y no se pasan de paquetes
+        resultado.Descartadas = descartadas
+            .Where(c => c.Envios.Count <= maxPaquetes && c.GananciaTotal > resultado.GananciaTotal)
+            .OrderByDescending(c => c.GananciaTotal)
+            .Take(MAX_PARA_MOSTRAR)
+            .ToList();
+
+        return resultado;
     }
-    
+
+    private static string? MotivoDescarte(Combinacion combinacion, int maxPaquetes, decimal pesoMaxKg, decimal desvioMaxKm)
+    {
+        if (combinacion.Envios.Count > maxPaquetes)
+        {
+            return $"Supera los {maxPaquetes} paquetes";
+        }
+        if (combinacion.PesoTotalKg > pesoMaxKg)
+        {
+            return $"Supera los {pesoMaxKg:0.##} kg";
+        }
+        if (combinacion.DesvioTotalKm > desvioMaxKm)
+        {
+            return $"Supera los {desvioMaxKm:0.##} km de desvío";
+        }
+        return null;
+    }
+
     private static void GenerarCombinaciones(
         List<CandidatoEnvio> candidatos,
         int indice,
