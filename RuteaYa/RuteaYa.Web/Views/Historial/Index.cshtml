@@ -1,0 +1,382 @@
+﻿@using RuteaYa.Entidades.Enums
+@model RuteaYa.Web.Models.Historial.HistorialViewModel
+
+@{
+    ViewData["Title"] = "Historial";
+    var meses = new (int Numero, string Nombre)[]
+    {
+        (1, "Enero"), (2, "Febrero"), (3, "Marzo"), (4, "Abril"),
+        (5, "Mayo"), (6, "Junio"), (7, "Julio"), (8, "Agosto"),
+        (9, "Septiembre"), (10, "Octubre"), (11, "Noviembre"), (12, "Diciembre")
+    };
+}
+
+<div class="historial-container">
+    <header class="historial-header">
+        <h1>Historial</h1>
+        <p>Operaciones anteriores.</p>
+    </header>
+
+    <!-- Tarjetas de métricas superiores. -->
+    <div class="metricas-grid">
+        <div class="metrica-card">
+            <span class="metrica-label">Viajes realizados</span>
+            <span class="metrica-valor">@Model.Resumen.ViajesRealizados</span>
+        </div>
+
+        <div class="metrica-card">
+            <span class="metrica-label">Envíos transportados</span>
+            <span class="metrica-valor">@Model.Resumen.EnviosTransportados</span>
+        </div>
+
+        <div class="metrica-card metrica-card--ganancia">
+            <span class="metrica-label">Ganancia efectiva</span>
+            <span class="metrica-valor metrica-valor--ganancia">@Model.Resumen.GananciaEfectiva.ToString("C0")</span>
+        </div>
+    </div>
+
+    <!-- Barra de filtros. -->
+    <form method="get" asp-action="Index" class="filtros-bar">
+        <div class="filtro-campo">
+            <label for="mes">Mes</label>
+            <select id="mes" name="mes" class="filtro-select">
+                <option value="">Todos los meses</option>
+                @foreach (var m in meses)
+                {
+                    @if (Model.MesSeleccionado == m.Numero)
+                    {
+                        <option value="@m.Numero" selected>@m.Nombre</option>
+                    }
+                    else
+                    {
+                    <option value="@m.Numero">@m.Nombre</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="filtro-campo">
+            <label for="anio">Año</label>
+            <select id="anio" name="anio" class="filtro-select">
+                <option value="">Todos los años</option>
+                @for (int a = DateTime.Now.Year; a >= 2024; a--)
+                {
+                    @if (Model.AnioSeleccionado == a)
+                    {
+                        <option value="@a" selected>@a</option>
+                    }
+                    else
+                    {
+                        <option value="@a">@a</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="filtro-campo">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" class="filtro-select">
+                <option value="">Entregados y Cancelados</option>
+                @if (Model.EstadoSeleccionado == EstadoEnvio.Entregado)
+                {
+                    <option value="@((int)EstadoEnvio.Entregado)" selected>Solo Entregados</option>
+                }
+                else
+                {
+                    <option value="@((int)EstadoEnvio.Entregado)">Solo Entregados</option>
+                }
+                @if (Model.EstadoSeleccionado == EstadoEnvio.Cancelado)
+                {
+                    <option value="@((int)EstadoEnvio.Cancelado)" selected>Solo Cancelados</option>
+                }
+                else
+                {
+                    <option value="@((int)EstadoEnvio.Cancelado)">Solo Cancelados</option>
+                }
+            </select>
+        </div>
+
+        <div class="filtro-acciones">
+            <button type="submit" class="btn-filtrar">Filtrar</button>
+            <a href="/Historial" class="btn-limpiar">Limpiar</a>
+        </div>
+    </form>
+
+    <!-- Listado de operaciones anteriores. -->
+    @if (Model.Resumen.Operaciones == null || Model.Resumen.Operaciones.Count == 0)
+    {
+        <div class="historial-vacio">
+            <div class="vacio-icono">📋</div>
+            <h3>No se encontraron operaciones registradas</h3>
+            <p>Las entregas de paquetes finalizadas o canceladas aparecerán acá.</p>
+        </div>
+    }
+    else
+    {
+        <div class="operaciones-lista">
+            @foreach (var op in Model.Resumen.Operaciones)
+            {
+                <div class="operacion-card">
+                    <div class="operacion-info">
+                        <span class="operacion-recorrido">@op.Recorrido</span>
+                        <span class="operacion-detalle">@op.Detalle</span>
+                    </div>
+
+                    <div class="operacion-monto-col">
+                        <span class="operacion-monto">@op.MontoGanancia.ToString("C0")</span>
+                        <span class="badge-estado badge-@op.Estado.ToString().ToLower()">
+                            @(op.Estado == EstadoEnvio.Entregado ? "Entregado" : "Cancelado")
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .historial-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .historial-header {
+        margin-bottom: 2rem;
+    }
+
+    .historial-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.35rem;
+    }
+
+    .historial-header p {
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Grid de tarjetas superiores. */
+    .metricas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .metrica-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--input-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .metrica-card--ganancia {
+        background: rgba(34, 197, 94, 0.08);
+        border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    .metrica-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .metrica-valor {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1;
+    }
+
+    .metrica-valor--ganancia {
+        color: #22c55e;
+    }
+
+    /* Barra de filtros. */
+    .filtros-bar {
+        background: var(--bg-panel);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .filtro-campo {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        min-width: 150px;
+        flex: 1;
+    }
+
+    .filtro-campo label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .filtro-select {
+        padding: 0.65rem 0.85rem;
+        border-radius: 8px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font: inherit;
+        outline: none;
+    }
+
+    .filtro-select:focus {
+        border-color: var(--accent);
+    }
+
+    .filtro-acciones {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .btn-filtrar {
+        padding: 0.65rem 1.25rem;
+        background: var(--text);
+        color: var(--bg-panel);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+    }
+
+    .btn-filtrar:hover {
+        opacity: 0.85;
+    }
+
+    .btn-limpiar {
+        padding: 0.65rem 1rem;
+        background: transparent;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-limpiar:hover {
+        color: var(--text);
+    }
+
+    /* Listado de operaciones. */
+    .operaciones-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .operacion-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        transition: border-color 0.15s ease;
+    }
+
+    .operacion-card:hover {
+        border-color: var(--text-muted);
+    }
+
+    .operacion-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .operacion-recorrido {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text);
+    }
+
+    .operacion-detalle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .operacion-monto-col {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+    }
+
+    .operacion-monto {
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: var(--text);
+    }
+
+    .badge-estado {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+    }
+
+    .badge-entregado {
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+    }
+
+    .badge-cancelado {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+    }
+
+    .historial-vacio {
+        text-align: center;
+        padding: 4rem 2rem;
+        border: 1px dashed var(--input-border);
+        border-radius: 14px;
+    }
+
+    .vacio-icono {
+        font-size: 2.8rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .historial-vacio h3 {
+        margin: 0 0 0.5rem;
+    }
+
+    .historial-vacio p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    @@media (max-width: 600px) {
+        .filtros-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .operacion-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .operacion-monto-col {
+            align-items: flex-start;
+            flex-direction: row;
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
