@@ -1,0 +1,179 @@
+@model RuteaYa.Logica.Optimizacion.ProyeccionMensualDto
+@using System.Globalization
+@using RuteaYa.Logica.Optimizacion
+@{
+    ViewData["Title"] = "Optimizador mensual";
+    var ar = CultureInfo.GetCultureInfo("es-AR");
+    var mesInput = Model.Mes.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+
+    string CriterioNombre(CriterioOptimizacion criterio) => criterio switch
+    {
+        CriterioOptimizacion.MinimizarDesvios => "Minimizar desvíos",
+        CriterioOptimizacion.Equilibrio => "Equilibrio",
+        _ => "Maximizar ganancias"
+    };
+}
+
+<div class="proyeccion">
+    <header class="cabecera cabecera--fila">
+        <div>
+            <h1>Optimizador de ganancias mensual</h1>
+            <p>Proyectá las ganancias potenciales de tus viajes recurrentes y los envíos disponibles.</p>
+        </div>
+    </header>
+
+    @if (TempData["Error"] is string error)
+    {
+        <div class="aviso aviso--error" role="alert">@error</div>
+    }
+
+    <form class="proyeccion__filtros panel" method="get" asp-action="Index">
+        <div>
+            <label class="selector__etiqueta" for="mes">Mes</label>
+            <input class="selector__select" id="mes" name="mes" type="month"
+                   value="@mesInput"
+                   min="@DateTime.Today.ToString("yyyy-MM", CultureInfo.InvariantCulture)" />
+        </div>
+        <div>
+            <label class="selector__etiqueta" for="criterio">Criterio</label>
+            <select class="selector__select" id="criterio" name="criterio">
+                @foreach (var criterio in Enum.GetValues<CriterioOptimizacion>())
+                {
+                    <option value="@criterio" selected="@(criterio == Model.Criterio)">
+                        @CriterioNombre(criterio)
+                    </option>
+                }
+            </select>
+            <small class="proyeccion__ayuda">
+                Equilibrio prioriza la mayor relación entre ganancia y desvío.
+            </small>
+        </div>
+        <button class="btn btn--primario" type="submit">Actualizar proyección</button>
+    </form>
+
+    <p class="proyeccion__aviso">
+        Los importes son estimaciones potenciales, no ganancias efectivamente obtenidas.
+        Solo se consideran viajes futuros y envíos compatibles aún disponibles.
+    </p>
+
+    <section class="proyeccion__metricas">
+        <article class="panel proyeccion__metrica proyeccion__metrica--destacada">
+            <span>Ganancia potencial del mes</span>
+            <strong>@Model.GananciaPotencial.ToString("C0", ar)</strong>
+        </article>
+        <article class="panel proyeccion__metrica">
+            <span>Viajes analizados</span>
+            <strong>@Model.ViajesAnalizados</strong>
+        </article>
+        <article class="panel proyeccion__metrica">
+            <span>Promedio potencial por viaje</span>
+            <strong>@Model.PromedioPorViaje.ToString("C0", ar)</strong>
+        </article>
+        <article class="panel proyeccion__metrica">
+            <span>Paquetes compatibles</span>
+            <strong>@Model.PaquetesPosibles</strong>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="proyeccion__titulo">
+            <div>
+                <h2>Ganancia potencial por semana</h2>
+                <p>Criterio aplicado: @CriterioNombre(Model.Criterio)</p>
+            </div>
+        </div>
+        <div class="proyeccion__semanas">
+            @foreach (var semana in Model.Semanas)
+            {
+                <div class="proyeccion__semana">
+                    <span>@semana.Desde.ToString("dd/MM") – @semana.Hasta.ToString("dd/MM")</span>
+                    <strong>@semana.GananciaPotencial.ToString("C0", ar)</strong>
+                </div>
+            }
+        </div>
+    </section>
+
+    @if (Model.MejorRecorrido is { } mejor)
+    {
+        <section class="panel proyeccion__mejor">
+            <div class="proyeccion__titulo">
+                <div>
+                    <h2>Mejor recorrido</h2>
+                    <p>@mejor.Fecha.ToString("dddd dd/MM", ar) · @mejor.Origen → @mejor.Destino</p>
+                </div>
+                <strong>@mejor.GananciaPotencial.ToString("C0", ar)</strong>
+            </div>
+            <p class="proyeccion__detalle">
+                @mejor.Envios.Count paquete(s) · desvío total @mejor.DesvioTotalKm.ToString("0.0", ar) km
+            </p>
+            <ul class="proyeccion__paquetes">
+                @foreach (var envio in mejor.Envios)
+                {
+                    <li>
+                        <span>@envio.Descripcion · @envio.Ruta</span>
+                        <strong>@envio.Ganancia.ToString("C0", ar)</strong>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+    else
+    {
+        <section class="vacio">
+            <strong>No hay paquetes compatibles para este mes</strong>
+            <span>Se analizaron @Model.ViajesAnalizados viajes recurrentes. Probá con otro mes o criterio.</span>
+        </section>
+    }
+
+    <section class="panel">
+        <div class="proyeccion__titulo">
+            <div>
+                <h2>Viajes analizados</h2>
+                <p>Los paquetes se asignan como máximo a un viaje en toda la proyección.</p>
+            </div>
+        </div>
+        @if (Model.Viajes.Count == 0)
+        {
+            <p class="nota">No hay viajes recurrentes futuros en el período seleccionado.</p>
+        }
+        else
+        {
+            <ul class="proyeccion__viajes">
+                @foreach (var viaje in Model.Viajes)
+                {
+                    <li>
+                        <div class="proyeccion__viaje-cabecera">
+                            <div>
+                                <strong>@viaje.Origen → @viaje.Destino</strong>
+                                <span>@viaje.Fecha.ToString("dddd dd/MM", ar) · @viaje.Envios.Count paquete(s)</span>
+                            </div>
+                            <strong>@viaje.GananciaPotencial.ToString("C0", ar)</strong>
+                        </div>
+                        @if (viaje.Envios.Count > 0)
+                        {
+                            <ul class="proyeccion__paquetes">
+                                @foreach (var envio in viaje.Envios)
+                                {
+                                    <li>
+                                        <span>@envio.Descripcion · @envio.Ruta</span>
+                                        <span>@envio.PesoKg.ToString("0.##", ar) kg · desvío @envio.DesvioKm.ToString("0.0", ar) km</span>
+                                        <strong>@envio.Ganancia.ToString("C0", ar)</strong>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="nota">Sin paquetes compatibles seleccionados.</p>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/oportunidades.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/proyeccion-mensual.css" asp-append-version="true" />
+}

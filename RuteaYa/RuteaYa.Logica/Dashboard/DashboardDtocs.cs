@@ -10,7 +10,7 @@ namespace RuteaYa.Logica.Dashboard
         public int ProximosViajes { get; set; }
         public int EnviosPendientes { get; set; }
         public int Oportunidades { get; set; }
-        public decimal PotencialMes { get; set; }   // provisorio (Falta parte Potencial)
+        public decimal PotencialMes { get; set; }
         public List<ViajeResumenDto> Viajes { get; set; } = new();
         public List<EnvioResumenDto> Envios { get; set; } = new();
     }

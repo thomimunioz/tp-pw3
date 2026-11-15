@@ -52,6 +52,7 @@ builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
 builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
 builder.Services.AddScoped<IDashboardServicios, DashboardServicios>();
 builder.Services.AddScoped<IOptimizadorServicios, OptimizadorServicios>();
+builder.Services.AddScoped<IProyeccionMensualServicios, ProyeccionMensualServicios>();
 builder.Services.AddScoped<IHistorialServicios, HistorialServicios>();
 
 

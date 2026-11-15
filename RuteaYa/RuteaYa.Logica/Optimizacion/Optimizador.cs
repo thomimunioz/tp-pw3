@@ -11,9 +11,20 @@ public static class Optimizador
         decimal pesoMaxKg,
         decimal desvioMaxKm)
     {
+        return Optimizar(candidatos, maxPaquetes, pesoMaxKg, desvioMaxKm,
+            CriterioOptimizacion.MaximizarGanancias);
+    }
+
+    public static ResultadoOptimizacion Optimizar(
+        List<CandidatoEnvio> candidatos,
+        int maxPaquetes,
+        decimal pesoMaxKg,
+        decimal desvioMaxKm,
+        CriterioOptimizacion criterio)
+    {
         if (candidatos.Count > MAX_CANDIDATOS)
         {
-            candidatos = candidatos.OrderByDescending(c => c.Pago).Take(MAX_CANDIDATOS).ToList();
+            candidatos = OrdenarCandidatos(candidatos, criterio).Take(MAX_CANDIDATOS).ToList();
         }
         // Generar todas las combinaciones posibles de candidatos
         var combinaciones = new List<List<CandidatoEnvio>>();
@@ -48,11 +59,7 @@ public static class Optimizador
             }
         }
 
-        // Mayor ganancia primero; si empatan, la de menor desvío
-        var ordenadas = validas
-            .OrderByDescending(c => c.GananciaTotal)
-            .ThenBy(c => c.DesvioTotalKm)
-            .ToList();
+        var ordenadas = OrdenarCombinaciones(validas, criterio).ToList();
 
         var resultado = new ResultadoOptimizacion();
         var mejor = ordenadas.FirstOrDefault();
@@ -70,10 +77,49 @@ public static class Optimizador
         resultado.Descartadas = descartadas
             .Where(c => c.Envios.Count <= maxPaquetes && c.GananciaTotal > resultado.GananciaTotal)
             .OrderByDescending(c => c.GananciaTotal)
+            .ThenBy(c => c.DesvioTotalKm)
             .Take(MAX_PARA_MOSTRAR)
             .ToList();
 
         return resultado;
+    }
+
+    private static IOrderedEnumerable<CandidatoEnvio> OrdenarCandidatos(
+        IEnumerable<CandidatoEnvio> candidatos,
+        CriterioOptimizacion criterio)
+    {
+        return criterio switch
+        {
+            CriterioOptimizacion.MinimizarDesvios => candidatos
+                .OrderBy(c => c.DesvioKm)
+                .ThenByDescending(c => c.Pago),
+            CriterioOptimizacion.Equilibrio => candidatos
+                .OrderByDescending(c => c.Pago / (1m + c.DesvioKm))
+                .ThenByDescending(c => c.Pago)
+                .ThenBy(c => c.DesvioKm),
+            _ => candidatos
+                .OrderByDescending(c => c.Pago)
+                .ThenBy(c => c.DesvioKm)
+        };
+    }
+
+    private static IOrderedEnumerable<Combinacion> OrdenarCombinaciones(
+        IEnumerable<Combinacion> combinaciones,
+        CriterioOptimizacion criterio)
+    {
+        return criterio switch
+        {
+            CriterioOptimizacion.MinimizarDesvios => combinaciones
+                .OrderBy(c => c.DesvioTotalKm)
+                .ThenByDescending(c => c.GananciaTotal),
+            CriterioOptimizacion.Equilibrio => combinaciones
+                .OrderByDescending(c => c.GananciaTotal / (1m + c.DesvioTotalKm))
+                .ThenByDescending(c => c.GananciaTotal)
+                .ThenBy(c => c.DesvioTotalKm),
+            _ => combinaciones
+                .OrderByDescending(c => c.GananciaTotal)
+                .ThenBy(c => c.DesvioTotalKm)
+        };
     }
 
     private static string? MotivoDescarte(Combinacion combinacion, int maxPaquetes, decimal pesoMaxKg, decimal desvioMaxKm)
