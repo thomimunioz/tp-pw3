@@ -175,8 +175,10 @@ public class ViajesController : Controller
             PesoMaxKg = viajeDb.PesoMaxKg,
             DesvioMaxKm = viajeDb.DesvioMaxKm,
             DiasSeleccionados = viajeDb.Dias.Select(d => (int)d.DiaSemana).ToList(),
-            // Unimos las paradas con coma para que el usuario las edite fácil en la caja de texto
-            ParadasIntermedias = viajeDb.Paradas.Any() ? string.Join(", ", viajeDb.Paradas.OrderBy(p => p.Orden).Select(p => p.Direccion)) : string.Empty
+            ParadasIntermedias = viajeDb.Paradas
+                .OrderBy(p => p.Orden)
+                .Select(p => p.Direccion)
+                .ToList()
         };
 
         return View(modelo);
@@ -209,7 +211,7 @@ public class ViajesController : Controller
             };
 
             // Mandamos todo al servicio
-            await _viajeServicios.EditarViajeAsync(viajeActualizado, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
+            await _viajeServicios.EditarViajeAsync(viajeActualizado, usuario.Id, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
 
             // Si salió todo bien, lo devolvemos a la lista de "Mis viajes"
             return RedirectToAction(nameof(Index));
@@ -225,5 +227,20 @@ public class ViajesController : Controller
             ModelState.AddModelError(string.Empty, "Ocurrió un error al actualizar el viaje.");
             return View(modelo);
         }
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Desactivar(int id)
+    {
+        var usuario = await _userManager.GetUserAsync(User);
+        if (usuario == null)
+            return Challenge();
+
+        var desactivado = await _viajeServicios.DesactivarViajeAsync(id, usuario.Id);
+        if (!desactivado)
+            return NotFound();
+
+        TempData["MensajeExito"] = "El viaje se desactivó correctamente.";
+        return RedirectToAction(nameof(Index));
     }
 }

@@ -55,7 +55,7 @@ namespace RuteaYa.Tests.Viajes
             };
 
             var diasSeleccionados = new List<int> { 1, 3, 5 };
-            string paradasIntermedias = "Morón, Luján";
+            var paradasIntermedias = new List<string> {"Morón", "Luján"};
 
             await servicio.CrearViajeAsync(viaje, diasSeleccionados, paradasIntermedias);
 

@@ -15,7 +15,7 @@ namespace RuteaYa.Web.Models
         public string DestinoDir { get; set; } = null!;
 
         [Display(Name = "Paradas intermedias")]
-        public string? ParadasIntermedias { get; set; }
+        public List<string> ParadasIntermedias { get; set; } = new List<string>();
 
         [Required(ErrorMessage = "Debes seleccionar al menos un día.")]
         public List<int> DiasSeleccionados { get; set; } = new List<int>();
@@ -37,6 +37,20 @@ namespace RuteaYa.Web.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (HoraLlegada <= HoraSalida)
+            {
+                yield return new ValidationResult(
+                    "La hora de llegada debe ser posterior a la hora de salida.",
+                    new[] { nameof(HoraLlegada) });
+            }
+
+            if (DiasSeleccionados == null || DiasSeleccionados.Count == 0)
+            {
+                yield return new ValidationResult(
+                    "Debes seleccionar al menos un día para el viaje.",
+                    new[] { nameof(DiasSeleccionados) });
+            }
+
             if (!string.IsNullOrEmpty(OrigenDir) && !string.IsNullOrEmpty(DestinoDir) &&
                 OrigenDir.Trim().Equals(DestinoDir.Trim(), StringComparison.OrdinalIgnoreCase))
             {

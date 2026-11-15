@@ -14,7 +14,7 @@
     </div>
     <p class="form-tarjeta__subtitulo">Registrá un recorrido habitual.</p>
 
-    <form asp-action="Create" method="post" class="form-envio">
+    <form asp-action="Create" method="post" class="form-envio" data-form-viaje>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-campo">
@@ -30,11 +30,42 @@
         </div>
 
         <div class="form-campo">
-            <label asp-for="ParadasIntermedias">Paradas intermedias (opcional, separadas por coma)</label>
-            <input asp-for="ParadasIntermedias" placeholder="Ej: Morón, Ramos Mejía" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
-            <span asp-validation-for="ParadasIntermedias"></span>
+            <div class="paradas-editor__encabezado">
+                <label class="mb-0">Paradas intermedias <span>(opcional)</span></label>
+                <button type="button" class="btn-parada" data-agregar-parada>+ Agregar parada</button>
+            </div>
+            <p class="paradas-editor__ayuda">Agregá las paradas en el orden en que vas a realizarlas. Podés cambiarlo con las flechas.</p>
+            <div class="paradas-editor" data-paradas-editor data-lugares-url="@Url.Action("Sugerir", "Lugares")">
+                @if (Model.ParadasIntermedias != null && Model.ParadasIntermedias.Any())
+                {
+                    @for (var i = 0; i < Model.ParadasIntermedias.Count; i++)
+                    {
+                        <div class="parada-item">
+                            <span class="parada-item__numero">@(i + 1)</span>
+                            <input name="ParadasIntermedias[@i]" value="@Model.ParadasIntermedias[i]" placeholder="Dirección de la parada" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+                            <div class="parada-item__acciones">
+                                <button type="button" class="btn-parada btn-parada--icono" data-subir-parada aria-label="Subir parada" title="Subir">↑</button>
+                                <button type="button" class="btn-parada btn-parada--icono" data-bajar-parada aria-label="Bajar parada" title="Bajar">↓</button>
+                                <button type="button" class="btn-parada btn-parada--eliminar" data-eliminar-parada aria-label="Eliminar parada" title="Eliminar">×</button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="parada-item">
+                        <span class="parada-item__numero">1</span>
+                        <input name="ParadasIntermedias[0]" placeholder="Dirección de la parada" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")" />
+                        <div class="parada-item__acciones">
+                            <button type="button" class="btn-parada btn-parada--icono" data-subir-parada aria-label="Subir parada" title="Subir" disabled>↑</button>
+                            <button type="button" class="btn-parada btn-parada--icono" data-bajar-parada aria-label="Bajar parada" title="Bajar" disabled>↓</button>
+                            <button type="button" class="btn-parada btn-parada--eliminar" data-eliminar-parada aria-label="Eliminar parada" title="Eliminar">×</button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <span asp-validation-for="ParadasIntermedias" class="text-danger"></span>
         </div>
-
         <div class="form-campo">
             <label>Días de la semana</label>
             <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
@@ -62,7 +93,7 @@
             <span asp-validation-for="DiasSeleccionados"></span>
         </div>
 
-        <div class="form-fila">
+        <div class="form-fila form-fila--horarios">
             <div class="form-campo">
                 <label asp-for="HoraSalida">Hora de salida</label>
                 <input asp-for="HoraSalida" type="time" />
@@ -104,9 +135,11 @@
 @section Estilos {
     <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/lugares.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/viajes.css" asp-append-version="true" />
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/lugares.js" asp-append-version="true"></script>
+    <script src="~/js/viajes-form.js" asp-append-version="true"></script>
 }
