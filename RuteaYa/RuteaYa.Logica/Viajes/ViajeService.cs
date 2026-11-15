@@ -147,14 +147,16 @@ public class ViajeServicios : IViajeServicios
         await _context.SaveChangesAsync();
     }
 
-    // --- ACÁ EMPIEZAN LOS MÉTODOS NUEVOS ---
 
     public async Task<Viaje?> ObtenerPorIdAsync(int id, int usuarioId)
     {
         return await _context.Viajes
             .Include(v => v.Dias)
             .Include(v => v.Paradas)
-            .FirstOrDefaultAsync(v => v.Id == id && v.UsuarioId == usuarioId);
+            .FirstOrDefaultAsync(v =>
+                v.Id == id &&
+                v.UsuarioId == usuarioId &&
+                v.Activo);
     }
 
     public async Task EditarViajeAsync(Viaje viajeActualizado, int usuarioId, List<int> diasSeleccionados, List<string>? paradasIntermedias)
@@ -166,7 +168,7 @@ public class ViajeServicios : IViajeServicios
         var viajeDb = await _context.Viajes
             .Include(v => v.Dias)
             .Include(v => v.Paradas)
-            .FirstOrDefaultAsync(v => v.Id == viajeActualizado.Id && v.UsuarioId == usuarioId);
+            .FirstOrDefaultAsync(v => v.Id == viajeActualizado.Id && v.UsuarioId == usuarioId && v.Activo);
 
         if (viajeDb == null) throw new InvalidOperationException("Viaje no encontrado.");
 
