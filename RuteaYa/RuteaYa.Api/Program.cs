@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using RuteaYa.Entidades.Data;
+using RuteaYa.Logica.Asignaciones;
+using RuteaYa.Logica.Oportunidades;
+using RuteaYa.Logica.Optimizacion;
 using RuteaYa.Logica.Viajes;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +12,9 @@ builder.Services.AddDbContext<RuteaYaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));
 
 builder.Services.AddScoped<IViajeListadoServicios, ViajeListadoServicios>();
+builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
+builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
+builder.Services.AddScoped<IOptimizadorServicios, OptimizadorServicios>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
