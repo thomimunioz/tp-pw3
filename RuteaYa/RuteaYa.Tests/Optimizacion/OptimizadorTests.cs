@@ -103,4 +103,66 @@ public class OptimizadorTests
         Assert.DoesNotContain(resultado.Seleccionados, c => c.EnvioId <= 5);
     }
 
+    [Fact]
+    public void Optimizar_EjemploDelEnunciado_DevuelveLasDosAlternativasQueSiguen()
+    {
+        //Arrange
+        var candidatos = new List<CandidatoEnvio>
+        {
+            Candidato(1, 4000m, 2m, 1m), // A
+            Candidato(2, 5500m, 6m, 2m), // B
+            Candidato(3, 3500m, 4m, 1m), // C
+            Candidato(4, 7000m, 8m, 3m), // D
+            Candidato(5, 2500m, 1m, 0.5m)  // E
+        };
+
+        //Act
+        var resultado = Optimizador.Optimizar(candidatos, maxPaquetes: 3, pesoMaxKg: 10m, desvioMaxKm: 5m);
+
+        //Assert: después de A+B+E ($12.000) vienen A+D ($11.000) y A+C+E ($10.000)
+        Assert.Equal(2, resultado.Alternativas.Count);
+        Assert.Equal(new List<int> { 1, 4 }, resultado.Alternativas[0].Envios.Select(c => c.EnvioId).ToList());
+        Assert.Equal(11000m, resultado.Alternativas[0].GananciaTotal);
+        Assert.Equal(new List<int> { 1, 3, 5 }, resultado.Alternativas[1].Envios.Select(c => c.EnvioId).ToList());
+        Assert.Equal(10000m, resultado.Alternativas[1].GananciaTotal);
+    }
+
+    [Fact]
+    public void Optimizar_LaQueMasPagaSePasaDePeso_LaDevuelveDescartadaConMotivo()
+    {
+        //Arrange
+        var candidatos = new List<CandidatoEnvio>
+        {
+            Candidato(1, 5000m, 6m, 1m),
+            Candidato(2, 4000m, 6m, 1m)
+        };
+
+        //Act
+        var resultado = Optimizador.Optimizar(candidatos, maxPaquetes: 3, pesoMaxKg: 10m, desvioMaxKm: 5m);
+
+        //Assert: juntos pagan $9.000 pero pesan 12 kg
+        var descartada = Assert.Single(resultado.Descartadas);
+        Assert.Equal(9000m, descartada.GananciaTotal);
+        Assert.Equal("Supera los 10 kg", descartada.MotivoDescarte);
+    }
+
+    [Fact]
+    public void Optimizar_LaQueMasPagaSePasaDeDesvio_LaDevuelveDescartadaConMotivo()
+    {
+        //Arrange
+        var candidatos = new List<CandidatoEnvio>
+        {
+            Candidato(1, 5000m, 1m, 3m),
+            Candidato(2, 4000m, 1m, 3m)
+        };
+
+        //Act
+        var resultado = Optimizador.Optimizar(candidatos, maxPaquetes: 3, pesoMaxKg: 10m, desvioMaxKm: 5m);
+
+        //Assert: juntos pagan $9.000 pero desvían 6 km
+        var descartada = Assert.Single(resultado.Descartadas);
+        Assert.Equal(9000m, descartada.GananciaTotal);
+        Assert.Equal("Supera los 5 km de desvío", descartada.MotivoDescarte);
+    }
+
 }

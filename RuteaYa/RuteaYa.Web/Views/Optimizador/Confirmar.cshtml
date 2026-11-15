@@ -1,0 +1,61 @@
+@model RuteaYa.Web.Models.OptimizadorViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Confirmar combinación";
+    var ar = new CultureInfo("es-AR");
+    var o = Model.Optimizacion;
+    var r = o.Resultado;
+}
+
+<div class="oportunidades">
+    <header class="cabecera cabecera--fila">
+        <div>
+            <h1>Confirmar combinación</h1>
+            <p>@o.Origen → @o.Destino · viaje del @o.FechaViaje?.ToString("dd/MM/yyyy")</p>
+        </div>
+        <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Volver</a>
+    </header>
+
+    <div class="detalle">
+        <section class="panel">
+            <h2>Paquetes seleccionados</h2>
+            <dl class="filas">
+                @foreach (var c in r.Seleccionados)
+                {
+                    <div class="fila">
+                        <dt>@c.Ruta</dt>
+                        <dd>
+                            $@c.Pago.ToString("N0", ar) · @c.PesoKg.ToString("0.##", ar) kg ·
+                            @c.DesvioKm.ToString("0.0", ar) km
+                        </dd>
+                    </div>
+                }
+            </dl>
+        </section>
+
+        <section class="panel panel--pago">
+            <span class="pago__etiqueta">Ganancia total</span>
+            <strong class="pago__monto">$@r.GananciaTotal.ToString("N0", ar)</strong>
+
+            <dl class="filas">
+                <div class="fila"><dt>Cantidad de paquetes</dt><dd>@r.Seleccionados.Count</dd></div>
+                <div class="fila"><dt>Peso total</dt><dd>@r.PesoTotalKg.ToString("0.##", ar) kg</dd></div>
+                <div class="fila"><dt>Desvío total</dt><dd>@r.DesvioTotalKm.ToString("0.0", ar) km</dd></div>
+            </dl>
+
+            <form asp-action="Reservar" method="post">
+                <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                @foreach (var c in r.Seleccionados)
+                {
+                    <input type="hidden" name="envioIds" value="@c.EnvioId" />
+                }
+                <button type="submit" class="btn btn--primario">Confirmar y reservar</button>
+            </form>
+            <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Volver sin reservar</a>
+        </section>
+    </div>
+</div>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/oportunidades.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/optimizador.css" asp-append-version="true" />
+}

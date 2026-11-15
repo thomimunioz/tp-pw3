@@ -1,0 +1,168 @@
+@model RuteaYa.Web.Models.OptimizadorViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Optimizador";
+    var ar = new CultureInfo("es-AR");
+    var o = Model.Optimizacion;
+    var r = o.Resultado;
+}
+
+<div class="oportunidades">
+    <header class="cabecera cabecera--fila">
+        <div>
+            <h1>Optimizador de oportunidades</h1>
+            <p>Probamos todas las combinaciones de envíos y elegimos la que más paga sin pasarse de los límites del viaje.</p>
+        </div>
+        @if (!Model.SinViajes)
+        {
+            <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Calcular de nuevo</a>
+        }
+    </header>
+
+    @if (TempData["Error"] is string error)
+    {
+        <div class="aviso aviso--error" role="alert">@error</div>
+    }
+
+    @if (Model.SinViajes)
+    {
+        <div class="vacio">
+            <strong>No tenés viajes cargados</strong>
+            <span>Cargá un viaje para que el optimizador pueda armar combinaciones de envíos.</span>
+            <a class="btn btn--primario vacio__accion" asp-controller="Viajes" asp-action="Create">Nuevo viaje</a>
+        </div>
+    }
+    else
+    {
+        <form class="selector" method="get" asp-action="Index">
+            <label class="selector__etiqueta" for="viajeId">Viaje</label>
+            <select class="selector__select" id="viajeId" name="viajeId" data-autoenviar>
+                @foreach (var v in Model.Viajes)
+                {
+                    <option value="@v.Id" selected="@(v.Id == Model.ViajeId)">@v.OrigenDir → @v.DestinoDir · @v.HoraSalida.ToString("HH:mm")</option>
+                }
+            </select>
+            <noscript><button type="submit" class="btn btn--secundario">Ver</button></noscript>
+        </form>
+
+        @if (o.FechaViaje == null)
+        {
+            <div class="vacio">
+                <strong>No hay envíos candidatos para este viaje</strong>
+                <span>Cuando haya envíos que entren en tu recorrido, acá vas a ver la mejor combinación.</span>
+            </div>
+        }
+        else
+        {
+            <section class="panel limites">
+                <div class="limite">
+                    <span class="limite__etiqueta">Viaje del</span>
+                    <strong>@o.FechaViaje.Value.ToString("dd/MM/yyyy")</strong>
+                </div>
+                <div class="limite">
+                    <span class="limite__etiqueta">Paquetes (máx. @o.MaxPaquetes)</span>
+                    <strong>@r.Seleccionados.Count de @o.PaquetesDisponibles libres</strong>
+                    <progress value="@r.Seleccionados.Count" max="@o.PaquetesDisponibles"></progress>
+                </div>
+                <div class="limite">
+                    <span class="limite__etiqueta">Peso (máx. @o.PesoMaxKg.ToString("0.##", ar) kg)</span>
+                    <strong>@r.PesoTotalKg.ToString("0.##", ar) de @o.PesoDisponibleKg.ToString("0.##", ar) kg libres</strong>
+                    <progress value="@r.PesoTotalKg.ToString(CultureInfo.InvariantCulture)"
+                              max="@o.PesoDisponibleKg.ToString(CultureInfo.InvariantCulture)"></progress>
+                </div>
+                <div class="limite">
+                    <span class="limite__etiqueta">Desvío máximo</span>
+                    <strong>@r.DesvioTotalKm.ToString("0.0", ar) de @o.DesvioMaxKm.ToString("0.##", ar) km</strong>
+                    <progress value="@r.DesvioTotalKm.ToString(CultureInfo.InvariantCulture)"
+                              max="@o.DesvioMaxKm.ToString(CultureInfo.InvariantCulture)"></progress>
+                </div>
+            </section>
+
+            <div class="detalle">
+                <section class="panel panel--pago">
+                    <span class="pago__etiqueta">Combinación recomendada</span>
+                    @if (r.Seleccionados.Count == 0)
+                    {
+                        <strong>Ningún envío entra en el lugar que le queda al viaje.</strong>
+                    }
+                    else
+                    {
+                        <strong class="pago__monto">$@r.GananciaTotal.ToString("N0", ar)</strong>
+                        <span class="pago__km">
+                            @r.Seleccionados.Count envío(s) · @r.PesoTotalKg.ToString("0.##", ar) kg ·
+                            @r.DesvioTotalKm.ToString("0.0", ar) km de desvío
+                        </span>
+                        <ul class="combinacion">
+                            @foreach (var c in r.Seleccionados)
+                            {
+                                <li><span>@c.Ruta</span><strong>$@c.Pago.ToString("N0", ar)</strong></li>
+                            }
+                        </ul>
+                        <a class="btn btn--primario" asp-action="Confirmar" asp-route-viajeId="@Model.ViajeId">Confirmar combinación</a>
+                    }
+                </section>
+
+                <section class="panel">
+                    <h2>Otras combinaciones</h2>
+                    @if (!r.Alternativas.Any() && !r.Descartadas.Any())
+                    {
+                        <p class="nota">No hay otras combinaciones para mostrar.</p>
+                    }
+                    <ul class="combinaciones">
+                        @foreach (var c in r.Alternativas)
+                        {
+                            <li class="combinaciones__item">
+                                <div>
+                                    <strong>$@c.GananciaTotal.ToString("N0", ar)</strong>
+                                    <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
+                                    <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
+                                </div>
+                            </li>
+                        }
+                        @foreach (var c in r.Descartadas)
+                        {
+                            <li class="combinaciones__item">
+                                <div>
+                                    <strong>$@c.GananciaTotal.ToString("N0", ar)</strong>
+                                    <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
+                                    <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
+                                </div>
+                                <span class="badge badge--alerta">@c.MotivoDescarte</span>
+                            </li>
+                        }
+                    </ul>
+                    <p class="nota">Si dos combinaciones pagan lo mismo, elegimos la de menor desvío.</p>
+                </section>
+            </div>
+
+            <section class="panel">
+                <h2>Envíos candidatos (@o.Candidatos.Count)</h2>
+                <ul class="combinaciones">
+                    @foreach (var c in o.Candidatos)
+                    {
+                        bool elegido = r.Seleccionados.Any(s => s.EnvioId == c.EnvioId);
+                        <li class="combinaciones__item">
+                            <div>
+                                <strong>@c.Ruta</strong>
+                                <span>@c.PesoKg.ToString("0.##", ar) kg · desvío @c.DesvioKm.ToString("0.0", ar) km</span>
+                            </div>
+                            @if (elegido)
+                            {
+                                <span class="badge badge--ok">En la combinación</span>
+                            }
+                            <strong class="tarjeta__pago">$@c.Pago.ToString("N0", ar)</strong>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+    }
+</div>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/oportunidades.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/optimizador.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/oportunidades.js" asp-append-version="true"></script>
+}
