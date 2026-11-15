@@ -10,39 +10,51 @@
             <h1>Mis viajes</h1>
             <p>Tus recorridos habituales.</p>
         </div>
-        <a asp-action="Create" class="btn-form btn-form--primario" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: auto; padding: 0.6rem 1.2rem;">
+        <a asp-action="Create" class="btn-form btn-form--primario viajes-nuevo">
             <svg class="icono"><use href="#i-plus" /></svg>
             Nuevo viaje
         </a>
     </div>
 
+    @if (TempData["MensajeExito"] is string mensaje)
+    {
+        <div class="alerta alerta-exito" role="status">@mensaje</div>
+    }
+
     @if (Model == null || !Model.Any())
     {
-        <div class="detalle-card" style="text-align: center; padding: 2rem;">
-            <p style="margin: 0; color: var(--text-muted, #94a3b8);">No tenés viajes cargados.</p>
+        <div class="detalle-card viajes-vacio">
+            <p>No tenés viajes cargados.</p>
         </div>
     }
     else
     {
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="viajes-lista">
             @foreach (var viaje in Model)
             {
-                <div class="detalle-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; margin-bottom: 0;">
-                    <div>
-                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">@viaje.OrigenDir → @viaje.DestinoDir</strong>
-                        <span style="font-size: 0.85rem; color: var(--text-muted, #94a3b8);">
-                            Estado: @(viaje.Activo ? "Activo" : "Inactivo")
+                <article class="detalle-card viaje-fila">
+                    <div class="viaje-fila__ruta">
+                        <strong>@viaje.OrigenDir <span aria-hidden="true">→</span> @viaje.DestinoDir</strong>
+                        <span class="viaje-fila__estado">
+                            Estado: <span class="estado @(viaje.Activo ? "estado-entregado" : "estado-cancelado")">@(viaje.Activo ? "Activo" : "Inactivo")</span>
                         </span>
                     </div>
-                    <div style="display: flex; gap: 0.75rem; align-items: center;">
-                        <a asp-action="Detalle" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Ver</a>
-                        <a asp-action="Edit" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Editar</a>
+
+                    <div class="viaje-fila__acciones">
+                        <a asp-action="Detalle" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario">Ver</a>
+                        
                         @if (viaje.Activo)
                         {
-                            <a asp-controller="Oportunidades" asp-action="Index" asp-route-viajeId="@viaje.Id" class="btn-form btn-form--secundario" style="padding: 0.4rem 1rem; font-size: 0.9rem; text-decoration: none; width: auto;">Oportunidades</a>
+                            <a asp-action="Edit" asp-route-id="@viaje.Id" class="btn-form btn-form--secundario">Editar</a>
+                            <a asp-controller="Oportunidades" asp-action="Index" asp-route-viajeId="@viaje.Id" class="btn-form btn-form--secundario">Oportunidades</a>
+                            <form asp-action="Desactivar" asp-route-id="@viaje.Id" method="post"
+                                  onsubmit="return confirm('¿Seguro que querés desactivar este viaje? Dejará de aparecer como disponible para nuevas oportunidades.');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-form btn-form--peligro">Desactivar</button>
+                            </form>
                         }
                     </div>
-                </div>
+                </article>
             }
         </div>
     }
@@ -50,4 +62,5 @@
 
 @section Estilos {
     <link rel="stylesheet" href="~/css/envios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/viajes.css" asp-append-version="true" />
 }

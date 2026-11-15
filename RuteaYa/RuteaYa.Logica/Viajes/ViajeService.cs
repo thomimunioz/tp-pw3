@@ -74,9 +74,10 @@ public class ViajeServicios : IViajeServicios
         return viaje;
     }
 
-    public async Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, string? paradasIntermedias)
+    public async Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, List<string>? paradasIntermedias)
     {
         ArgumentNullException.ThrowIfNull(viaje);
+        ValidarHorario(viaje.HoraSalida, viaje.HoraLlegada);
 
         viaje.Activo = true;
 
@@ -106,15 +107,14 @@ public class ViajeServicios : IViajeServicios
         viaje.DestinoLat = destino.Lat;
         viaje.DestinoLng = destino.Lng;
 
-        if (!string.IsNullOrWhiteSpace(paradasIntermedias))
+        if (paradasIntermedias?.Any(p => !string.IsNullOrWhiteSpace(p)) == true)
         {
             var origenNormalizado = viaje.OrigenDir?.Trim();
             var destinoNormalizado = viaje.DestinoDir?.Trim();
 
             var paradas = paradasIntermedias
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(p => p.Trim())
                 .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(p => p.Trim())
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Where(p =>
                     !string.Equals(p, origenNormalizado, StringComparison.OrdinalIgnoreCase) &&
@@ -157,15 +157,18 @@ public class ViajeServicios : IViajeServicios
             .FirstOrDefaultAsync(v => v.Id == id && v.UsuarioId == usuarioId);
     }
 
-    public async Task EditarViajeAsync(Viaje viajeActualizado, List<int> diasSeleccionados, string? paradasIntermedias)
+    public async Task EditarViajeAsync(Viaje viajeActualizado, int usuarioId, List<int> diasSeleccionados, List<string>? paradasIntermedias)
     {
-        // 1. Buscamos el viaje original
+        ArgumentNullException.ThrowIfNull(viajeActualizado);
+        ValidarHorario(viajeActualizado.HoraSalida, viajeActualizado.HoraLlegada);
+
+        // Buscamos el viaje original y verificamos que pertenezca al usuario autenticado.
         var viajeDb = await _context.Viajes
             .Include(v => v.Dias)
             .Include(v => v.Paradas)
-            .FirstOrDefaultAsync(v => v.Id == viajeActualizado.Id);
+            .FirstOrDefaultAsync(v => v.Id == viajeActualizado.Id && v.UsuarioId == usuarioId);
 
-        if (viajeDb == null) throw new Exception("Viaje no encontrado");
+        if (viajeDb == null) throw new InvalidOperationException("Viaje no encontrado.");
 
         // 2. Si el usuario modificó el Origen, buscamos las nuevas coordenadas
         if (viajeDb.OrigenDir != viajeActualizado.OrigenDir)
@@ -208,13 +211,14 @@ public class ViajeServicios : IViajeServicios
 
         // 6. Reemplazamos las paradas calculando coordenadas nuevas
         _context.Paradas.RemoveRange(viajeDb.Paradas);
-        if (!string.IsNullOrWhiteSpace(paradasIntermedias))
+        if (paradasIntermedias?.Any(p => !string.IsNullOrWhiteSpace(p)) == true)
         {
             var origenNorm = viajeDb.OrigenDir?.Trim();
             var destinoNorm = viajeDb.DestinoDir?.Trim();
 
             var nuevasParadas = paradasIntermedias
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(p => p.Trim())
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Where(p => !string.Equals(p, origenNorm, StringComparison.OrdinalIgnoreCase) &&
                             !string.Equals(p, destinoNorm, StringComparison.OrdinalIgnoreCase))
@@ -239,4 +243,23 @@ public class ViajeServicios : IViajeServicios
         // 7. Guardamos en la base de datos
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> DesactivarViajeAsync(int viajeId, int usuarioId)
+    {
+        var viaje = await _context.Viajes
+            .FirstOrDefaultAsync(v => v.Id == viajeId && v.UsuarioId == usuarioId);
+
+        if (viaje == null)
+            return false;
+
+        viaje.Activo = false;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    private static void ValidarHorario(TimeOnly horaSalida, TimeOnly horaLlegada)
+    {
+        if (horaLlegada <= horaSalida)
+            throw new InvalidOperationException("La hora de llegada debe ser posterior a la hora de salida.");
+    }
+
 }

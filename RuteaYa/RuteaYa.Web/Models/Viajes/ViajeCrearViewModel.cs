@@ -13,7 +13,7 @@ public class ViajeCrearViewModel : IValidatableObject
     public string DestinoDir { get; set; } = string.Empty;
 
     [Display(Name = "Paradas intermedias")]
-    public string? ParadasIntermedias { get; set; }
+    public List<string> ParadasIntermedias { get; set; } = new();
 
     [Required(ErrorMessage = "Debes seleccionar al menos un día.")]
     [Display(Name = "Días de la semana")]
@@ -48,6 +48,13 @@ public class ViajeCrearViewModel : IValidatableObject
             yield return new ValidationResult(
                 "El origen y el destino deben ser distintos.",
                 new[] { nameof(OrigenDir), nameof(DestinoDir) });
+        }
+
+        if (HoraLlegada <= HoraSalida)
+        {
+            yield return new ValidationResult(
+                "La hora de llegada debe ser posterior a la hora de salida.",
+                new[] { nameof(HoraLlegada) });
         }
 
         if (DiasSeleccionados == null || DiasSeleccionados.Count == 0)

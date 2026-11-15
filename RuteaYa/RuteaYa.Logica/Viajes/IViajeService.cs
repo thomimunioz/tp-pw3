@@ -8,7 +8,8 @@ public interface IViajeServicios
     Task<List<Viaje>> ObtenerPorUsuarioAsync(int usuarioId);
     Task<Viaje?> ObtenerDetallePorUsuarioAsync(int viajeId, int usuarioId);
     Task<ViajeRecorridoDto?> ObtenerRecorridoPorUsuarioAsync(int viajeId, int usuarioId);
-    Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, string? paradasIntermedias);
+    Task CrearViajeAsync(Viaje viaje, List<int> diasSeleccionados, List<string>? paradasIntermedias);
     Task<Viaje?> ObtenerPorIdAsync(int id, int usuarioId);
-    Task EditarViajeAsync(Viaje viaje, List<int> diasSeleccionados, string? paradasIntermedias);
+    Task EditarViajeAsync(Viaje viaje, int usuarioId, List<int> diasSeleccionados, List<string>? paradasIntermedias);
+    Task<bool> DesactivarViajeAsync(int viajeId, int usuarioId);
 }
