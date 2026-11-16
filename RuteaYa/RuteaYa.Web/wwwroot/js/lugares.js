@@ -1,21 +1,10 @@
-﻿/**
- * lugares.js — Sugerencias de lugares para los inputs de origen, destino y paradas.
- *
- * Uso: agregar al input los atributos  autocomplete="off"  y
- *      data-lugares-url="@Url.Action("Sugerir", "Lugares")"
- *
- * Funciona con delegación de eventos en document, así que también sirve para
- * inputs que se agregan después (por ejemplo, las paradas intermedias).
- * El JS solo dibuja: la búsqueda y sus reglas viven en el servidor.
- */
-(function () {
+﻿(function () {
     'use strict';
 
-    const MIN_CARACTERES = 3;   // mismo valor que LugaresReglas.MinCaracteres
-    const ESPERA_MS = 300;      // debounce: esperar a que el usuario deje de escribir
+    const MIN_CARACTERES = 3;
+    const ESPERA_MS = 180;
     const SELECTOR = 'input[data-lugares-url]';
 
-    // Estado propio de cada input: lista, temporizador, consulta en curso e ítem marcado
     const estados = new WeakMap();
     let contador = 0;
 
@@ -34,7 +23,6 @@
         lista.hidden = true;
         input.insertAdjacentElement('afterend', lista);
 
-        // Accesibilidad: el input se anuncia como un combobox con lista de opciones
         input.setAttribute('role', 'combobox');
         input.setAttribute('aria-autocomplete', 'list');
         input.setAttribute('aria-expanded', 'false');
@@ -79,7 +67,6 @@
     function elegir(input, texto) {
         input.value = texto;
         cerrar(input);
-        // Avisa a la validación del formulario que el valor cambió
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -112,9 +99,8 @@
             item.className = 'lugares-item';
             item.setAttribute('role', 'option');
             item.setAttribute('aria-selected', 'false');
-            item.textContent = lugar.nombre;   // textContent y no innerHTML: el dato viene de afuera
+            item.textContent = lugar.nombre;
 
-            // mousedown (y no click) para que ocurra antes de que el input pierda el foco
             item.addEventListener('mousedown', function (ev) {
                 ev.preventDefault();
                 elegir(input, lugar.nombre);
@@ -182,7 +168,6 @@
 
         clearTimeout(e.temporizador);
 
-        // Invalida y cancela inmediatamente la búsqueda anterior.
         e.version++;
 
         if (e.controlador) {
@@ -211,14 +196,13 @@
             if (nuevo >= items.length) nuevo = 0;
             marcar(input, nuevo);
         } else if (ev.key === 'Enter' && e.activo >= 0) {
-            ev.preventDefault();   // que Enter elija la sugerencia y no envíe el formulario
+            ev.preventDefault();
             elegir(input, items[e.activo].textContent);
         } else if (ev.key === 'Escape') {
             cerrar(input);
         }
     });
 
-    // Al salir del input se cierra la lista (el click en una sugerencia usa mousedown, ya se resolvió antes)
     document.addEventListener('focusout', function (ev) {
         if (esInputDeLugares(ev.target)) cerrar(ev.target);
     });
