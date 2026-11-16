@@ -5,6 +5,9 @@
     ViewData["Title"] = "Optimizador mensual";
     var ar = CultureInfo.GetCultureInfo("es-AR");
     var mesInput = Model.Mes.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+    var viajesConPaquetes = Model.Viajes
+        .Where(v => v.Envios.Count > 0)
+        .ToList();
 
     string CriterioNombre(CriterioOptimizacion criterio) => criterio switch
     {
@@ -44,9 +47,6 @@
                     </option>
                 }
             </select>
-            <small class="proyeccion__ayuda">
-                Equilibrio prioriza la mayor relación entre ganancia y desvío.
-            </small>
         </div>
         <button class="btn btn--primario" type="submit">Actualizar proyección</button>
     </form>
@@ -128,18 +128,28 @@
     <section class="panel">
         <div class="proyeccion__titulo">
             <div>
-                <h2>Viajes analizados</h2>
-                <p>Los paquetes se asignan como máximo a un viaje en toda la proyección.</p>
+                <h2>Viajes con paquetes compatibles</h2>
+                <p>
+                    Se muestran @viajesConPaquetes.Count de @Model.ViajesAnalizados viajes analizados.
+                    Los paquetes se asignan como máximo a un viaje en toda la proyección.
+                </p>
             </div>
         </div>
-        @if (Model.Viajes.Count == 0)
+        @if (viajesConPaquetes.Count == 0)
         {
-            <p class="nota">No hay viajes recurrentes futuros en el período seleccionado.</p>
+            @if (Model.ViajesAnalizados == 0)
+            {
+                <p class="nota">No hay viajes recurrentes futuros en el período seleccionado.</p>
+            }
+            else
+            {
+                <p class="nota">Se analizaron @Model.ViajesAnalizados viajes, pero ninguno tiene paquetes compatibles seleccionados.</p>
+            }
         }
         else
         {
             <ul class="proyeccion__viajes">
-                @foreach (var viaje in Model.Viajes)
+                @foreach (var viaje in viajesConPaquetes)
                 {
                     <li>
                         <div class="proyeccion__viaje-cabecera">
@@ -149,23 +159,16 @@
                             </div>
                             <strong>@viaje.GananciaPotencial.ToString("C0", ar)</strong>
                         </div>
-                        @if (viaje.Envios.Count > 0)
-                        {
-                            <ul class="proyeccion__paquetes">
-                                @foreach (var envio in viaje.Envios)
-                                {
-                                    <li>
-                                        <span>@envio.Descripcion · @envio.Ruta</span>
-                                        <span>@envio.PesoKg.ToString("0.##", ar) kg · desvío @envio.DesvioKm.ToString("0.0", ar) km</span>
-                                        <strong>@envio.Ganancia.ToString("C0", ar)</strong>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="nota">Sin paquetes compatibles seleccionados.</p>
-                        }
+                        <ul class="proyeccion__paquetes">
+                            @foreach (var envio in viaje.Envios)
+                            {
+                                <li>
+                                    <span>@envio.Descripcion · @envio.Ruta</span>
+                                    <span>@envio.PesoKg.ToString("0.##", ar) kg · desvío @envio.DesvioKm.ToString("0.0", ar) km</span>
+                                    <strong>@envio.Ganancia.ToString("C0", ar)</strong>
+                                </li>
+                            }
+                        </ul>
                     </li>
                 }
             </ul>
