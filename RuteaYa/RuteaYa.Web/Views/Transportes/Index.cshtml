@@ -94,6 +94,10 @@
                         {
                             <span class="texto-completado">Completado ✓</span>
                         }
+                        else if (item.Estado == EstadoEnvio.Cancelado)
+                        {
+                            <span class="texto-cancelado">Ya no tenés que llevarlo</span>
+                        }
                     </div>
                 </div>
             }
@@ -111,7 +115,7 @@
             EstadoEnvio.Retirado => "Retirado",
             EstadoEnvio.EnCamino => "En camino",
             EstadoEnvio.Entregado => "Entregado",
-            EstadoEnvio.Cancelado => "Cancelado",
+            EstadoEnvio.Cancelado => "Cancelado por el remitente",
             _ => estado.ToString()
         };
     }
@@ -309,6 +313,11 @@
         font-size: 0.9rem;
         font-weight: 700;
         color: #22c55e;
+    }
+
+    .texto-cancelado {
+        font-size: 0.85rem;
+        color: var(--estado-cancelado);
     }
 
     .transportes-vacio {

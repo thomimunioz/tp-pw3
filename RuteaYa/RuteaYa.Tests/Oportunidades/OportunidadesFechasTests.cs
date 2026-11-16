@@ -64,4 +64,34 @@ public class OportunidadesFechasTests
         Assert.NotNull(oportunidades);
         Assert.Empty(oportunidades);
     }
+
+    [Fact]
+    public async Task BuscarAsync_ElRemitenteCanceloUnEnvioDeEseDia_ElLugarQuedaLibre()
+    {
+        // Arrange: el viaje lleva 1 paquete y ese lunes lo ocupaba un envío que después se canceló
+        using var context = ContextoDePrueba.Crear();
+        var viaje = DatosDePrueba.CrearViaje(context, Conductor);
+        viaje.MaxPaquetes = 1;
+        var cancelado = DatosDePrueba.CrearEnvio(context, estado: EstadoEnvio.Cancelado);
+        context.Add(new Asignacion
+        {
+            EnvioId = cancelado.Id,
+            ViajeId = viaje.Id,
+            FechaViaje = DatosDePrueba.Hoy,
+            Ganancia = cancelado.Monto
+        });
+        var envio = DatosDePrueba.CrearEnvio(context);
+        context.SaveChanges();
+
+        var servicio = new OportunidadesServicios(context);
+
+        // Act
+        var oportunidades = await servicio.BuscarAsync(Conductor, viaje.Id, DatosDePrueba.Hoy);
+
+        // Assert
+        var oportunidad = Assert.Single(oportunidades!);
+        Assert.Equal(envio.Id, oportunidad.EnvioId);
+        Assert.Equal(DatosDePrueba.Hoy, oportunidad.FechaViaje);
+        Assert.Equal(1, oportunidad.PaquetesDisponibles);
+    }
 }

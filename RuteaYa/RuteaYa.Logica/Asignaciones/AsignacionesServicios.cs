@@ -48,6 +48,11 @@ namespace RuteaYa.Logica.Asignaciones
                 return ResultadoAceptar.NoEncontrado;
             }
 
+            if (envio.Estado == EstadoEnvio.Cancelado)
+            {
+                return ResultadoAceptar.NoCumple;
+            }
+
             if (envio.Estado == EstadoEnvio.ConductorAsignado || envio.Asignacion != null)
             {
                 return ResultadoAceptar.YaTomado;
@@ -130,6 +135,11 @@ namespace RuteaYa.Logica.Asignaciones
             if (envios.Count != envioIds.Count)
             {
                 return ResultadoAceptar.NoEncontrado;
+            }
+
+            if (envios.Any(e => e.Estado == EstadoEnvio.Cancelado))
+            {
+                return ResultadoAceptar.NoCumple;
             }
 
             // Si otro conductor se llevó aunque sea uno, no se reserva ninguno

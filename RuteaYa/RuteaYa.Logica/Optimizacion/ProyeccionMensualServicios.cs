@@ -78,7 +78,7 @@ public class ProyeccionMensualServicios : IProyeccionMensualServicios
         {
             var viaje = recurrencia.Viaje;
             var asignados = viaje.Asignaciones
-                .Where(a => a.FechaViaje == recurrencia.Fecha)
+                .Where(a => a.FechaViaje == recurrencia.Fecha && a.Envio.Estado != EstadoEnvio.Cancelado)
                 .ToList();
             var paquetesLibres = Math.Max(0, viaje.MaxPaquetes - asignados.Count);
             var pesoLibre = Math.Max(0m, viaje.PesoMaxKg - asignados.Sum(a => a.Envio.PesoKg));

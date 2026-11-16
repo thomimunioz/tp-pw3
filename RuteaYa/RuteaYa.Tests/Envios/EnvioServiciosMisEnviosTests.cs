@@ -222,7 +222,7 @@ namespace RuteaYa.Tests.Envios
         }
 
         [Fact]
-        public async Task CancelarAsync_DesdeConductorAsignado_CancelaYEliminaLaAsignacion()
+        public async Task CancelarAsync_DesdeConductorAsignado_CancelaYConservaLaAsignacion()
         {
 
             using var context = CrearContextoEnMemoria();
@@ -246,7 +246,8 @@ namespace RuteaYa.Tests.Envios
 
             Assert.True(resultado.ResultadoExitoso);
             Assert.Equal(EstadoEnvio.Cancelado, (await context.Envios.FindAsync(envio.Id))!.Estado);
-            Assert.Empty(context.Set<Asignacion>().Where(a => a.EnvioId == envio.Id));
+            // La asignación queda para que el conductor vea el envío como cancelado
+            Assert.Single(context.Set<Asignacion>().Where(a => a.EnvioId == envio.Id));
         }
 
         [Theory]

@@ -2,7 +2,8 @@
     const formulario = evento.target;
 
     if (formulario.matches('.form-cancelar')) {
-        const confirmo = confirm('¿Seguro que querés cancelar este envío?');
+        const mensaje = formulario.dataset.confirmar || '¿Seguro que querés cancelar este envío?';
+        const confirmo = confirm(mensaje);
         if (!confirmo) {
             evento.preventDefault();
         }

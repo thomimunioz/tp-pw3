@@ -152,7 +152,10 @@ public class OportunidadesServicios : IOportunidadesServicios
 
     private static List<Asignacion> AsignacionesDelDia(Viaje viaje, DateOnly fecha)
     {
-        return viaje.Asignaciones.Where(a => a.FechaViaje == fecha).ToList();
+        // Un envío cancelado por el remitente ya no ocupa lugar en el viaje
+        return viaje.Asignaciones
+            .Where(a => a.FechaViaje == fecha && a.Envio.Estado != EstadoEnvio.Cancelado)
+            .ToList();
     }
 
     private static DateOnly? BuscarFechaConLugar(Viaje viaje, Envio envio, DateOnly hoy, decimal desvio)
