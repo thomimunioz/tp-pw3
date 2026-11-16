@@ -224,11 +224,6 @@ namespace RuteaYa.Logica.Envios {
             var estadoAnterior = envio.Estado;
             envio.Estado = EstadoEnvio.Cancelado;
 
-            if (envio.Asignacion != null)
-            {
-                _context.Remove(envio.Asignacion);
-            }
-
             envio.Historial.Add(new EnvioEstadoHistorial
             {
                 EstadoAnterior = estadoAnterior,

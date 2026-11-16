@@ -55,7 +55,8 @@
                     <a asp-action="Detalle" asp-route-id="@envio.Id" class="btn-detalle">Ver detalle</a>
                     @if (envio.PuedeCancelar)
                     {
-                        <form asp-action="Cancelar" asp-route-id="@envio.Id" method="post" class="form-cancelar">
+                        <form asp-action="Cancelar" asp-route-id="@envio.Id" method="post" class="form-cancelar"
+                              data-confirmar="@(envio.Estado == EstadoEnvio.ConductorAsignado ? "Este envío ya tiene un conductor asignado. Si lo cancelás, le va a figurar como cancelado en sus transportes. ¿Querés cancelarlo igual?" : "¿Seguro que querés cancelar este envío?")">
                             <button type="submit" class="btn-cancelar">Cancelar</button>
                         </form>
                     }
