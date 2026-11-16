@@ -1,21 +1,10 @@
-﻿/**
- * lugares.js — Sugerencias de lugares para los inputs de origen, destino y paradas.
- *
- * Uso: agregar al input los atributos  autocomplete="off"  y
- *      data-lugares-url="@Url.Action("Sugerir", "Lugares")"
- *
- * Funciona con delegación de eventos en document, así que también sirve para
- * inputs que se agregan después (por ejemplo, las paradas intermedias).
- * El JS solo dibuja: la búsqueda y sus reglas viven en el servidor.
- */
-(function () {
+﻿(function () {
     'use strict';
 
-    const MIN_CARACTERES = 3;   // mismo valor que LugaresReglas.MinCaracteres
-    const ESPERA_MS = 300;      // debounce: esperar a que el usuario deje de escribir
+    const MIN_CARACTERES = 3;
+    const ESPERA_MS = 180;
     const SELECTOR = 'input[data-lugares-url]';
 
-    // Estado propio de cada input: lista, temporizador, consulta en curso e ítem marcado
     const estados = new WeakMap();
     let contador = 0;
 
@@ -34,13 +23,18 @@
         lista.hidden = true;
         input.insertAdjacentElement('afterend', lista);
 
-        // Accesibilidad: el input se anuncia como un combobox con lista de opciones
         input.setAttribute('role', 'combobox');
         input.setAttribute('aria-autocomplete', 'list');
         input.setAttribute('aria-expanded', 'false');
         input.setAttribute('aria-controls', lista.id);
 
-        estado = { lista, temporizador: null, controlador: null, activo: -1 };
+        estado = {
+            lista,
+            temporizador: null,
+            controlador: null,
+            activo: -1,
+            version: 0
+        };
         estados.set(input, estado);
         return estado;
     }
@@ -53,11 +47,19 @@
 
     function cerrar(input) {
         const e = obtenerEstado(input);
+
+        e.version++;
         clearTimeout(e.temporizador);
-        if (e.controlador) e.controlador.abort();   // descarta consultas pendientes
+
+        if (e.controlador) {
+            e.controlador.abort();
+            e.controlador = null;
+        }
+
         e.lista.hidden = true;
         e.lista.replaceChildren();
         e.activo = -1;
+
         input.setAttribute('aria-expanded', 'false');
         input.removeAttribute('aria-activedescendant');
     }
@@ -65,7 +67,6 @@
     function elegir(input, texto) {
         input.value = texto;
         cerrar(input);
-        // Avisa a la validación del formulario que el valor cambió
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -98,9 +99,8 @@
             item.className = 'lugares-item';
             item.setAttribute('role', 'option');
             item.setAttribute('aria-selected', 'false');
-            item.textContent = lugar.nombre;   // textContent y no innerHTML: el dato viene de afuera
+            item.textContent = lugar.nombre;
 
-            // mousedown (y no click) para que ocurra antes de que el input pierda el foco
             item.addEventListener('mousedown', function (ev) {
                 ev.preventDefault();
                 elegir(input, lugar.nombre);
@@ -113,43 +113,73 @@
         input.setAttribute('aria-expanded', 'true');
     }
 
-    async function buscar(input) {
+    async function buscar(input, version) {
         const e = obtenerEstado(input);
         const texto = input.value.trim();
+
+        if (version !== e.version) return;
 
         if (texto.length < MIN_CARACTERES) {
             cerrar(input);
             return;
         }
 
-        if (e.controlador) e.controlador.abort();   // solo importa la última consulta
-        e.controlador = new AbortController();
+        const controlador = new AbortController();
+        e.controlador = controlador;
 
         try {
             const url = input.dataset.lugaresUrl + '?q=' + encodeURIComponent(texto);
+
             const respuesta = await fetch(url, {
-                signal: e.controlador.signal,
+                signal: controlador.signal,
                 headers: { 'Accept': 'application/json' }
             });
+
+            if (version !== e.version) return;
 
             if (!respuesta.ok) {
                 cerrar(input);
                 return;
             }
-            mostrar(input, await respuesta.json());
+
+            const lugares = await respuesta.json();
+
+            if (version !== e.version) return;
+
+            mostrar(input, lugares);
+
         } catch (error) {
-            // AbortError es normal (el usuario siguió escribiendo). Con cualquier otro error
-            // el input sigue funcionando como texto libre.
-            if (error.name !== 'AbortError') cerrar(input);
+            if (error.name !== 'AbortError' && version === e.version) {
+                console.error('Error al buscar lugares:', error);
+                cerrar(input);
+            }
+        } finally {
+            if (e.controlador === controlador) {
+                e.controlador = null;
+            }
         }
     }
 
     document.addEventListener('input', function (ev) {
         if (!esInputDeLugares(ev.target)) return;
+
         const input = ev.target;
         const e = obtenerEstado(input);
+
         clearTimeout(e.temporizador);
-        e.temporizador = setTimeout(function () { buscar(input); }, ESPERA_MS);
+
+        e.version++;
+
+        if (e.controlador) {
+            e.controlador.abort();
+            e.controlador = null;
+        }
+
+        const version = e.version;
+
+        e.temporizador = setTimeout(function () {
+            buscar(input, version);
+        }, ESPERA_MS);
     });
 
     document.addEventListener('keydown', function (ev) {
@@ -166,14 +196,13 @@
             if (nuevo >= items.length) nuevo = 0;
             marcar(input, nuevo);
         } else if (ev.key === 'Enter' && e.activo >= 0) {
-            ev.preventDefault();   // que Enter elija la sugerencia y no envíe el formulario
+            ev.preventDefault();
             elegir(input, items[e.activo].textContent);
         } else if (ev.key === 'Escape') {
             cerrar(input);
         }
     });
 
-    // Al salir del input se cierra la lista (el click en una sugerencia usa mousedown, ya se resolvió antes)
     document.addEventListener('focusout', function (ev) {
         if (esInputDeLugares(ev.target)) cerrar(ev.target);
     });
