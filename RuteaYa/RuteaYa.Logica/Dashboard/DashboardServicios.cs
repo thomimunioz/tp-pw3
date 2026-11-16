@@ -2,6 +2,7 @@
 using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Envios;
 using RuteaYa.Logica.Oportunidades;
+using RuteaYa.Logica.Optimizacion;
 using RuteaYa.Logica.Viajes;
 using System;
 using System.Collections.Generic;
@@ -19,15 +20,18 @@ namespace RuteaYa.Logica.Dashboard
         private readonly IViajeServicios _viajes;
         private readonly IEnvioServicios _envios;
         private readonly IOportunidadesServicios _oportunidades;
+        private readonly IProyeccionMensualServicios _proyeccionMensual;
 
         public DashboardServicios(
             IViajeServicios viajes,
             IEnvioServicios envios,
-            IOportunidadesServicios oportunidades)
+            IOportunidadesServicios oportunidades,
+            IProyeccionMensualServicios proyeccionMensual)
         {
             _viajes = viajes;
             _envios = envios;
             _oportunidades = oportunidades;
+            _proyeccionMensual = proyeccionMensual;
         }
 
         public async Task<DashboardDto> ObtenerAsync(int usuarioId)
@@ -70,7 +74,12 @@ namespace RuteaYa.Logica.Dashboard
 
             dto.ProximosViajes = proximos.Count;
             dto.EnviosPendientes = envios.Count;
-            dto.PotencialMes = 0; // provisorio hasta la Pantalla 14: Potencial
+            var mesActual = new DateOnly(ahora.Year, ahora.Month, 1);
+            var proyeccion = await _proyeccionMensual.CalcularAsync(
+                usuarioId,
+                mesActual,
+                CriterioOptimizacion.MaximizarGanancias);
+            dto.PotencialMes = proyeccion.GananciaPotencial;
 
             return dto;
         }

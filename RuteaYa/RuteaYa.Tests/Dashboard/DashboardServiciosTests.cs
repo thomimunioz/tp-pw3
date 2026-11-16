@@ -6,6 +6,7 @@ using RuteaYa.Logica.Envios;
 using RuteaYa.Logica.Envios.Dtos;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Oportunidades.Dtos;
+using RuteaYa.Logica.Optimizacion;
 using RuteaYa.Logica.Viajes;
 
 namespace RuteaYa.Tests.Dashboard;
@@ -18,6 +19,7 @@ public class DashboardServiciosTests
     private readonly Mock<IViajeServicios> _viajes;
     private readonly Mock<IEnvioServicios> _envios;
     private readonly Mock<IOportunidadesServicios> _oportunidades;
+    private readonly Mock<IProyeccionMensualServicios> _proyeccionMensual;
     private readonly DashboardServicios _servicio;
 
     public DashboardServiciosTests()
@@ -25,6 +27,7 @@ public class DashboardServiciosTests
         _viajes = new Mock<IViajeServicios>();
         _envios = new Mock<IEnvioServicios>();
         _oportunidades = new Mock<IOportunidadesServicios>();
+        _proyeccionMensual = new Mock<IProyeccionMensualServicios>();
 
         // el usuario no tiene viajes ni envíos
         _viajes
@@ -33,8 +36,18 @@ public class DashboardServiciosTests
         _envios
             .Setup(s => s.ListarAsync(It.IsAny<int>(), It.IsAny<EstadoEnvio?>()))
             .ReturnsAsync(new List<EnvioListadoDto>());
+        _proyeccionMensual
+            .Setup(s => s.CalcularAsync(
+                It.IsAny<int>(),
+                It.IsAny<DateOnly>(),
+                CriterioOptimizacion.MaximizarGanancias))
+            .ReturnsAsync(new ProyeccionMensualDto());
 
-        _servicio = new DashboardServicios(_viajes.Object, _envios.Object, _oportunidades.Object);
+        _servicio = new DashboardServicios(
+            _viajes.Object,
+            _envios.Object,
+            _oportunidades.Object,
+            _proyeccionMensual.Object);
     }
 
     // Helpers
@@ -349,17 +362,21 @@ public class DashboardServiciosTests
     // ObtenerAsync: potencial y usuario
 
     [Fact]
-    public async Task ObtenerAsync_PotencialDelMes_EsProvisorioYVale0()
+    public async Task ObtenerAsync_PotencialDelMes_UsaLaProyeccionMensual()
     {
         // Arrange
-        ConfigurarViajes(CrearViaje(1));
-        ConfigurarEnvios(CrearEnvio(1, EstadoEnvio.BuscandoConductor));
+        _proyeccionMensual
+            .Setup(s => s.CalcularAsync(
+                UsuarioId,
+                It.IsAny<DateOnly>(),
+                CriterioOptimizacion.MaximizarGanancias))
+            .ReturnsAsync(new ProyeccionMensualDto { GananciaPotencial = 12500m });
 
         // Act
         var dto = await _servicio.ObtenerAsync(UsuarioId);
 
-        // Assert: hasta que exista la Pantalla 14
-        Assert.Equal(0m, dto.PotencialMes);
+        // Assert
+        Assert.Equal(12500m, dto.PotencialMes);
     }
 
     [Fact]

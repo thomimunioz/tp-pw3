@@ -1,0 +1,149 @@
+.proyeccion {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 76rem;
+}
+
+.proyeccion__filtros {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.proyeccion__filtros > div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 12rem;
+}
+
+.proyeccion__filtros .selector__select {
+    max-width: none;
+}
+
+.proyeccion__ayuda {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.proyeccion__aviso,
+.proyeccion__detalle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.proyeccion__metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+}
+
+.proyeccion__metrica {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.proyeccion__metrica span,
+.proyeccion__semana span,
+.proyeccion__viaje-cabecera span {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.proyeccion__metrica strong {
+    font-size: 1.4rem;
+}
+
+.proyeccion__metrica--destacada strong {
+    color: var(--estado-ok);
+}
+
+.proyeccion__titulo,
+.proyeccion__viaje-cabecera {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.proyeccion__titulo h2 {
+    margin: 0;
+}
+
+.proyeccion__titulo p {
+    margin: 0.3rem 0 0;
+    color: var(--text-muted);
+}
+
+.proyeccion__semanas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.proyeccion__semana {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+}
+
+.proyeccion__mejor > .proyeccion__titulo > strong {
+    color: var(--estado-ok);
+    font-size: 1.25rem;
+}
+
+.proyeccion__paquetes,
+.proyeccion__viajes {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.proyeccion__paquetes li,
+.proyeccion__viajes > li {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.proyeccion__paquetes li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.proyeccion__viajes > li:first-child,
+.proyeccion__paquetes li:first-child {
+    border-top: 0;
+}
+
+.proyeccion__viaje-cabecera > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+@media (max-width: 640px) {
+    .proyeccion__filtros {
+        align-items: stretch;
+    }
+
+    .proyeccion__filtros .btn {
+        width: 100%;
+    }
+
+    .proyeccion__paquetes li,
+    .proyeccion__viaje-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
