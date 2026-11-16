@@ -44,7 +44,10 @@ namespace RuteaYa.Web.Controllers
             var lista = await _oportunidades.BuscarAsync(UsuarioId, id.Value);
 
             if (viaje == null || lista == null)
+            {
+                TempData.Remove("Error");
                 return NotFound();
+            }
 
             var modelo = new OportunidadesIndexViewModel
             {
@@ -84,7 +87,7 @@ namespace RuteaYa.Web.Controllers
                     TempData["Exito"] = "Envío aceptado. Ya figura entre tus transportes.";
                     break;
                 case ResultadoAceptar.YaTomado:
-                    TempData["Error"] = "Otro conductor tomó este envío antes que vos.";
+                    TempData["Error"] = "Este envío ya fue tomado y no está disponible.";
                     break;
                 case ResultadoAceptar.NoCumple:
                     TempData["Error"] = "El envío dejó de cumplir las condiciones de tu viaje (peso, cantidad, desvío o fecha).";

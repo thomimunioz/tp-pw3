@@ -25,7 +25,7 @@
                     <div class="fila">
                         <dt>@c.Ruta</dt>
                         <dd>
-                            $@c.Pago.ToString("N0", ar) · @c.PesoKg.ToString("0.##", ar) kg ·
+                            @c.Pago.ToString("C0", ar) · @c.PesoKg.ToString("0.##", ar) kg ·
                             @c.DesvioKm.ToString("0.0", ar) km
                         </dd>
                     </div>
@@ -35,7 +35,7 @@
 
         <section class="panel panel--pago">
             <span class="pago__etiqueta">Ganancia total</span>
-            <strong class="pago__monto">$@r.GananciaTotal.ToString("N0", ar)</strong>
+            <strong class="pago__monto">@r.GananciaTotal.ToString("C0", ar)</strong>
 
             <dl class="filas">
                 <div class="fila"><dt>Cantidad de paquetes</dt><dd>@r.Seleccionados.Count</dd></div>

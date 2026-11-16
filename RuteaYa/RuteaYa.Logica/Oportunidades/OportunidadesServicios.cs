@@ -9,6 +9,7 @@ namespace RuteaYa.Logica.Oportunidades;
 
 public class OportunidadesServicios : IOportunidadesServicios
 {
+    private const int DIAS_MAXIMOS_DE_BUSQUEDA = 60;
     private readonly RuteaYaContext _context;
 
     public OportunidadesServicios(RuteaYaContext context)
@@ -90,16 +91,16 @@ public class OportunidadesServicios : IOportunidadesServicios
 
     private static OportunidadDto? CalcularOportunidad(Viaje viaje, Envio envio, DateOnly hoy, decimal distanciaHabitual)
     {
-        DateOnly? fechaViaje = BuscarFechaConLugar(viaje, envio, hoy);
-        if (fechaViaje == null)
-        {
-            return null;
-        }
-
         decimal distanciaConEnvio = CalculadoraDistancias.DistanciaRutaKm(ArmarRuta(viaje, envio));
         decimal desvio = distanciaConEnvio - distanciaHabitual;
 
         if (desvio > viaje.DesvioMaxKm)
+        {
+            return null;
+        }
+
+        DateOnly? fechaViaje = BuscarFechaConLugar(viaje, envio, hoy, desvio);
+        if (fechaViaje == null)
         {
             return null;
         }
@@ -122,6 +123,7 @@ public class OportunidadesServicios : IOportunidadesServicios
             GananciaPorKm = desvio > 0 ? Math.Round(envio.Monto / desvio, 2) : envio.Monto,
             PaquetesDisponibles = viaje.MaxPaquetes - asignadosEseDia.Count,
             PesoDisponibleKg = viaje.PesoMaxKg - asignadosEseDia.Sum(a => a.Envio.PesoKg),
+            DesvioDisponibleKm = viaje.DesvioMaxKm - asignadosEseDia.Sum(a => a.DesvioKm),
             Compatibilidad = CalcularCompatibilidad(desvio, viaje.DesvioMaxKm)
         };
     }
@@ -153,13 +155,19 @@ public class OportunidadesServicios : IOportunidadesServicios
         return viaje.Asignaciones.Where(a => a.FechaViaje == fecha).ToList();
     }
 
-    private static DateOnly? BuscarFechaConLugar(Viaje viaje, Envio envio, DateOnly hoy)
+    private static DateOnly? BuscarFechaConLugar(Viaje viaje, Envio envio, DateOnly hoy, decimal desvio)
     {
-        for(var fecha = hoy; fecha <= envio.FechaLimite; fecha = fecha.AddDays(1))
+        var hasta = envio.FechaLimite;
+        if (hasta > hoy.AddDays(DIAS_MAXIMOS_DE_BUSQUEDA))
+        {
+            hasta = hoy.AddDays(DIAS_MAXIMOS_DE_BUSQUEDA);
+        }
+
+        for(var fecha = hoy; fecha <= hasta; fecha = fecha.AddDays(1))
         {
             bool viajaEseDia = viaje.Dias.Any(d => d.DiaSemana == fecha.DayOfWeek);
 
-            if (!viajaEseDia)
+            if (!viajaEseDia || YaSalio(viaje, fecha))
             {
                 continue;
             }
@@ -168,14 +176,22 @@ public class OportunidadesServicios : IOportunidadesServicios
 
             bool entraPorCantidad = asignadosEseDia.Count < viaje.MaxPaquetes;
             bool entraPorPeso = asignadosEseDia.Sum(a => a.Envio.PesoKg) + envio.PesoKg <= viaje.PesoMaxKg;
+            bool entraPorDesvio = asignadosEseDia.Sum(a => a.DesvioKm) + desvio <= viaje.DesvioMaxKm;
 
-            if (entraPorCantidad && entraPorPeso)
+            if (entraPorCantidad && entraPorPeso && entraPorDesvio)
             {
                 return fecha;
             }
 
         }
-        return null;   
+        return null;
+    }
+
+    // Si el viaje es hoy y ya pasó la hora de salida, ese día ya no sirve
+    private static bool YaSalio(Viaje viaje, DateOnly fecha)
+    {
+        var ahora = DateTime.Now;
+        return fecha == DateOnly.FromDateTime(ahora) && viaje.HoraSalida <= TimeOnly.FromDateTime(ahora);
     }
     private static NivelCompatibilidad CalcularCompatibilidad(decimal desvio, decimal desvioMax)
     {

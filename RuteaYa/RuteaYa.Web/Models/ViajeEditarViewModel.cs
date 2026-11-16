@@ -7,10 +7,12 @@ namespace RuteaYa.Web.Models
         public int Id { get; set; } // Fundamental: La "patente" del viaje a editar
 
         [Required(ErrorMessage = "El origen es obligatorio.")]
+        [StringLength(250, ErrorMessage = "El origen puede tener hasta 250 caracteres.")]
         [Display(Name = "Origen")]
         public string OrigenDir { get; set; } = null!;
 
         [Required(ErrorMessage = "El destino es obligatorio.")]
+        [StringLength(250, ErrorMessage = "El destino puede tener hasta 250 caracteres.")]
         [Display(Name = "Destino")]
         public string DestinoDir { get; set; } = null!;
 
@@ -26,21 +28,21 @@ namespace RuteaYa.Web.Models
         [Required(ErrorMessage = "La hora de llegada es obligatoria.")]
         public TimeOnly HoraLlegada { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "La cantidad máxima de paquetes debe ser mayor a 0.")]
+        [Range(1, 100, ErrorMessage = "El máximo de paquetes tiene que estar entre 1 y 100.")]
         public int MaxPaquetes { get; set; } = 1;
 
-        [Range(0.1, 9999.99, ErrorMessage = "El peso máximo debe ser mayor a 0.")]
+        [Range(0.1, 1000, ErrorMessage = "El peso máximo tiene que estar entre 0,1 y 1.000 kg.")]
         public decimal PesoMaxKg { get; set; } = 1;
 
-        [Range(0, 9999.99, ErrorMessage = "El desvío máximo debe ser un valor válido.")]
+        [Range(0, 100, ErrorMessage = "El desvío máximo tiene que estar entre 0 y 100 km.")]
         public decimal DesvioMaxKm { get; set; } = 0;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (HoraLlegada <= HoraSalida)
+            if (HoraLlegada == HoraSalida)
             {
                 yield return new ValidationResult(
-                    "La hora de llegada debe ser posterior a la hora de salida.",
+                    "La hora de llegada no puede ser igual a la de salida.",
                     new[] { nameof(HoraLlegada) });
             }
 
@@ -55,6 +57,11 @@ namespace RuteaYa.Web.Models
                 OrigenDir.Trim().Equals(DestinoDir.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 yield return new ValidationResult("El origen y el destino no pueden ser iguales.", new[] { nameof(DestinoDir) });
+            }
+
+            if (ParadasIntermedias != null && ParadasIntermedias.Any(p => p != null && p.Length > 250))
+            {
+                yield return new ValidationResult("Cada parada puede tener hasta 250 caracteres.", new[] { nameof(ParadasIntermedias) });
             }
         }
     }

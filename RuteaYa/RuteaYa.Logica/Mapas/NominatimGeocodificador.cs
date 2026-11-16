@@ -15,7 +15,20 @@ public class NominatimGeocodificador : IGeocodificador
     public async Task<Coordenada?> GeocodificarAsync(string direccion)
     {
         var url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(direccion)}&format=json&limit=1&countrycodes=ar";
-        var resultados = await _http.GetFromJsonAsync<List<ResultadoNominatim>>(url);
+        List<ResultadoNominatim>? resultados;
+        try
+        {
+            resultados = await _http.GetFromJsonAsync<List<ResultadoNominatim>>(url);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException)
+        {
+            return null;
+        }
+
         if (resultados == null || resultados.Count == 0)
         {
             return null;

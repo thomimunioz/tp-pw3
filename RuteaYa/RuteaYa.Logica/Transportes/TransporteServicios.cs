@@ -77,6 +77,11 @@ namespace RuteaYa.Logica.Transportes
                 return ResultadoActualizarTransporte.Fallido("El paquete fue cancelado y no se puede transportar.");
                 }
 
+            if (envio.Estado == nuevoEstado)
+                {
+                return ResultadoActualizarTransporte.Fallido("El paquete ya tiene ese estado.");
+                }
+
             if (envio.Estado != estadoEsperado)
                 {
                 return ResultadoActualizarTransporte.Fallido(mensajeErrorEstadoInvalido);

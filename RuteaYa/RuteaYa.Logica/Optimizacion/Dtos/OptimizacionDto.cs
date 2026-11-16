@@ -15,6 +15,7 @@ public class OptimizacionDto
     // Lugar que le queda libre al viaje ese día
     public int PaquetesDisponibles { get; set; }
     public decimal PesoDisponibleKg { get; set; }
+    public decimal DesvioDisponibleKm { get; set; }
 
     public List<CandidatoEnvio> Candidatos { get; set; } = new List<CandidatoEnvio>();
     public ResultadoOptimizacion Resultado { get; set; } = new ResultadoOptimizacion();

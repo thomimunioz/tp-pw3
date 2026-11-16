@@ -115,14 +115,14 @@
             </div>
             <div class="form-campo">
                 <label asp-for="PesoMaxKg">Peso máximo (kg)</label>
-                <input asp-for="PesoMaxKg" type="number" step="0.1" min="0.1" />
+                <input asp-for="PesoMaxKg" type="number" step="0.01" min="0.1" />
                 <span asp-validation-for="PesoMaxKg"></span>
             </div>
         </div>
 
         <div class="form-campo">
             <label asp-for="DesvioMaxKm">Desvío máximo (km)</label>
-            <input asp-for="DesvioMaxKm" type="number" step="0.1" min="0" />
+            <input asp-for="DesvioMaxKm" type="number" step="0.01" min="0" />
             <span asp-validation-for="DesvioMaxKm"></span>
         </div>
 

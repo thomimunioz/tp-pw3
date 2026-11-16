@@ -39,7 +39,8 @@ public class OptimizadorServiciosTests
             DesvioKm = 1m,
             FechaViaje = fecha,
             PaquetesDisponibles = paquetesLibres,
-            PesoDisponibleKg = pesoLibreKg
+            PesoDisponibleKg = pesoLibreKg,
+            DesvioDisponibleKm = 5m
         };
     }
 

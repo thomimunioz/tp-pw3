@@ -66,11 +66,20 @@ namespace RuteaYa.Logica.Dashboard
             dto.Envios = envios.Take(3).Select(e => new EnvioResumenDto(
                 e.OrigenDir, e.DestinoDir, e.Descripcion, e.Monto, e.Estado)).ToList();
 
+            // Un mismo envío puede servirle a dos viajes: se cuenta una sola vez
+            var enviosConOportunidad = new HashSet<int>();
             foreach (var v in viajesActivos)
             {
                 var ops = await _oportunidades.BuscarAsync(usuarioId, v.Id);
-                dto.Oportunidades += ops?.Count ?? 0;
+                if (ops != null)
+                {
+                    foreach (var o in ops)
+                    {
+                        enviosConOportunidad.Add(o.EnvioId);
+                    }
+                }
             }
+            dto.Oportunidades = enviosConOportunidad.Count;
 
             dto.ProximosViajes = proximos.Count;
             dto.EnviosPendientes = envios.Count;

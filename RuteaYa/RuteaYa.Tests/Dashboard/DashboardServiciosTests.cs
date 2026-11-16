@@ -315,9 +315,9 @@ public class DashboardServiciosTests
     // ObtenerAsync: oportunidades
 
     [Fact]
-    public async Task ObtenerAsync_VariosViajesActivos_SumaLasOportunidadesDeTodos()
+    public async Task ObtenerAsync_VariosViajesActivos_CuentaCadaEnvioUnaSolaVez()
     {
-        // Arrange
+        // Arrange: los envíos 1 y 2 le sirven a los dos viajes, el 3 solo al segundo
         ConfigurarViajes(CrearViaje(1), CrearViaje(2));
         _oportunidades.Setup(o => o.BuscarAsync(UsuarioId, 1)).ReturnsAsync(CrearOportunidades(2));
         _oportunidades.Setup(o => o.BuscarAsync(UsuarioId, 2)).ReturnsAsync(CrearOportunidades(3));
@@ -326,7 +326,7 @@ public class DashboardServiciosTests
         var dto = await _servicio.ObtenerAsync(UsuarioId);
 
         // Assert
-        Assert.Equal(5, dto.Oportunidades);
+        Assert.Equal(3, dto.Oportunidades);
     }
 
     [Fact]

@@ -57,10 +57,13 @@ namespace RuteaYa.Web.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearEnvioViewModel model)
         {
 
-            if (model.OrigenDirrecion.Trim().Equals(model.DestinoDireccion.Trim(), StringComparison.OrdinalIgnoreCase))
+            // Si falta algún campo, ModelState ya no es válido y no se compara (evita el error con null)
+            if (ModelState.IsValid &&
+                model.OrigenDireccion.Trim().Equals(model.DestinoDireccion.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.DestinoDireccion), "El destino debe ser diferente al origen.");
             }
@@ -84,7 +87,7 @@ namespace RuteaYa.Web.Controllers {
 
             var dto = new CrearEnvioDto
             {
-                OrigenDirrecion = model.OrigenDirrecion,
+                OrigenDireccion = model.OrigenDireccion,
                 DestinoDireccion = model.DestinoDireccion,
                 FechaLimite = model.FechaLimite,
                 Peso = model.Peso,
@@ -104,7 +107,7 @@ namespace RuteaYa.Web.Controllers {
                 return View(model);
             }
 
-            TempData["MensajeExito"] = "¡Tu envío fue publicado con éxito y ya está disponible buscando conductor!.";
+            TempData["MensajeExito"] = "¡Tu envío fue publicado con éxito y ya está disponible buscando conductor!";
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]

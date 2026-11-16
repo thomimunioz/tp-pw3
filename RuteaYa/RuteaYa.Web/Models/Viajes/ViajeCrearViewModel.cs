@@ -5,10 +5,12 @@ namespace RuteaYa.Web.Models.Viajes;
 public class ViajeCrearViewModel : IValidatableObject
 {
     [Required(ErrorMessage = "El origen es obligatorio.")]
+    [StringLength(250, ErrorMessage = "El origen puede tener hasta 250 caracteres.")]
     [Display(Name = "Origen")]
     public string OrigenDir { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El destino es obligatorio.")]
+    [StringLength(250, ErrorMessage = "El destino puede tener hasta 250 caracteres.")]
     [Display(Name = "Destino")]
     public string DestinoDir { get; set; } = string.Empty;
 
@@ -27,15 +29,15 @@ public class ViajeCrearViewModel : IValidatableObject
     [DataType(DataType.Time)]
     public TimeOnly HoraLlegada { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Debe haber al menos 1 paquete.")]
+    [Range(1, 100, ErrorMessage = "El máximo de paquetes tiene que estar entre 1 y 100.")]
     [Display(Name = "Máximo de paquetes")]
     public int MaxPaquetes { get; set; } = 1;
 
-    [Range(0.1, double.MaxValue, ErrorMessage = "El peso máximo debe ser mayor a 0.")]
+    [Range(0.1, 1000, ErrorMessage = "El peso máximo tiene que estar entre 0,1 y 1.000 kg.")]
     [Display(Name = "Peso máximo (kg)")]
     public decimal PesoMaxKg { get; set; } = 0.1m;
 
-    [Range(0, double.MaxValue, ErrorMessage = "El desvío máximo no puede ser negativo.")]
+    [Range(0, 100, ErrorMessage = "El desvío máximo tiene que estar entre 0 y 100 km.")]
     [Display(Name = "Desvío máximo (km)")]
     public decimal DesvioMaxKm { get; set; }
 
@@ -50,10 +52,10 @@ public class ViajeCrearViewModel : IValidatableObject
                 new[] { nameof(OrigenDir), nameof(DestinoDir) });
         }
 
-        if (HoraLlegada <= HoraSalida)
+        if (HoraLlegada == HoraSalida)
         {
             yield return new ValidationResult(
-                "La hora de llegada debe ser posterior a la hora de salida.",
+                "La hora de llegada no puede ser igual a la de salida.",
                 new[] { nameof(HoraLlegada) });
         }
 
@@ -62,6 +64,13 @@ public class ViajeCrearViewModel : IValidatableObject
             yield return new ValidationResult(
                 "Debes seleccionar al menos un día para el viaje.",
                 new[] { nameof(DiasSeleccionados) });
+        }
+
+        if (ParadasIntermedias != null && ParadasIntermedias.Any(p => p != null && p.Length > 250))
+        {
+            yield return new ValidationResult(
+                "Cada parada puede tener hasta 250 caracteres.",
+                new[] { nameof(ParadasIntermedias) });
         }
     }
 }

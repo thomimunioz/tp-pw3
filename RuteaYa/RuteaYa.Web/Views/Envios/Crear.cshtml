@@ -18,9 +18,9 @@
         <div asp-validation-summary="ModelOnly"></div>
 
         <div class="form-campo">
-            <label asp-for="OrigenDirrecion">Origen</label>
-            <input asp-for="OrigenDirrecion" placeholder="¿Dónde lo retiran?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")"/>
-            <span asp-validation-for="OrigenDirrecion"></span>
+            <label asp-for="OrigenDireccion">Origen</label>
+            <input asp-for="OrigenDireccion" placeholder="¿Dónde lo retiran?" autocomplete="off" data-lugares-url="@Url.Action("Sugerir", "Lugares")"/>
+            <span asp-validation-for="OrigenDireccion"></span>
         </div>
 
         <div class="form-campo">
@@ -42,7 +42,7 @@
                 <span asp-validation-for="Monto"></span>
             </div>
             <div class="form-campo">
-                <label asp-for="FechaLimite">Fecha</label>
+                <label asp-for="FechaLimite">Fecha límite</label>
                 <input asp-for="FechaLimite" type="date" />
                 <span asp-validation-for="FechaLimite"></span>
             </div>

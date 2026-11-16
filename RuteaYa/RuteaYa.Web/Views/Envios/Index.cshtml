@@ -48,7 +48,7 @@
             <div class="envio-fila">
                 <div>
                     <div class="envio-ruta">@envio.OrigenDir → @envio.DestinoDir</div>
-                    <div class="envio-info">@envio.Descripcion · <strong>$@envio.Monto.ToString("#,##0.##")</strong></div>
+                    <div class="envio-info">@envio.Descripcion · <strong>@envio.Monto.ToString("C0")</strong></div>
                 </div>
                 <div class="envio-acciones">
                     <span class="estado estado-@envio.Estado.ToString().ToLower()">@envio.Estado.Texto()</span>

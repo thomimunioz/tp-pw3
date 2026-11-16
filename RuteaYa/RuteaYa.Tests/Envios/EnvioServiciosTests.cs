@@ -54,7 +54,7 @@ namespace RuteaYa.Tests.Envios
 
             return new CrearEnvioDto
                 {
-                OrigenDirrecion = "Av. Corrientes 1234, CABA",
+                OrigenDireccion = "Av. Corrientes 1234, CABA",
                 DestinoDireccion = "Av. Santa Fe 4321, CABA",
                 FechaLimite = DateOnly.FromDateTime(DateTime.Today.AddDays(2)),
                 Peso = 2.5m,
@@ -109,7 +109,7 @@ namespace RuteaYa.Tests.Envios
             var servicio = new EnvioServicios(context, new MockGeocodificador());
 
             var dto = CrearDtoValido();
-            dto.OrigenDirrecion = "Av. Mayo 500";
+            dto.OrigenDireccion = "Av. Mayo 500";
             dto.DestinoDireccion = "Av. Mayo 500";
 
             var resultado = await servicio.CrearAsync(1, dto);
@@ -126,7 +126,7 @@ namespace RuteaYa.Tests.Envios
 
             var dto = new CrearEnvioDto
                 {
-                OrigenDirrecion = "",
+                OrigenDireccion = "",
                 DestinoDireccion = "   ",
                 FechaLimite = DateOnly.FromDateTime(DateTime.Today),
                 Peso = 1m,
@@ -199,7 +199,7 @@ namespace RuteaYa.Tests.Envios
             var servicio = new EnvioServicios(context, new MockGeocodificador(simularFalloOrigen: true));
 
             var dto = CrearDtoValido();
-            dto.OrigenDirrecion = "Calle OrigenInvalido 999999";
+            dto.OrigenDireccion = "Calle OrigenInvalido 999999";
             var resultado = await servicio.CrearAsync(1, dto);
 
             Assert.False(resultado.ResultadoExitoso);

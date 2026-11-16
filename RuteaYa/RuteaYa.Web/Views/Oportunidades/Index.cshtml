@@ -113,7 +113,7 @@
 
                         <span class="badge badge--@nivel.Clase">@nivel.Texto</span>
 
-                        <span class="tarjeta__pago">$@o.Pago.ToString("N0", ar)</span>
+                        <span class="tarjeta__pago">@o.Pago.ToString("C0", ar)</span>
 
                         <div class="tarjeta__acciones">
                             <a class="btn btn--secundario" asp-action="Detalle"
