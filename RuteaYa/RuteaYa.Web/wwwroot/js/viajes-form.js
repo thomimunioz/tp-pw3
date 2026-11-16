@@ -60,8 +60,8 @@
             if (!salida || !llegada) return;
 
             llegada.setCustomValidity('');
-            if (salida.value && llegada.value && llegada.value <= salida.value) {
-                llegada.setCustomValidity('La hora de llegada debe ser posterior a la hora de salida.');
+            if (salida.value && llegada.value && llegada.value === salida.value) {
+                llegada.setCustomValidity('La hora de llegada no puede ser igual a la de salida.');
                 llegada.reportValidity();
                 event.preventDefault();
             }

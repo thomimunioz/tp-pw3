@@ -61,20 +61,20 @@
                 </div>
                 <div class="limite">
                     <span class="limite__etiqueta">Paquetes (máx. @o.MaxPaquetes)</span>
-                    <strong>@r.Seleccionados.Count de @o.PaquetesDisponibles libres</strong>
+                    <strong>Usa @r.Seleccionados.Count de los @o.PaquetesDisponibles lugares libres</strong>
                     <progress value="@r.Seleccionados.Count" max="@o.PaquetesDisponibles"></progress>
                 </div>
                 <div class="limite">
                     <span class="limite__etiqueta">Peso (máx. @o.PesoMaxKg.ToString("0.##", ar) kg)</span>
-                    <strong>@r.PesoTotalKg.ToString("0.##", ar) de @o.PesoDisponibleKg.ToString("0.##", ar) kg libres</strong>
+                    <strong>Usa @r.PesoTotalKg.ToString("0.##", ar) kg de los @o.PesoDisponibleKg.ToString("0.##", ar) kg libres</strong>
                     <progress value="@r.PesoTotalKg.ToString(CultureInfo.InvariantCulture)"
                               max="@o.PesoDisponibleKg.ToString(CultureInfo.InvariantCulture)"></progress>
                 </div>
                 <div class="limite">
-                    <span class="limite__etiqueta">Desvío máximo</span>
-                    <strong>@r.DesvioTotalKm.ToString("0.0", ar) de @o.DesvioMaxKm.ToString("0.##", ar) km</strong>
+                    <span class="limite__etiqueta">Desvío (máx. @o.DesvioMaxKm.ToString("0.##", ar) km)</span>
+                    <strong>Usa @r.DesvioTotalKm.ToString("0.0", ar) km de los @o.DesvioDisponibleKm.ToString("0.##", ar) km libres</strong>
                     <progress value="@r.DesvioTotalKm.ToString(CultureInfo.InvariantCulture)"
-                              max="@o.DesvioMaxKm.ToString(CultureInfo.InvariantCulture)"></progress>
+                              max="@o.DesvioDisponibleKm.ToString(CultureInfo.InvariantCulture)"></progress>
                 </div>
             </section>
 
@@ -87,7 +87,7 @@
                     }
                     else
                     {
-                        <strong class="pago__monto">$@r.GananciaTotal.ToString("N0", ar)</strong>
+                        <strong class="pago__monto">@r.GananciaTotal.ToString("C0", ar)</strong>
                         <span class="pago__km">
                             @r.Seleccionados.Count envío(s) · @r.PesoTotalKg.ToString("0.##", ar) kg ·
                             @r.DesvioTotalKm.ToString("0.0", ar) km de desvío
@@ -95,7 +95,7 @@
                         <ul class="combinacion">
                             @foreach (var c in r.Seleccionados)
                             {
-                                <li><span>@c.Ruta</span><strong>$@c.Pago.ToString("N0", ar)</strong></li>
+                                <li><span>@c.Ruta</span><strong>@c.Pago.ToString("C0", ar)</strong></li>
                             }
                         </ul>
                         <a class="btn btn--primario" asp-action="Confirmar" asp-route-viajeId="@Model.ViajeId">Confirmar combinación</a>
@@ -113,7 +113,7 @@
                         {
                             <li class="combinaciones__item">
                                 <div>
-                                    <strong>$@c.GananciaTotal.ToString("N0", ar)</strong>
+                                    <strong>@c.GananciaTotal.ToString("C0", ar)</strong>
                                     <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
                                     <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
                                 </div>
@@ -123,7 +123,7 @@
                         {
                             <li class="combinaciones__item">
                                 <div>
-                                    <strong>$@c.GananciaTotal.ToString("N0", ar)</strong>
+                                    <strong>@c.GananciaTotal.ToString("C0", ar)</strong>
                                     <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
                                     <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
                                 </div>
@@ -150,7 +150,7 @@
                             {
                                 <span class="badge badge--ok">En la combinación</span>
                             }
-                            <strong class="tarjeta__pago">$@c.Pago.ToString("N0", ar)</strong>
+                            <strong class="tarjeta__pago">@c.Pago.ToString("C0", ar)</strong>
                         </li>
                     }
                 </ul>

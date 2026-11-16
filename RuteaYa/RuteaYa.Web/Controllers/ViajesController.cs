@@ -136,6 +136,7 @@ public class ViajesController : Controller
         try
         {
             await _viajeServicios.CrearViajeAsync(viaje, modelo.DiasSeleccionados, modelo.ParadasIntermedias);
+            TempData["MensajeExito"] = "El viaje se creó correctamente.";
             return RedirectToAction(nameof(Index));
         }
         catch (InvalidOperationException ex)

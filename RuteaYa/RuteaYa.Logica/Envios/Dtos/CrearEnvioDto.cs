@@ -7,7 +7,7 @@ namespace RuteaYa.Logica.Envios.Dtos {
     public class CrearEnvioDto
     {
 
-        public string OrigenDirrecion { get; set; } = "";
+        public string OrigenDireccion { get; set; } = "";
         public string DestinoDireccion { get; set; } = "";
         public DateOnly FechaLimite { get; set; }
         public decimal Peso { get; set; }

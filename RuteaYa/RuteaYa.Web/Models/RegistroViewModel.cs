@@ -5,11 +5,11 @@ namespace RuteaYa.Web.Models
     public class RegistroViewModel
     {
         [Required(ErrorMessage = "El nombre es obligatorio")]
-        [MaxLength(100)]
+        [MaxLength(100, ErrorMessage = "Puede tener hasta 100 caracteres.")]
         public string Nombre { get; set; } = null!;
 
         [Required(ErrorMessage = "El apellido es obligatorio")]
-        [MaxLength(100)]
+        [MaxLength(100, ErrorMessage = "Puede tener hasta 100 caracteres.")]
         public string Apellido { get; set; } = null!;
 
         [Required(ErrorMessage = "El email es obligatorio")]

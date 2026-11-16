@@ -74,7 +74,7 @@ public static class DatosDemo
         {
             EstadoAnterior = EstadoEnvio.BuscandoConductor,
             EstadoNuevo = EstadoEnvio.ConductorAsignado,
-            Fecha = DateTime.UtcNow
+            Fecha = DateTime.Now
         });
         asignado.Asignacion = new Asignacion
         {
@@ -83,7 +83,7 @@ public static class DatosDemo
             DesvioKm = 1.8m,
             TiempoExtraMin = 7,
             Ganancia = 4400m,
-            AsignadoEn = DateTime.UtcNow
+            AsignadoEn = DateTime.Now
         };
 
         context.AddRange(carlosIda, carlosVuelta, luciaViaje);
@@ -100,7 +100,7 @@ public static class DatosDemo
             Email = email,
             Nombre = nombre,
             Apellido = apellido,
-            CreadoEn = DateTime.UtcNow
+            CreadoEn = DateTime.Now
         };
 
         var resultado = await userManager.CreateAsync(usuario, Password);
@@ -177,14 +177,14 @@ public static class DatosDemo
             Descripcion = descripcion,
             Monto = monto,
             Estado = EstadoEnvio.BuscandoConductor,
-            CreadoEn = DateTime.UtcNow
+            CreadoEn = DateTime.Now
         };
 
         envio.Historial.Add(new EnvioEstadoHistorial
         {
             EstadoAnterior = null,
             EstadoNuevo = EstadoEnvio.BuscandoConductor,
-            Fecha = DateTime.UtcNow
+            Fecha = DateTime.Now
         });
 
         return envio;

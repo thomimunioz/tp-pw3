@@ -36,7 +36,7 @@ namespace RuteaYa.Logica.Account
                 Email = email,
                 Nombre = nombre,
                 Apellido = apellido,
-                CreadoEn = DateTime.UtcNow
+                CreadoEn = DateTime.Now
             };
 
             var resultado = await _userManager.CreateAsync(usuario, password);

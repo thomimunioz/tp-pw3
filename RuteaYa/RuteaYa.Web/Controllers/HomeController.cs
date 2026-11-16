@@ -27,6 +27,12 @@ namespace RuteaYa.Web.Controllers
         [AllowAnonymous]
         public IActionResult NoEncontrado()
         {
+            // Los demás errores (400, 403, 405...) muestran la página de error y no la de 404
+            if (Response.StatusCode >= 400 && Response.StatusCode != StatusCodes.Status404NotFound)
+            {
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+
             return View();
         }
 

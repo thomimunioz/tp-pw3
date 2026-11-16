@@ -30,7 +30,7 @@ public class PhotonSugeridorLugares : ISugeridorLugares
         // Buscamos direcciones, calles y localidades.
         // No usamos osm_tag=place porque excluiría otros tipos de resultados.
         var url = $"api/?q={Uri.EscapeDataString(texto)}" +
-          $"&limit={LugaresReglas.MaxResultados}&countrycode=AR";
+          $"&limit={LugaresReglas.MaxResultados}&countrycode=AR&lat=-34.60&lon=-58.44";
 
         try
         {

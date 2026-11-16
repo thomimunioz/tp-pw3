@@ -38,7 +38,8 @@ public class ConfirmarCombinacionTests
             TiempoExtraMin = 2,
             FechaViaje = DatosDePrueba.Hoy,
             PaquetesDisponibles = 3,
-            PesoDisponibleKg = 10m
+            PesoDisponibleKg = 10m,
+            DesvioDisponibleKm = 5m
         };
     }
 

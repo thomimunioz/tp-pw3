@@ -12,20 +12,20 @@ namespace RuteaYa.Web.Models.Envios {
         [Required(ErrorMessage = "El origen es obligatorio.")]
         [StringLength(250, ErrorMessage = "El origen no puede superar los 250 caracteres.")]
         [Display(Name = "Origen")]
-        public string OrigenDirrecion { get; set; } = "";
+        public string OrigenDireccion { get; set; } = "";
 
         [Required(ErrorMessage = "El destino es obligatorio.")]
         [StringLength(250, ErrorMessage = "El destino no puede superar los 250 caracteres.")]
-        [Display(Name = "Destinoooo")]
+        [Display(Name = "Destino")]
         public string DestinoDireccion { get; set; } = "";
 
         [Required(ErrorMessage = "La fecha es obligatoria.")]
         [DataType(DataType.Date)]
-        [Display(Name = "Fecha")]
+        [Display(Name = "Fecha límite")]
         public DateOnly FechaLimite { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
         [Required(ErrorMessage = "El peso es obligatorio.")]
-        [Range(0.01, 9999.99, ErrorMessage = "El peso debe ser mayor a 0 kg.")]
+        [Range(0.01, 9999.99, ErrorMessage = "El peso debe estar entre 0,01 y 9.999,99 kg.")]
         [Display(Name = "Peso (kg)")]
         public decimal Peso { get; set; }
 

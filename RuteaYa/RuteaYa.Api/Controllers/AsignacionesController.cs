@@ -48,9 +48,11 @@ public class AsignacionesController : ControllerBase
             case ResultadoAceptar.Exito:
                 return StatusCode(StatusCodes.Status201Created);
             case ResultadoAceptar.YaTomado:
-                return Conflict("Otro conductor tomó el envío antes.");
+                return Problem(statusCode: StatusCodes.Status409Conflict,
+                    title: "Otro conductor tomó el envío antes.");
             case ResultadoAceptar.NoCumple:
-                return UnprocessableEntity("El envío ya no cumple las condiciones del viaje (fecha, lugar o desvío).");
+                return Problem(statusCode: StatusCodes.Status422UnprocessableEntity,
+                    title: "El envío ya no cumple las condiciones del viaje (fecha, lugar o desvío).");
             default:
                 return NotFound();
         }

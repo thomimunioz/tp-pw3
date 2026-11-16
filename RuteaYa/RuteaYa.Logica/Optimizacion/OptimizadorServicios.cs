@@ -40,7 +40,8 @@ public class OptimizadorServicios : IOptimizadorServicios
             PesoMaxKg = viaje.PesoMaxKg,
             DesvioMaxKm = viaje.DesvioMaxKm,
             PaquetesDisponibles = viaje.MaxPaquetes,
-            PesoDisponibleKg = viaje.PesoMaxKg
+            PesoDisponibleKg = viaje.PesoMaxKg,
+            DesvioDisponibleKm = viaje.DesvioMaxKm
         };
 
         // Las oportunidades ya vienen filtradas por fecha límite, lugar libre y desvío máximo
@@ -58,6 +59,7 @@ public class OptimizadorServicios : IOptimizadorServicios
         optimizacion.FechaViaje = fecha;
         optimizacion.PaquetesDisponibles = delDia[0].PaquetesDisponibles;
         optimizacion.PesoDisponibleKg = delDia[0].PesoDisponibleKg;
+        optimizacion.DesvioDisponibleKm = delDia[0].DesvioDisponibleKm;
         optimizacion.Candidatos = delDia
             .Select(o => new CandidatoEnvio
             {
@@ -73,7 +75,7 @@ public class OptimizadorServicios : IOptimizadorServicios
             optimizacion.Candidatos,
             optimizacion.PaquetesDisponibles,
             optimizacion.PesoDisponibleKg,
-            viaje.DesvioMaxKm);
+            optimizacion.DesvioDisponibleKm);
 
         return optimizacion;
     }

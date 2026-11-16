@@ -1,2 +1,14 @@
 ﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $.extend($.validator.messages, {
+        required: "Este campo es obligatorio.",
+        number: "Ingresá un número válido.",
+        email: "Ingresá un email válido.",
+        min: $.validator.format("Ingresá un valor mayor o igual a {0}."),
+        max: $.validator.format("Ingresá un valor menor o igual a {0}."),
+        step: $.validator.format("Ingresá un múltiplo de {0}."),
+        minlength: $.validator.format("Ingresá al menos {0} caracteres."),
+        maxlength: $.validator.format("Ingresá como máximo {0} caracteres.")
+    });
+</script>

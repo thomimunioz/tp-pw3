@@ -35,7 +35,7 @@
                 <span>Estado</span>
                 <span class="estado estado-@Model.Estado.ToString().ToLower()">@Model.Estado.Texto()</span>
             </div>
-            <div class="detalle-fila detalle-fila--monto"><span>Monto</span><strong>$@Model.Monto.ToString("#,##0.##")</strong></div>
+            <div class="detalle-fila detalle-fila--monto"><span>Monto</span><strong>@Model.Monto.ToString("C0")</strong></div>
             <div class="detalle-fila"><span>Peso</span><strong>@Model.PesoKg kg</strong></div>
             <div class="detalle-fila"><span>Tamaño</span><strong>@Model.Tamano.Texto()</strong></div>
             <div class="detalle-fila"><span>Fecha límite</span><strong>@Model.FechaLimite.ToString("dd/MM/yyyy")</strong></div>

@@ -63,7 +63,7 @@ namespace RuteaYa.Tests.Envios
 
             var dto = new CrearEnvioDto
             {
-                OrigenDirrecion = "Av. Corrientes 1234, CABA",
+                OrigenDireccion = "Av. Corrientes 1234, CABA",
                 DestinoDireccion = "Av. Santa Fe 4321, CABA",
                 FechaLimite = DateOnly.FromDateTime(DateTime.Today.AddDays(2)),
                 Peso = 2.5m,

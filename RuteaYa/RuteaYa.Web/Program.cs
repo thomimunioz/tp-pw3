@@ -28,6 +28,14 @@ builder.Services.AddControllersWithViews(options =>
         .Build();
 
     options.Filters.Add(new AuthorizeFilter(politica));
+
+    // Mensajes de error de los formularios en español
+    var mensajes = options.ModelBindingMessageProvider;
+    mensajes.SetAttemptedValueIsInvalidAccessor((valor, campo) => $"El valor '{valor}' no es válido para {campo}.");
+    mensajes.SetNonPropertyAttemptedValueIsInvalidAccessor(valor => $"El valor '{valor}' no es válido.");
+    mensajes.SetValueIsInvalidAccessor(valor => $"El valor '{valor}' no es válido.");
+    mensajes.SetValueMustBeANumberAccessor(campo => $"El campo {campo} tiene que ser un número.");
+    mensajes.SetValueMustNotBeNullAccessor(campo => $"El campo {campo} es obligatorio.");
 });
 builder.Services.AddDbContext<RuteaYaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));
@@ -65,6 +73,7 @@ else
     builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
     {
         client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+        client.Timeout = TimeSpan.FromSeconds(10);
     });
 }
 
@@ -80,6 +89,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<RuteaYaContext>().Database.Migrate();
     await DatosDemo.SembrarAsync(scope.ServiceProvider);
 }
 

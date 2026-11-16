@@ -77,7 +77,7 @@ namespace RuteaYa.Web.Controllers
                 }
 
                 var resultado = await this._transporteServicios.MarcarEntregadoAsync(usuario.Id, envioId);
-                ProcesarResultado(resultado, "¡Paquete entregado con éxito!, se completó el transporte.");
+                ProcesarResultado(resultado, "¡Paquete entregado con éxito! Se completó el transporte.");
                 return RedirectToAction(nameof(Index));
             }
 

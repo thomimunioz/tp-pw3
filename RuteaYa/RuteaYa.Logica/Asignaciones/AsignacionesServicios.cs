@@ -72,7 +72,7 @@ namespace RuteaYa.Logica.Asignaciones
                 DesvioKm = detalle.DesvioKm,
                 TiempoExtraMin = detalle.TiempoExtraMin,
                 Ganancia = detalle.Pago,
-                AsignadoEn = DateTime.UtcNow
+                AsignadoEn = DateTime.Now
             });
 
             _context.Add(new EnvioEstadoHistorial
@@ -80,7 +80,7 @@ namespace RuteaYa.Logica.Asignaciones
                 EnvioId = envio.Id,
                 EstadoAnterior = envio.Estado,
                 EstadoNuevo = EstadoEnvio.ConductorAsignado,
-                Fecha = DateTime.UtcNow
+                Fecha = DateTime.Now
             });
 
             envio.Estado = EstadoEnvio.ConductorAsignado;
@@ -161,7 +161,7 @@ namespace RuteaYa.Logica.Asignaciones
             bool mismoDia = elegidas.All(o => o.FechaViaje == fecha);
             bool entraPorCantidad = elegidas.Count <= elegidas[0].PaquetesDisponibles;
             bool entraPorPeso = elegidas.Sum(o => o.PesoKg) <= elegidas[0].PesoDisponibleKg;
-            bool entraPorDesvio = elegidas.Sum(o => o.DesvioKm) <= viaje.DesvioMaxKm;
+            bool entraPorDesvio = elegidas.Sum(o => o.DesvioKm) <= elegidas[0].DesvioDisponibleKm;
 
             if (!mismoDia || !entraPorCantidad || !entraPorPeso || !entraPorDesvio)
             {
@@ -180,7 +180,7 @@ namespace RuteaYa.Logica.Asignaciones
                     DesvioKm = oportunidad.DesvioKm,
                     TiempoExtraMin = oportunidad.TiempoExtraMin,
                     Ganancia = oportunidad.Pago,
-                    AsignadoEn = DateTime.UtcNow
+                    AsignadoEn = DateTime.Now
                 });
 
                 _context.Add(new EnvioEstadoHistorial
@@ -188,7 +188,7 @@ namespace RuteaYa.Logica.Asignaciones
                     EnvioId = envio.Id,
                     EstadoAnterior = envio.Estado,
                     EstadoNuevo = EstadoEnvio.ConductorAsignado,
-                    Fecha = DateTime.UtcNow
+                    Fecha = DateTime.Now
                 });
 
                 envio.Estado = EstadoEnvio.ConductorAsignado;

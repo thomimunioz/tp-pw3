@@ -34,7 +34,7 @@ namespace RuteaYa.Logica.Envios {
             }
 
             // Geocodificación.
-            var origenCoordenadas = await _geocodificador.GeocodificarAsync(dto.OrigenDirrecion.Trim());
+            var origenCoordenadas = await _geocodificador.GeocodificarAsync(dto.OrigenDireccion.Trim());
             if (origenCoordenadas == null)
             {
                 return ResultadoCrearEnvio.Fallido(new[]
@@ -57,7 +57,7 @@ namespace RuteaYa.Logica.Envios {
 
             var envio = new Envio {
                 UsuarioId = usuarioId,
-                OrigenDir = dto.OrigenDirrecion.Trim(),
+                OrigenDir = dto.OrigenDireccion.Trim(),
                 OrigenLat = origenCoordenadas.Lat,
                 OrigenLng = origenCoordenadas.Lng,
                 DestinoDir = dto.DestinoDireccion.Trim(),
@@ -91,7 +91,7 @@ namespace RuteaYa.Logica.Envios {
             {
             var errores = new List<string>();
 
-            if (dto.OrigenDirrecion == null || dto.OrigenDirrecion.Trim() == "")
+            if (dto.OrigenDireccion == null || dto.OrigenDireccion.Trim() == "")
             {
                 errores.Add("El origen es obligatorio.");
             }
@@ -101,9 +101,9 @@ namespace RuteaYa.Logica.Envios {
                 errores.Add("El destino es obligatorio.");
             }
 
-            if (dto.OrigenDirrecion != null && dto.OrigenDirrecion.Trim().Length > 0 &&
+            if (dto.OrigenDireccion != null && dto.OrigenDireccion.Trim().Length > 0 &&
                dto.DestinoDireccion != null && dto.DestinoDireccion.Trim().Length > 0 &&
-               dto.OrigenDirrecion.Trim().Equals(dto.DestinoDireccion.Trim(), StringComparison.OrdinalIgnoreCase))
+               dto.OrigenDireccion.Trim().Equals(dto.DestinoDireccion.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 errores.Add("El origen y el destino deben ser diferentes.");
             }
@@ -113,6 +113,10 @@ namespace RuteaYa.Logica.Envios {
             if (dto.FechaLimite < hoy)
             {
                 errores.Add("La fecha no puede ser anterior a la fecha actual.");
+            }
+            else if (dto.FechaLimite > hoy.AddYears(1))
+            {
+                errores.Add("La fecha límite no puede ser posterior a un año desde hoy.");
             }
 
             if (dto.Peso <= 0)
