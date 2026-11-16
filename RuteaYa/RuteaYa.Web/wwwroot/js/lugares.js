@@ -40,7 +40,13 @@
         input.setAttribute('aria-expanded', 'false');
         input.setAttribute('aria-controls', lista.id);
 
-        estado = { lista, temporizador: null, controlador: null, activo: -1 };
+        estado = {
+            lista,
+            temporizador: null,
+            controlador: null,
+            activo: -1,
+            version: 0
+        };
         estados.set(input, estado);
         return estado;
     }
@@ -53,11 +59,19 @@
 
     function cerrar(input) {
         const e = obtenerEstado(input);
+
+        e.version++;
         clearTimeout(e.temporizador);
-        if (e.controlador) e.controlador.abort();   // descarta consultas pendientes
+
+        if (e.controlador) {
+            e.controlador.abort();
+            e.controlador = null;
+        }
+
         e.lista.hidden = true;
         e.lista.replaceChildren();
         e.activo = -1;
+
         input.setAttribute('aria-expanded', 'false');
         input.removeAttribute('aria-activedescendant');
     }
@@ -113,43 +127,74 @@
         input.setAttribute('aria-expanded', 'true');
     }
 
-    async function buscar(input) {
+    async function buscar(input, version) {
         const e = obtenerEstado(input);
         const texto = input.value.trim();
+
+        if (version !== e.version) return;
 
         if (texto.length < MIN_CARACTERES) {
             cerrar(input);
             return;
         }
 
-        if (e.controlador) e.controlador.abort();   // solo importa la última consulta
-        e.controlador = new AbortController();
+        const controlador = new AbortController();
+        e.controlador = controlador;
 
         try {
             const url = input.dataset.lugaresUrl + '?q=' + encodeURIComponent(texto);
+
             const respuesta = await fetch(url, {
-                signal: e.controlador.signal,
+                signal: controlador.signal,
                 headers: { 'Accept': 'application/json' }
             });
+
+            if (version !== e.version) return;
 
             if (!respuesta.ok) {
                 cerrar(input);
                 return;
             }
-            mostrar(input, await respuesta.json());
+
+            const lugares = await respuesta.json();
+
+            if (version !== e.version) return;
+
+            mostrar(input, lugares);
+
         } catch (error) {
-            // AbortError es normal (el usuario siguió escribiendo). Con cualquier otro error
-            // el input sigue funcionando como texto libre.
-            if (error.name !== 'AbortError') cerrar(input);
+            if (error.name !== 'AbortError' && version === e.version) {
+                console.error('Error al buscar lugares:', error);
+                cerrar(input);
+            }
+        } finally {
+            if (e.controlador === controlador) {
+                e.controlador = null;
+            }
         }
     }
 
     document.addEventListener('input', function (ev) {
         if (!esInputDeLugares(ev.target)) return;
+
         const input = ev.target;
         const e = obtenerEstado(input);
+
         clearTimeout(e.temporizador);
-        e.temporizador = setTimeout(function () { buscar(input); }, ESPERA_MS);
+
+        // Invalida y cancela inmediatamente la búsqueda anterior.
+        e.version++;
+
+        if (e.controlador) {
+            e.controlador.abort();
+            e.controlador = null;
+        }
+
+        const version = e.version;
+
+        e.temporizador = setTimeout(function () {
+            buscar(input, version);
+        }, ESPERA_MS);
     });
 
     document.addEventListener('keydown', function (ev) {
