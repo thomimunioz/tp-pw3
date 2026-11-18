@@ -1,4 +1,4 @@
-﻿namespace RuteaYa.Api.Auth;
+﻿namespace RuteaYa.Api.Autenticacion;
 
 public class JwtOpciones
 {

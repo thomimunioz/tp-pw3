@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RuteaYa.Api.Auth;
+using RuteaYa.Api.Autenticacion;
 using RuteaYa.Logica.Transportes;
 using RuteaYa.Logica.Transportes.Dtos;
 

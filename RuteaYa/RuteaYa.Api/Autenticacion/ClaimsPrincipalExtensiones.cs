@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace RuteaYa.Api.Auth;
+namespace RuteaYa.Api.Autenticacion;
 
 public static class ClaimsPrincipalExtensiones
 {
