@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RuteaYa.Entidades\RuteaYa.Entidades.csproj" />
     <ProjectReference Include="..\RuteaYa.Logica\RuteaYa.Logica.csproj" />
+	<ProjectReference Include="..\RuteaYa.Api\RuteaYa.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
