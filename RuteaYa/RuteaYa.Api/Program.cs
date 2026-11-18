@@ -12,6 +12,8 @@ using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Optimizacion;
 using RuteaYa.Logica.Viajes;
 using System.Text;
+using RuteaYa.Logica.Transportes;
+using RuteaYa.Logica.Historial;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +78,8 @@ builder.Services.AddScoped<IViajeListadoServicios, ViajeListadoServicios>();
 builder.Services.AddScoped<IOportunidadesServicios, OportunidadesServicios>();
 builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
 builder.Services.AddScoped<IOptimizadorServicios, OptimizadorServicios>();
+builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
+builder.Services.AddScoped<IHistorialServicios, HistorialServicios>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
