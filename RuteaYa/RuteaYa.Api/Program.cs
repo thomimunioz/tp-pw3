@@ -11,6 +11,8 @@ using RuteaYa.Logica.Asignaciones;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Optimizacion;
 using RuteaYa.Logica.Viajes;
+using RuteaYa.Logica.Envios;
+using RuteaYa.Logica.Mapas;
 using System.Text;
 using RuteaYa.Logica.Transportes;
 using RuteaYa.Logica.Historial;
@@ -80,6 +82,7 @@ builder.Services.AddScoped<IAsignacionesServicios, AsignacionesServicios>();
 builder.Services.AddScoped<IOptimizadorServicios, OptimizadorServicios>();
 builder.Services.AddScoped<ITransporteServicios, TransporteServicios>();
 builder.Services.AddScoped<IHistorialServicios, HistorialServicios>();
+builder.Services.AddScoped<IEnvioServicios, EnvioServicios>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -97,6 +100,19 @@ builder.Services.AddSwaggerGen(options =>
         [new OpenApiSecuritySchemeReference("Bearer", documento)] = []
     });
 });
+
+if (builder.Configuration.GetValue<bool>("Mapas:UsarGeocodificadorFalso"))
+{
+    builder.Services.AddScoped<IGeocodificador, GeocodificadorFalso>();
+}
+else
+{
+    builder.Services.AddHttpClient<IGeocodificador, NominatimGeocodificador>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("RuteaYa/1.0 (TP Programacion Web III - UNLaM)");
+        client.Timeout = TimeSpan.FromSeconds(10);
+    });
+}
 
 var app = builder.Build();
 
