@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
-using RuteaYa.Api.Auth;
+using RuteaYa.Api.Autenticacion;
 using RuteaYa.Api.Controllers;
 using RuteaYa.Api.Dtos;
 using RuteaYa.Entidades;
 using RuteaYa.Logica.Account;
 
-namespace RuteaYa.Tests.Auth;
+namespace RuteaYa.Tests.Autenticacion;
 
 public class AutenticacionControllerTests
 {

@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using RuteaYa.Api.Autenticacion;
 using RuteaYa.Api.Dtos;
 using RuteaYa.Logica.Asignaciones;
 
 namespace RuteaYa.Api.Controllers;
 
 [ApiController]
+[Authorize]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Route("api/viajes/{viajeId:int}/asignaciones")]
 public class AsignacionesController : ControllerBase
 {
@@ -13,29 +16,33 @@ public class AsignacionesController : ControllerBase
 
     public AsignacionesController(IAsignacionesServicios asignaciones) => _asignaciones = asignaciones;
 
-    // POST api/viajes/5/asignaciones/8?usuarioId=2
+    // POST api/viajes/5/asignaciones/8
     [HttpPost("{envioId:int}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Aceptar(int viajeId, int envioId, [FromQuery, BindRequired] int usuarioId)
+    public async Task<IActionResult> Aceptar(int viajeId, int envioId)
     {
+        var usuarioId = User.ObtenerUsuarioId();
+
         var resultado = await _asignaciones.AceptarAsync(usuarioId, viajeId, envioId);
         return Respuesta(resultado);
     }
 
-    // POST api/viajes/5/asignaciones?usuarioId=2 con body { "envioIds": [8, 9] }
+    // POST api/viajes/5/asignaciones con body { "envioIds": [8, 9] }
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> ConfirmarCombinacion(int viajeId, [FromQuery, BindRequired] int usuarioId,
+    public async Task<IActionResult> ConfirmarCombinacion(int viajeId,
         [FromBody] ConfirmarCombinacionRequest request)
     {
+        var usuarioId = User.ObtenerUsuarioId();
+
         var resultado = await _asignaciones.ConfirmarCombinacionAsync(usuarioId, viajeId, request.EnvioIds);
         return Respuesta(resultado);
     }

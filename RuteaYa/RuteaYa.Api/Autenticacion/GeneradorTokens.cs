@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RuteaYa.Entidades;
 
-namespace RuteaYa.Api.Auth;
+namespace RuteaYa.Api.Autenticacion;
 
 public record TokenGenerado(string Token, DateTime ExpiraEn);
 
