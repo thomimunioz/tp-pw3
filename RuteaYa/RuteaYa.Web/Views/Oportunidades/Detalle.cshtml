@@ -9,7 +9,7 @@
 <div class="oportunidades">
     <header class="cabecera cabecera--fila">
         <div>
-            <h1>Detalle de oportunidad</h1>
+            <h1>@o.Descripcion</h1>
             <p>@o.OrigenDireccion → @o.DestinoDireccion</p>
         </div>
         <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Volver</a>
@@ -25,6 +25,7 @@
                 <div class="fila"><dt>Desvío</dt><dd>@o.DesvioKm.ToString("0.0", ar) km</dd></div>
                 <div class="fila"><dt>Tiempo habitual</dt><dd>@o.TiempoHabitualMin min</dd></div>
                 <div class="fila"><dt>Tiempo adicional</dt><dd>+@o.TiempoExtraMin min</dd></div>
+                <div class="fila"><dt>Tamaño del paquete</dt><dd>@o.Tamano</dd></div>
                 <div class="fila"><dt>Peso del envío</dt><dd>@o.PesoKg.ToString("0.##", ar) kg</dd></div>
                 <div class="fila">
                     <dt>Capacidad disponible del viaje</dt>
@@ -38,7 +39,9 @@
             <strong class="pago__monto">@o.Pago.ToString("C0", ar)</strong>
             @if (o.DesvioKm > 0)
             {
-                <span class="pago__km">@o.GananciaPorKm.ToString("C0", ar) por km adicional</span>
+                <span class="pago__km">
+                    +@o.TiempoExtraMin min y +@o.DesvioKm.ToString("0.0", ar) km de desvío por @o.Pago.ToString("C0", ar)
+                </span>
             }
             else
             {
@@ -46,7 +49,7 @@
             }
 
             <form asp-action="Aceptar" method="post"
-                  data-confirmar="¿Aceptar este envío para tu viaje?">
+                  data-confirmar="¿Aceptás llevar @o.Descripcion en tu viaje del @o.FechaViaje.ToString("dd/MM/yyyy")?">
                 <input type="hidden" name="viajeId" value="@Model.ViajeId" />
                 <input type="hidden" name="envioId" value="@o.EnvioId" />
                 <button type="submit" class="btn btn--primario">Aceptar envío</button>

@@ -3,6 +3,7 @@ using RuteaYa.Logica.Account;
 using RuteaYa.Logica.Envios;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Optimizacion;
+using RuteaYa.Logica.Transportes;
 using RuteaYa.Logica.Viajes;
 using System;
 using System.Collections.Generic;
@@ -21,17 +22,20 @@ namespace RuteaYa.Logica.Dashboard
         private readonly IEnvioServicios _envios;
         private readonly IOportunidadesServicios _oportunidades;
         private readonly IProyeccionMensualServicios _proyeccionMensual;
+        private readonly ITransporteServicios _transportes;
 
         public DashboardServicios(
             IViajeServicios viajes,
             IEnvioServicios envios,
             IOportunidadesServicios oportunidades,
-            IProyeccionMensualServicios proyeccionMensual)
+            IProyeccionMensualServicios proyeccionMensual,
+            ITransporteServicios transportes)
         {
             _viajes = viajes;
             _envios = envios;
             _oportunidades = oportunidades;
             _proyeccionMensual = proyeccionMensual;
+            _transportes = transportes;
         }
 
         public async Task<DashboardDto> ObtenerAsync(int usuarioId)
@@ -83,6 +87,22 @@ namespace RuteaYa.Logica.Dashboard
 
             dto.ProximosViajes = proximos.Count;
             dto.EnviosPendientes = envios.Count;
+
+            if (envios.Count > 0 && envios.All(e => e.Estado == envios[0].Estado))
+            {
+                dto.EstadoEnviosPendientes = envios[0].Estado;
+            }
+
+            // Paquetes que el usuario lleva como conductor y todavía no entregó
+            var transportes = await _transportes.ListarMisTransportesAsync(usuarioId);
+            if (transportes != null)
+            {
+                dto.ParaEntregar = transportes.Count(t =>
+                    t.Estado == EstadoEnvio.ConductorAsignado ||
+                    t.Estado == EstadoEnvio.Retirado ||
+                    t.Estado == EstadoEnvio.EnCamino);
+            }
+
             var mesActual = new DateOnly(ahora.Year, ahora.Month, 1);
             var proyeccion = await _proyeccionMensual.CalcularAsync(
                 usuarioId,

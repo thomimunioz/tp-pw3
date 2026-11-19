@@ -90,8 +90,8 @@ namespace RuteaYa.Web.Controllers {
                 OrigenDireccion = model.OrigenDireccion,
                 DestinoDireccion = model.DestinoDireccion,
                 FechaLimite = model.FechaLimite,
-                Peso = model.Peso,
-                Monto = model.Monto,
+                Peso = model.Peso!.Value,
+                Monto = model.Monto!.Value,
                 Tamano = model.tamano,
                 Descripcion = model.Descripcion
             };

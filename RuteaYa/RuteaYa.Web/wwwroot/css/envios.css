@@ -135,9 +135,9 @@
 /* ---------- Filtros por estado ---------- */
 .filtros {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     padding-bottom: 0.25rem;
-    overflow-x: auto;
 }
 
 .filtro {

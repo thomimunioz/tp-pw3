@@ -47,6 +47,30 @@
         color: var(--estado-ok);
     }
 
+        .combinacion li div {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .combinacion li small {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+.pago__aviso {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Columna de la derecha: combinaciones posibles arriba y las que no entran abajo */
+.columna {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
 /* ---------- Otras combinaciones y candidatos ---------- */
 .combinaciones {
     margin: 0;
@@ -80,8 +104,46 @@
             color: var(--text-muted);
         }
 
+    .combinaciones__item .combinaciones__ruta {
+        font-size: 0.85rem;
+        color: var(--text);
+    }
+
+/* Combinaciones que no entran: apagadas y con el motivo a la vista */
+.panel--descartadas {
+    border-style: dashed;
+    background: var(--bg-panel);
+}
+
+.combinaciones__item--descartada strong {
+    color: var(--text-muted);
+}
+
+.combinaciones__item .combinaciones__motivo {
+    font-weight: 600;
+    color: var(--estado-cancelado);
+}
+
 .nota {
     margin: 0.75rem 0 0;
     font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.nota--arriba {
+    margin: 0 0 0.5rem;
+}
+
+/* ---------- Confirmar ---------- */
+.paquete__nombre {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.paquete__datos {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
     color: var(--text-muted);
 }

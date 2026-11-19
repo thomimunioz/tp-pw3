@@ -54,14 +54,33 @@
     });
 
     document.querySelectorAll('[data-form-viaje]').forEach(form => {
+        const dias = [...form.querySelectorAll('[name="DiasSeleccionados"]')];
+        const errorDias = form.querySelector('[data-valmsg-for="DiasSeleccionados"]');
+
+        const mostrarErrorDias = mensaje => {
+            if (!errorDias) return;
+            errorDias.textContent = mensaje;
+            errorDias.className = mensaje ? 'field-validation-error' : 'field-validation-valid';
+        };
+
+        // Al tildar un día se borra el error
+        dias.forEach(dia => dia.addEventListener('change', () => {
+            if (dias.some(d => d.checked)) mostrarErrorDias('');
+        }));
+
         form.addEventListener('submit', event => {
+            if (dias.length > 0 && !dias.some(d => d.checked)) {
+                mostrarErrorDias('Elegí al menos un día de la semana.');
+                event.preventDefault();
+            }
+
             const salida = form.querySelector('[name="HoraSalida"]');
             const llegada = form.querySelector('[name="HoraLlegada"]');
             if (!salida || !llegada) return;
 
             llegada.setCustomValidity('');
-            if (salida.value && llegada.value && llegada.value === salida.value) {
-                llegada.setCustomValidity('La hora de llegada no puede ser igual a la de salida.');
+            if (salida.value && llegada.value && llegada.value <= salida.value) {
+                llegada.setCustomValidity('La hora de llegada debe ser posterior a la hora de salida.');
                 llegada.reportValidity();
                 event.preventDefault();
             }

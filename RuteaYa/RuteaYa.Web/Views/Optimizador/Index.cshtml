@@ -95,44 +95,66 @@
                         <ul class="combinacion">
                             @foreach (var c in r.Seleccionados)
                             {
-                                <li><span>@c.Ruta</span><strong>@c.Pago.ToString("C0", ar)</strong></li>
+                                <li>
+                                    <div>
+                                        <span>@c.Descripcion</span>
+                                        <small>@c.Ruta</small>
+                                    </div>
+                                    <strong>@c.Pago.ToString("C0", ar)</strong>
+                                </li>
                             }
                         </ul>
                         <a class="btn btn--primario" asp-action="Confirmar" asp-route-viajeId="@Model.ViajeId">Confirmar combinación</a>
+                        <span class="pago__aviso">En el paso siguiente revisás todo antes de reservar.</span>
                     }
                 </section>
 
-                <section class="panel">
-                    <h2>Otras combinaciones</h2>
-                    @if (!r.Alternativas.Any() && !r.Descartadas.Any())
+                <div class="columna">
+                    <section class="panel">
+                        <h2>Otras combinaciones posibles</h2>
+                        @if (!r.Alternativas.Any())
+                        {
+                            <p class="nota">No hay otras combinaciones que entren en tu viaje.</p>
+                        }
+                        else
+                        {
+                            <ul class="combinaciones">
+                                @foreach (var c in r.Alternativas)
+                                {
+                                    <li class="combinaciones__item">
+                                        <div>
+                                            <strong>@string.Join(" + ", c.Envios.Select(e => e.Descripcion))</strong>
+                                            <span>@c.Envios.Count envío(s) · @c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km de desvío</span>
+                                        </div>
+                                        <strong class="monto">@c.GananciaTotal.ToString("C0", ar)</strong>
+                                    </li>
+                                }
+                            </ul>
+                            <p class="nota">Ordenadas de mayor a menor pago. Si dos pagan lo mismo, va primero la de menor desvío.</p>
+                        }
+                    </section>
+
+                    @if (r.Descartadas.Any())
                     {
-                        <p class="nota">No hay otras combinaciones para mostrar.</p>
+                        <section class="panel panel--descartadas">
+                            <h2>No entran en tu viaje</h2>
+                            <p class="nota nota--arriba">Pagarían más que la recomendada, pero no las podés llevar en este viaje.</p>
+                            <ul class="combinaciones">
+                                @foreach (var c in r.Descartadas)
+                                {
+                                    <li class="combinaciones__item combinaciones__item--descartada">
+                                        <div>
+                                            <strong>@string.Join(" + ", c.Envios.Select(e => e.Descripcion))</strong>
+                                            <span>@c.Envios.Count envío(s) · @c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km de desvío</span>
+                                            <span class="combinaciones__motivo">@c.MotivoDescarte</span>
+                                        </div>
+                                        <strong>@c.GananciaTotal.ToString("C0", ar)</strong>
+                                    </li>
+                                }
+                            </ul>
+                        </section>
                     }
-                    <ul class="combinaciones">
-                        @foreach (var c in r.Alternativas)
-                        {
-                            <li class="combinaciones__item">
-                                <div>
-                                    <strong>@c.GananciaTotal.ToString("C0", ar)</strong>
-                                    <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
-                                    <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
-                                </div>
-                            </li>
-                        }
-                        @foreach (var c in r.Descartadas)
-                        {
-                            <li class="combinaciones__item">
-                                <div>
-                                    <strong>@c.GananciaTotal.ToString("C0", ar)</strong>
-                                    <span>@string.Join(" + ", c.Envios.Select(e => e.Ruta))</span>
-                                    <span>@c.PesoTotalKg.ToString("0.##", ar) kg · @c.DesvioTotalKm.ToString("0.0", ar) km</span>
-                                </div>
-                                <span class="badge badge--alerta">@c.MotivoDescarte</span>
-                            </li>
-                        }
-                    </ul>
-                    <p class="nota">Si dos combinaciones pagan lo mismo, elegimos la de menor desvío.</p>
-                </section>
+                </div>
             </div>
 
             <section class="panel">
@@ -143,8 +165,12 @@
                         bool elegido = r.Seleccionados.Any(s => s.EnvioId == c.EnvioId);
                         <li class="combinaciones__item">
                             <div>
-                                <strong>@c.Ruta</strong>
-                                <span>@c.PesoKg.ToString("0.##", ar) kg · desvío @c.DesvioKm.ToString("0.0", ar) km</span>
+                                <strong>@c.Descripcion</strong>
+                                <span class="combinaciones__ruta">@c.Ruta</span>
+                                <span>
+                                    Paquete @c.Tamano.ToLower() · @c.PesoKg.ToString("0.##", ar) kg ·
+                                    desvío @c.DesvioKm.ToString("0.0", ar) km
+                                </span>
                             </div>
                             @if (elegido)
                             {

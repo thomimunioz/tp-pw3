@@ -87,6 +87,12 @@ namespace RuteaYa.Logica.Transportes
                 return ResultadoActualizarTransporte.Fallido(mensajeErrorEstadoInvalido);
                 }
 
+            // No se puede empezar a llevar un paquete antes del día del viaje
+            if (nuevoEstado == EstadoEnvio.Retirado && asignacion.FechaViaje > DateOnly.FromDateTime(DateTime.Today))
+                {
+                return ResultadoActualizarTransporte.Fallido($"Este viaje es el {asignacion.FechaViaje:dd/MM/yyyy}. Vas a poder marcar el paquete como retirado ese día.");
+                }
+
             var estadoAnterior = envio.Estado;
             envio.Estado = nuevoEstado;
 

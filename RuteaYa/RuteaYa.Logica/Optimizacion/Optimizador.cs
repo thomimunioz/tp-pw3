@@ -126,15 +126,15 @@ public static class Optimizador
     {
         if (combinacion.Envios.Count > maxPaquetes)
         {
-            return $"Supera los {maxPaquetes} paquetes";
+            return $"Supera los {maxPaquetes} lugares libres de tu viaje";
         }
         if (combinacion.PesoTotalKg > pesoMaxKg)
         {
-            return $"Supera los {pesoMaxKg:0.##} kg";
+            return $"Supera los {pesoMaxKg:0.##} kg libres de tu viaje";
         }
         if (combinacion.DesvioTotalKm > desvioMaxKm)
         {
-            return $"Supera los {desvioMaxKm:0.##} km de desvío";
+            return $"Supera los {desvioMaxKm:0.##} km de desvío que le quedan a tu viaje";
         }
         return null;
     }

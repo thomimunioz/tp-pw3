@@ -143,7 +143,7 @@ public class OptimizadorTests
         //Assert: juntos pagan $9.000 pero pesan 12 kg
         var descartada = Assert.Single(resultado.Descartadas);
         Assert.Equal(9000m, descartada.GananciaTotal);
-        Assert.Equal("Supera los 10 kg", descartada.MotivoDescarte);
+        Assert.Equal("Supera los 10 kg libres de tu viaje", descartada.MotivoDescarte);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class OptimizadorTests
         //Assert: juntos pagan $9.000 pero desvían 6 km
         var descartada = Assert.Single(resultado.Descartadas);
         Assert.Equal(9000m, descartada.GananciaTotal);
-        Assert.Equal("Supera los 5 km de desvío", descartada.MotivoDescarte);
+        Assert.Equal("Supera los 5 km de desvío que le quedan a tu viaje", descartada.MotivoDescarte);
     }
 
 }

@@ -1,5 +1,6 @@
 using RuteaYa.Entidades;
 using RuteaYa.Entidades.Data;
+using RuteaYa.Entidades.Enums;
 using RuteaYa.Logica.Mapas;
 using RuteaYa.Logica.Oportunidades.Dtos;
 
@@ -112,6 +113,7 @@ public class OportunidadesServicios : IOportunidadesServicios
             OrigenDireccion = envio.OrigenDir,
             DestinoDireccion = envio.DestinoDir,
             Descripcion = envio.Descripcion,
+            Tamano = TextoTamano(envio.Tamano),
             Pago = envio.Monto,
             PesoKg = envio.PesoKg,
             FechaViaje = fechaViaje.Value,
@@ -196,6 +198,17 @@ public class OportunidadesServicios : IOportunidadesServicios
         var ahora = DateTime.Now;
         return fecha == DateOnly.FromDateTime(ahora) && viaje.HoraSalida <= TimeOnly.FromDateTime(ahora);
     }
+    private static string TextoTamano(TamanoPaquete tamano)
+    {
+        return tamano switch
+        {
+            TamanoPaquete.Pequeno => "Pequeño",
+            TamanoPaquete.Mediano => "Mediano",
+            TamanoPaquete.Grande => "Grande",
+            _ => ""
+        };
+    }
+
     private static NivelCompatibilidad CalcularCompatibilidad(decimal desvio, decimal desvioMax)
     {
         decimal proporcion = desvioMax > 0 ? desvio / desvioMax : 0;

@@ -43,6 +43,17 @@
     background: color-mix(in srgb, var(--estado-cancelado) 10%, transparent);
 }
 
+.aviso--info {
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--estado-asignado) 40%, transparent);
+    background: color-mix(in srgb, var(--estado-asignado) 10%, transparent);
+}
+
+/* Lo que gana el conductor siempre en verde */
+.monto {
+    color: var(--estado-ok);
+}
+
 /* ---------- Botones ---------- */
 .btn {
     display: inline-flex;
@@ -190,10 +201,19 @@
         color: var(--text-muted);
     }
 
+    .tarjeta__ruta .tarjeta__recorrido {
+        font-size: 0.85rem;
+        color: var(--text);
+    }
+
+.tarjeta__titulo {
+    font-size: 1.05rem;
+}
+
 .tarjeta__pago {
     font-size: 1.25rem;
     font-weight: 800;
-    color: var(--accent);
+    color: var(--estado-ok);
 }
 
 .tarjeta__acciones {
