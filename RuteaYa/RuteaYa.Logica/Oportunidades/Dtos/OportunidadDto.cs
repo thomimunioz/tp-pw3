@@ -6,6 +6,7 @@ public class OportunidadDto
     public string OrigenDireccion { get; set; } = "";
     public string DestinoDireccion { get; set; } = "";
     public string Descripcion { get; set; } = "";
+    public string Tamano { get; set; } = "";
     public decimal Pago { get; set; }
     public decimal PesoKg { get; set; }
     public DateOnly FechaViaje { get; set; }

@@ -35,7 +35,14 @@ builder.Services.AddControllersWithViews(options =>
     mensajes.SetNonPropertyAttemptedValueIsInvalidAccessor(valor => $"El valor '{valor}' no es válido.");
     mensajes.SetValueIsInvalidAccessor(valor => $"El valor '{valor}' no es válido.");
     mensajes.SetValueMustBeANumberAccessor(campo => $"El campo {campo} tiene que ser un número.");
-    mensajes.SetValueMustNotBeNullAccessor(campo => $"El campo {campo} es obligatorio.");
+    mensajes.SetNonPropertyValueMustBeANumberAccessor(() => "El campo tiene que ser un número.");
+    // Este recibe el valor que llegó (vacío), no el nombre del campo
+    mensajes.SetValueMustNotBeNullAccessor(_ => "Este campo es obligatorio.");
+    mensajes.SetMissingBindRequiredValueAccessor(campo => $"Falta completar el campo {campo}.");
+    mensajes.SetMissingKeyOrValueAccessor(() => "Falta completar un valor obligatorio.");
+    mensajes.SetMissingRequestBodyRequiredValueAccessor(() => "No llegaron los datos del formulario.");
+    mensajes.SetUnknownValueIsInvalidAccessor(campo => $"El valor ingresado no es válido para {campo}.");
+    mensajes.SetNonPropertyUnknownValueIsInvalidAccessor(() => "El valor ingresado no es válido.");
 });
 builder.Services.AddDbContext<RuteaYaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RuteaYa")));

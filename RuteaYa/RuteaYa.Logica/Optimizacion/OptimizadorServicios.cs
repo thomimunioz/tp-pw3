@@ -67,7 +67,9 @@ public class OptimizadorServicios : IOptimizadorServicios
                 Pago = o.Pago,
                 PesoKg = o.PesoKg,
                 DesvioKm = o.DesvioKm,
-                Ruta = $"{o.OrigenDireccion} → {o.DestinoDireccion}"
+                Ruta = $"{o.OrigenDireccion} → {o.DestinoDireccion}",
+                Descripcion = o.Descripcion,
+                Tamano = o.Tamano
             })
             .ToList();
 

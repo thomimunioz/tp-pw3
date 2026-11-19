@@ -24,10 +24,11 @@ namespace RuteaYa.Web.Models.Envios {
         [Display(Name = "Fecha límite")]
         public DateOnly FechaLimite { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
+        // Nullable para que el campo arranque vacío y se vea el placeholder (si no, aparece un 0)
         [Required(ErrorMessage = "El peso es obligatorio.")]
         [Range(0.01, 9999.99, ErrorMessage = "El peso debe estar entre 0,01 y 9.999,99 kg.")]
         [Display(Name = "Peso (kg)")]
-        public decimal Peso { get; set; }
+        public decimal? Peso { get; set; }
 
         [Required(ErrorMessage = "El tamaño es obligatorio.")]
         [Display(Name = "Tamaño")]
@@ -40,6 +41,7 @@ namespace RuteaYa.Web.Models.Envios {
 
         [Required(ErrorMessage = "El monto ofrecido es obligatorio.")]
         [Range(1, 99999999, ErrorMessage = "El monto ofrecido debe ser mayor a $0.")]
-        public decimal Monto { get; set; }
+        [Display(Name = "Monto ofrecido")]
+        public decimal? Monto { get; set; }
     }
 }

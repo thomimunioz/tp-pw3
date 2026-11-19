@@ -16,6 +16,11 @@
         <a class="btn btn--secundario" asp-action="Index" asp-route-viajeId="@Model.ViajeId">Volver</a>
     </header>
 
+    <div class="aviso aviso--info">
+        Todavía no reservaste nada. Revisá los envíos y, si está todo bien, tocá
+        <strong>Confirmar y reservar</strong>: van a quedar asignados a tu viaje del @o.FechaViaje?.ToString("dd/MM/yyyy").
+    </div>
+
     <div class="detalle">
         <section class="panel">
             <h2>Paquetes seleccionados</h2>
@@ -23,10 +28,15 @@
                 @foreach (var c in r.Seleccionados)
                 {
                     <div class="fila">
-                        <dt>@c.Ruta</dt>
+                        <dt>
+                            <span class="paquete__nombre">@c.Descripcion</span>
+                            @c.Ruta
+                        </dt>
                         <dd>
-                            @c.Pago.ToString("C0", ar) · @c.PesoKg.ToString("0.##", ar) kg ·
-                            @c.DesvioKm.ToString("0.0", ar) km
+                            <span class="monto">@c.Pago.ToString("C0", ar)</span>
+                            <span class="paquete__datos">
+                                @c.PesoKg.ToString("0.##", ar) kg · @c.DesvioKm.ToString("0.0", ar) km
+                            </span>
                         </dd>
                     </div>
                 }

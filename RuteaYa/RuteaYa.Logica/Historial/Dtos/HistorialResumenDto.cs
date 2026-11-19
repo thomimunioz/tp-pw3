@@ -11,6 +11,7 @@ namespace RuteaYa.Logica.Historial.Dtos
         {
             public int ViajesRealizados { get; set; }
             public int EnviosTransportados { get; set; }
+            public int EnviosCancelados { get; set; }
             public decimal GananciaEfectiva { get; set; }
             public List<ItemHistorialDto> Operaciones { get; set; } = new();
         }

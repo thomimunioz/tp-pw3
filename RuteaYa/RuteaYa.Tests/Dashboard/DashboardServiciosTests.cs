@@ -7,6 +7,8 @@ using RuteaYa.Logica.Envios.Dtos;
 using RuteaYa.Logica.Oportunidades;
 using RuteaYa.Logica.Oportunidades.Dtos;
 using RuteaYa.Logica.Optimizacion;
+using RuteaYa.Logica.Transportes;
+using RuteaYa.Logica.Transportes.Dtos;
 using RuteaYa.Logica.Viajes;
 
 namespace RuteaYa.Tests.Dashboard;
@@ -20,6 +22,7 @@ public class DashboardServiciosTests
     private readonly Mock<IEnvioServicios> _envios;
     private readonly Mock<IOportunidadesServicios> _oportunidades;
     private readonly Mock<IProyeccionMensualServicios> _proyeccionMensual;
+    private readonly Mock<ITransporteServicios> _transportes;
     private readonly DashboardServicios _servicio;
 
     public DashboardServiciosTests()
@@ -28,6 +31,7 @@ public class DashboardServiciosTests
         _envios = new Mock<IEnvioServicios>();
         _oportunidades = new Mock<IOportunidadesServicios>();
         _proyeccionMensual = new Mock<IProyeccionMensualServicios>();
+        _transportes = new Mock<ITransporteServicios>();
 
         // el usuario no tiene viajes ni envíos
         _viajes
@@ -42,12 +46,16 @@ public class DashboardServiciosTests
                 It.IsAny<DateOnly>(),
                 CriterioOptimizacion.MaximizarGanancias))
             .ReturnsAsync(new ProyeccionMensualDto());
+        _transportes
+            .Setup(s => s.ListarMisTransportesAsync(It.IsAny<int>()))
+            .ReturnsAsync(new List<TransporteListadoDto>());
 
         _servicio = new DashboardServicios(
             _viajes.Object,
             _envios.Object,
             _oportunidades.Object,
-            _proyeccionMensual.Object);
+            _proyeccionMensual.Object,
+            _transportes.Object);
     }
 
     // Helpers
@@ -310,6 +318,61 @@ public class DashboardServiciosTests
         // Assert
         Assert.Equal(5, dto.EnviosPendientes);
         Assert.Equal(3, dto.Envios.Count);
+    }
+
+    [Fact]
+    public async Task ObtenerAsync_EnviosPendientesEnElMismoEstado_DevuelveEseEstado()
+    {
+        // Arrange
+        ConfigurarEnvios(
+            CrearEnvio(1, EstadoEnvio.BuscandoConductor),
+            CrearEnvio(2, EstadoEnvio.BuscandoConductor),
+            CrearEnvio(3, EstadoEnvio.Entregado));
+
+        // Act
+        var dto = await _servicio.ObtenerAsync(UsuarioId);
+
+        // Assert
+        Assert.Equal(EstadoEnvio.BuscandoConductor, dto.EstadoEnviosPendientes);
+    }
+
+    [Fact]
+    public async Task ObtenerAsync_EnviosPendientesEnEstadosDistintos_NoDevuelveEstado()
+    {
+        // Arrange
+        ConfigurarEnvios(
+            CrearEnvio(1, EstadoEnvio.BuscandoConductor),
+            CrearEnvio(2, EstadoEnvio.EnCamino));
+
+        // Act
+        var dto = await _servicio.ObtenerAsync(UsuarioId);
+
+        // Assert
+        Assert.Null(dto.EstadoEnviosPendientes);
+    }
+
+    // ObtenerAsync: paquetes para entregar como conductor
+
+    [Fact]
+    public async Task ObtenerAsync_Transportes_CuentaSoloLosQueFaltaEntregar()
+    {
+        // Arrange
+        _transportes
+            .Setup(s => s.ListarMisTransportesAsync(UsuarioId))
+            .ReturnsAsync(new List<TransporteListadoDto>
+            {
+                new TransporteListadoDto { EnvioId = 1, Estado = EstadoEnvio.ConductorAsignado },
+                new TransporteListadoDto { EnvioId = 2, Estado = EstadoEnvio.Retirado },
+                new TransporteListadoDto { EnvioId = 3, Estado = EstadoEnvio.EnCamino },
+                new TransporteListadoDto { EnvioId = 4, Estado = EstadoEnvio.Entregado },
+                new TransporteListadoDto { EnvioId = 5, Estado = EstadoEnvio.Cancelado }
+            });
+
+        // Act
+        var dto = await _servicio.ObtenerAsync(UsuarioId);
+
+        // Assert
+        Assert.Equal(3, dto.ParaEntregar);
     }
 
     // ObtenerAsync: oportunidades

@@ -17,6 +17,10 @@
         animation-delay: 0.16s;
     }
 
+    .dash > :nth-child(4) {
+        animation-delay: 0.24s;
+    }
+
 @keyframes dash-entra {
     from {
         opacity: 0;
@@ -87,11 +91,23 @@
         background: var(--hover);
     }
 
-/* indicadores */
+/* indicadores: 4 columnas, 2x2 en pantallas medianas y 1 columna en el celular */
 .dash__kpis {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+    .dash__kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .dash__kpis {
+        grid-template-columns: 1fr;
+    }
 }
 
 .kpi {
@@ -102,6 +118,8 @@
     border: 1px solid var(--border);
     border-radius: 1rem;
     background: var(--bg-card);
+    color: var(--text);
+    text-decoration: none;
     transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -109,6 +127,60 @@
         border-color: var(--accent);
         transform: translateY(-3px);
     }
+
+    .kpi:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+/* aviso de paquetes para entregar como conductor */
+.aviso-entrega {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--estado-curso) 40%, var(--border));
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--estado-curso) 8%, var(--bg-card));
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+}
+
+    .aviso-entrega:hover {
+        border-color: var(--estado-curso);
+    }
+
+    .aviso-entrega:focus-visible {
+        outline: 2px solid var(--estado-curso);
+        outline-offset: 2px;
+    }
+
+    .aviso-entrega .kpi__icono {
+        flex-shrink: 0;
+        background: color-mix(in srgb, var(--estado-curso) 15%, transparent);
+        color: var(--estado-curso);
+    }
+
+.aviso-entrega__texto {
+    flex: 1;
+    min-width: 12rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+    .aviso-entrega__texto span {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+.aviso-entrega__enlace {
+    color: var(--estado-curso);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
 
 .kpi__cabecera {
     display: flex;
@@ -213,6 +285,18 @@
     --c: var(--estado-curso);
 }
 
+.kpi__chip--asignado {
+    --c: var(--estado-asignado);
+}
+
+.kpi__chip--cancelado {
+    --c: var(--estado-cancelado);
+}
+
+.kpi__chip--neutro {
+    --c: var(--text-muted);
+}
+
 /* cabecera y pie de los paneles */
 .panel__cabecera {
     display: flex;
@@ -266,8 +350,9 @@
     font-weight: 600;
 }
 
+/* lo que paga el usuario va en color neutro (lo que gana como conductor va en verde) */
 .item__monto {
-    color: var(--accent);
+    color: var(--text);
     font-weight: 700;
 }
 
@@ -347,7 +432,7 @@
         animation: none;
     }
 
-    .kpi, .item, .dash__boton {
+    .kpi, .item, .dash__boton, .aviso-entrega {
         transition: none;
     }
 }

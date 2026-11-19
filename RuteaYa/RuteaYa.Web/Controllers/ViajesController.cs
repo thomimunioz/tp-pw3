@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RuteaYa.Entidades;
+using RuteaYa.Entidades.Enums;
 using RuteaYa.Logica.Viajes;
 using RuteaYa.Web.Models;
+using RuteaYa.Web.Models.Envios;
 using RuteaYa.Web.Models.Viajes;
 using System.Security.Claims;
 
@@ -19,7 +21,7 @@ public class ViajesController : Controller
         _userManager = userManager;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? estado)
     {
         var usuario = await _userManager.GetUserAsync(User);
 
@@ -30,6 +32,16 @@ public class ViajesController : Controller
 
         var viajes = await _viajeServicios.ObtenerPorUsuarioAsync(usuario.Id);
 
+        if (estado == "activos")
+        {
+            viajes = viajes.Where(v => v.Activo).ToList();
+        }
+        else if (estado == "inactivos")
+        {
+            viajes = viajes.Where(v => !v.Activo).ToList();
+        }
+
+        ViewData["Estado"] = estado;
         return View(viajes);
     }
 
@@ -68,16 +80,19 @@ public class ViajesController : Controller
             Paradas = viaje.Paradas
                 .OrderBy(p => p.Orden)
                 .ToList(),
+            // Solo los que todavía hay que llevar (los entregados y cancelados están en el historial)
             PaquetesAsignados = viaje.Asignaciones
+                .Where(a => a.Envio.Estado != EstadoEnvio.Entregado && a.Envio.Estado != EstadoEnvio.Cancelado)
                 .OrderBy(a => a.FechaViaje)
                 .Select(a => new PaqueteAsignadoViewModel
                 {
                     Id = a.Envio.Id,
+                    Descripcion = a.Envio.Descripcion,
                     OrigenDir = a.Envio.OrigenDir,
                     DestinoDir = a.Envio.DestinoDir,
                     PesoKg = a.Envio.PesoKg,
                     Tamano = a.Envio.Tamano.ToString(),
-                    Estado = a.Envio.Estado.ToString(),
+                    Estado = a.Envio.Estado.Texto(),
                     FechaViaje = a.FechaViaje
                 })
                 .ToList()
@@ -124,8 +139,8 @@ public class ViajesController : Controller
             UsuarioId = usuario.Id,
             OrigenDir = modelo.OrigenDir.Trim(),
             DestinoDir = modelo.DestinoDir.Trim(),
-            HoraSalida = modelo.HoraSalida,
-            HoraLlegada = modelo.HoraLlegada,
+            HoraSalida = modelo.HoraSalida!.Value,
+            HoraLlegada = modelo.HoraLlegada!.Value,
             MaxPaquetes = modelo.MaxPaquetes,
             PesoMaxKg = modelo.PesoMaxKg,
             DesvioMaxKm = modelo.DesvioMaxKm,
@@ -204,8 +219,8 @@ public class ViajesController : Controller
                 Id = modelo.Id,
                 OrigenDir = modelo.OrigenDir.Trim(),
                 DestinoDir = modelo.DestinoDir.Trim(),
-                HoraSalida = modelo.HoraSalida,
-                HoraLlegada = modelo.HoraLlegada,
+                HoraSalida = modelo.HoraSalida!.Value,
+                HoraLlegada = modelo.HoraLlegada!.Value,
                 MaxPaquetes = modelo.MaxPaquetes,
                 PesoMaxKg = modelo.PesoMaxKg,
                 DesvioMaxKm = modelo.DesvioMaxKm

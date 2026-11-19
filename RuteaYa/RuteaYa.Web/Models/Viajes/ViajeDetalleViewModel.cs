@@ -23,6 +23,7 @@ public class ViajeDetalleViewModel
 public class PaqueteAsignadoViewModel
 {
     public int Id { get; set; }
+    public string Descripcion { get; set; } = string.Empty;
     public string OrigenDir { get; set; } = string.Empty;
     public string DestinoDir { get; set; } = string.Empty;
     public decimal PesoKg { get; set; }

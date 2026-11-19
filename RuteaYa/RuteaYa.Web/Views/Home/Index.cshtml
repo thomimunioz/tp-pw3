@@ -36,8 +36,20 @@
         </div>
     </header>
 
-     <section class="dash__kpis">
-        <div class="kpi">
+    @if (Model.ParaEntregar > 0)
+    {
+        <a class="aviso-entrega" asp-controller="Transportes" asp-action="Index">
+            <span class="kpi__icono"><svg class="icono"><use href="#i-truck" /></svg></span>
+            <span class="aviso-entrega__texto">
+                <strong>Para entregar: @Model.ParaEntregar @(Model.ParaEntregar == 1 ? "paquete" : "paquetes")</strong>
+                <span>Tenés envíos asignados como conductor que todavía no entregaste.</span>
+            </span>
+            <span class="aviso-entrega__enlace">Ver mis transportes →</span>
+        </a>
+    }
+
+    <section class="dash__kpis">
+        <a class="kpi" asp-controller="Viajes" asp-action="Index">
             <div class="kpi__cabecera">
                 <span>Próximos viajes</span>
                 <span class="kpi__icono"><svg class="icono"><use href="#i-map" /></svg></span>
@@ -46,18 +58,26 @@
                 <span class="kpi__valor" data-contar="@Model.ProximosViajes">@Model.ProximosViajes</span>
                 <span class="kpi__chip kpi__chip--ok">Activo</span>
             </div>
-        </div>
-        <div class="kpi">
+        </a>
+        <a class="kpi" asp-controller="Envios" asp-action="Index">
             <div class="kpi__cabecera">
                 <span>Envíos pendientes</span>
                 <span class="kpi__icono"><svg class="icono"><use href="#i-package" /></svg></span>
             </div>
             <div class="kpi__fila">
                 <span class="kpi__valor" data-contar="@Model.EnviosPendientes">@Model.EnviosPendientes</span>
-                <span class="kpi__chip kpi__chip--espera">En curso</span>
+                @if (Model.EstadoEnviosPendientes != null)
+                {
+                    var (claseKpi, textoKpi) = Estado(Model.EstadoEnviosPendientes.Value);
+                    <span class="kpi__chip kpi__chip--@claseKpi">@textoKpi</span>
+                }
+                else if (Model.EnviosPendientes > 0)
+                {
+                    <span class="kpi__chip kpi__chip--neutro">Varios estados</span>
+                }
             </div>
-        </div>
-        <div class="kpi">
+        </a>
+        <a class="kpi" asp-controller="Oportunidades" asp-action="Index">
             <div class="kpi__cabecera">
                 <span>Oportunidades</span>
                 <span class="kpi__icono"><svg class="icono"><use href="#i-sparkles" /></svg></span>
@@ -66,14 +86,14 @@
                 <span class="kpi__valor" data-contar="@Model.Oportunidades">@Model.Oportunidades</span>
                 <span class="kpi__chip kpi__chip--curso">Disponibles</span>
             </div>
-        </div>
-        <div class="kpi kpi--destacado">
+        </a>
+        <a class="kpi kpi--destacado" asp-controller="OptimizadorMensual" asp-action="Index">
             <div class="kpi__cabecera">
                 <span>Potencial del mes</span>
                 <span class="kpi__icono"><svg class="icono"><use href="#i-dollar" /></svg></span>
             </div>
             <span class="kpi__valor">@Model.PotencialMes.ToString("C0", es)</span>
-        </div>
+        </a>
     </section>
 
     <section class="dash__paneles">
@@ -124,7 +144,7 @@
                 </div>
             }
 
-            <a class="dash__boton dash__boton--secundario panel__boton" asp-controller="Oportunidades" asp-action="Index">Ver oportunidades</a>
+            <a class="dash__boton dash__boton--secundario panel__boton" asp-controller="Envios" asp-action="Index">Ver mis envíos</a>
         </div>
     </section>
 </div>

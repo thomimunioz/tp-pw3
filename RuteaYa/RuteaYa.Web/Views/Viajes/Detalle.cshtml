@@ -124,10 +124,39 @@
         </div>
     </div>
 
-    <!-- Acciones rápidas inferiores -->
-    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-form btn-form--primario" style="text-decoration: none; width: auto; padding: 0.5rem 1.5rem;">Editar este viaje</a>
+    <!-- Tarjeta 4: Paquetes asignados -->
+    <div class="form-tarjeta" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #334155); padding-bottom: 0.5rem;">Paquetes asignados</h3>
+
+        @if (!Model.PaquetesAsignados.Any())
+        {
+            <p style="color: var(--text-muted, #94a3b8);">Este viaje no tiene paquetes pendientes de llevar.</p>
+        }
+        else
+        {
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                @foreach (var paquete in Model.PaquetesAsignados)
+                {
+                    <li style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);">
+                        <span style="display: flex; flex-direction: column; gap: 0.15rem;">
+                            <strong>@paquete.Descripcion</strong>
+                            <span>@paquete.OrigenDir &rarr; @paquete.DestinoDir · @paquete.PesoKg.ToString("0.##") kg · @paquete.Tamano</span>
+                        </span>
+                        <span style="color: var(--text-muted, #94a3b8);">@paquete.FechaViaje.ToString("dd/MM/yyyy") · @paquete.Estado</span>
+                    </li>
+                }
+            </ul>
+            <a asp-controller="Transportes" asp-action="Index" style="display: inline-block; margin-top: 1rem; color: var(--accent); font-weight: 700; text-decoration: none;">Gestionar en Mis transportes &rarr;</a>
+        }
     </div>
+
+    @if (Model.Activo)
+    {
+        <!-- Acciones rápidas inferiores -->
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-form btn-form--primario" style="text-decoration: none; width: auto; padding: 0.5rem 1.5rem;">Editar este viaje</a>
+        </div>
+    }
 </div>
 
 @section Estilos {

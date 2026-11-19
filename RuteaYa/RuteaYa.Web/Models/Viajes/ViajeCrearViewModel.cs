@@ -17,26 +17,34 @@ public class ViajeCrearViewModel : IValidatableObject
     [Display(Name = "Paradas intermedias")]
     public List<string> ParadasIntermedias { get; set; } = new();
 
-    [Required(ErrorMessage = "Debes seleccionar al menos un día.")]
+    // MinLength hace que se valide junto con los demás campos (aunque falte el origen o el destino)
+    [Required(ErrorMessage = "Elegí al menos un día de la semana.")]
+    [MinLength(1, ErrorMessage = "Elegí al menos un día de la semana.")]
     [Display(Name = "Días de la semana")]
     public List<int> DiasSeleccionados { get; set; } = new();
 
+    // Nullable para que el campo aparezca vacío y no en 00:00
+    [Required(ErrorMessage = "Ingresá la hora de salida.")]
     [Display(Name = "Hora de salida")]
     [DataType(DataType.Time)]
-    public TimeOnly HoraSalida { get; set; }
+    public TimeOnly? HoraSalida { get; set; }
 
+    [Required(ErrorMessage = "Ingresá la hora de llegada.")]
     [Display(Name = "Hora de llegada")]
     [DataType(DataType.Time)]
-    public TimeOnly HoraLlegada { get; set; }
+    public TimeOnly? HoraLlegada { get; set; }
 
+    [Required(ErrorMessage = "Ingresá el máximo de paquetes.")]
     [Range(1, 100, ErrorMessage = "El máximo de paquetes tiene que estar entre 1 y 100.")]
     [Display(Name = "Máximo de paquetes")]
     public int MaxPaquetes { get; set; } = 1;
 
+    [Required(ErrorMessage = "Ingresá el peso máximo.")]
     [Range(0.1, 1000, ErrorMessage = "El peso máximo tiene que estar entre 0,1 y 1.000 kg.")]
     [Display(Name = "Peso máximo (kg)")]
     public decimal PesoMaxKg { get; set; } = 0.1m;
 
+    [Required(ErrorMessage = "Ingresá el desvío máximo.")]
     [Range(0, 100, ErrorMessage = "El desvío máximo tiene que estar entre 0 y 100 km.")]
     [Display(Name = "Desvío máximo (km)")]
     public decimal DesvioMaxKm { get; set; }
@@ -52,18 +60,11 @@ public class ViajeCrearViewModel : IValidatableObject
                 new[] { nameof(OrigenDir), nameof(DestinoDir) });
         }
 
-        if (HoraLlegada == HoraSalida)
+        if (HoraSalida != null && HoraLlegada != null && HoraLlegada <= HoraSalida)
         {
             yield return new ValidationResult(
-                "La hora de llegada no puede ser igual a la de salida.",
+                "La hora de llegada debe ser posterior a la hora de salida.",
                 new[] { nameof(HoraLlegada) });
-        }
-
-        if (DiasSeleccionados == null || DiasSeleccionados.Count == 0)
-        {
-            yield return new ValidationResult(
-                "Debes seleccionar al menos un día para el viaje.",
-                new[] { nameof(DiasSeleccionados) });
         }
 
         if (ParadasIntermedias != null && ParadasIntermedias.Any(p => p != null && p.Length > 250))

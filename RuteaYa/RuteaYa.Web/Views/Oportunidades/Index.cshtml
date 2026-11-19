@@ -104,10 +104,11 @@
                     var nivel = Nivel(o.Compatibilidad);
                     <li class="tarjeta">
                         <div class="tarjeta__ruta">
-                            <strong>@o.OrigenDireccion → @o.DestinoDireccion</strong>
+                            <strong class="tarjeta__titulo">@o.Descripcion</strong>
+                            <span class="tarjeta__recorrido">@o.OrigenDireccion → @o.DestinoDireccion</span>
                             <span>
-                                @o.PesoKg.ToString("0.##", ar) kg · desvío @o.DesvioKm.ToString("0.0", ar) km ·
-                                @o.FechaViaje.ToString("dd/MM/yyyy")
+                                Paquete @o.Tamano.ToLower() · @o.PesoKg.ToString("0.##", ar) kg ·
+                                desvío @o.DesvioKm.ToString("0.0", ar) km · @o.FechaViaje.ToString("dd/MM/yyyy")
                             </span>
                         </div>
 
@@ -120,7 +121,7 @@
                                asp-route-viajeId="@Model.ViajeId" asp-route-envioId="@o.EnvioId">Ver detalle</a>
 
                             <form asp-action="Aceptar" method="post"
-                                  data-confirmar="¿Aceptar este envío para tu viaje?">
+                                  data-confirmar="¿Aceptás llevar @o.Descripcion en tu viaje del @o.FechaViaje.ToString("dd/MM/yyyy")?">
                                 <input type="hidden" name="viajeId" value="@Model.ViajeId" />
                                 <input type="hidden" name="envioId" value="@o.EnvioId" />
                                 <button type="submit" class="btn btn--primario">Aceptar</button>

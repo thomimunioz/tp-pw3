@@ -31,7 +31,15 @@ namespace RuteaYa.Web.Controllers
                 }
 
                 var transportes = await this._transporteServicios.ListarMisTransportesAsync(usuario.Id);
-                return View(transportes);
+
+                // Acá solo van los paquetes que todavía hay que llevar, el más próximo primero.
+                // Los entregados y cancelados se ven en Historial.
+                var pendientes = transportes
+                    .Where(t => !t.Finalizado())
+                    .OrderBy(t => t.FechaViaje)
+                    .ToList();
+
+                return View(pendientes);
             }
 
         [HttpPost]
@@ -77,7 +85,7 @@ namespace RuteaYa.Web.Controllers
                 }
 
                 var resultado = await this._transporteServicios.MarcarEntregadoAsync(usuario.Id, envioId);
-                ProcesarResultado(resultado, "¡Paquete entregado con éxito! Se completó el transporte.");
+                ProcesarResultado(resultado, "¡Paquete entregado! Ya lo podés ver en tu Historial.");
                 return RedirectToAction(nameof(Index));
             }
 

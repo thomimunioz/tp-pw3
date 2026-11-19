@@ -7,6 +7,8 @@ public class CandidatoEnvio
     public decimal PesoKg { get; set; }
     public decimal DesvioKm { get; set; }
 
-    // Solo para mostrar en pantalla ("Origen → Destino"); el algoritmo no lo usa
+    // Solo para mostrar en pantalla; el algoritmo no los usa
     public string Ruta { get; set; } = "";
+    public string Descripcion { get; set; } = "";
+    public string Tamano { get; set; } = "";
 }

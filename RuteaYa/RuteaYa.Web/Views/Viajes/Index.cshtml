@@ -21,10 +21,19 @@
         <div class="alerta alerta-exito" role="status">@mensaje</div>
     }
 
+    @{
+        var estadoFiltro = ViewData["Estado"] as string;
+    }
+    <div class="filtros">
+        <a asp-action="Index" class="filtro @(estadoFiltro == null ? "activo" : "")">Todos</a>
+        <a asp-action="Index" asp-route-estado="activos" class="filtro @(estadoFiltro == "activos" ? "activo" : "")">Activos</a>
+        <a asp-action="Index" asp-route-estado="inactivos" class="filtro @(estadoFiltro == "inactivos" ? "activo" : "")">Inactivos</a>
+    </div>
+
     @if (Model == null || !Model.Any())
     {
         <div class="detalle-card viajes-vacio">
-            <p>No tenés viajes cargados.</p>
+            <p>@(estadoFiltro == null ? "No tenés viajes cargados." : "No hay viajes con ese filtro.")</p>
         </div>
     }
     else
