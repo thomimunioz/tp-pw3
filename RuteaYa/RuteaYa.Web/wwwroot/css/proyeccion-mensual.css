@@ -82,7 +82,7 @@
 
 .proyeccion__semanas {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
     gap: 0.75rem;
     margin-top: 1rem;
 }
@@ -94,6 +94,26 @@
     padding: 0.85rem;
     border: 1px solid var(--border);
     border-radius: 0.75rem;
+}
+
+/* Semanas con ganancia: borde y monto en verde */
+.proyeccion__semana--ganancia {
+    border-color: color-mix(in srgb, var(--estado-ok) 45%, var(--border));
+    background: color-mix(in srgb, var(--estado-ok) 6%, transparent);
+}
+
+.proyeccion__semana--ganancia strong {
+    color: var(--estado-ok);
+}
+
+/* Semanas que ya pasaron o sin envíos: apagadas */
+.proyeccion__semana--apagada {
+    border-style: dashed;
+}
+
+.proyeccion__semana--apagada strong {
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .proyeccion__mejor > .proyeccion__titulo > strong {
@@ -108,28 +128,96 @@
     list-style: none;
 }
 
-.proyeccion__paquetes li,
-.proyeccion__viajes > li {
-    padding: 0.75rem 0;
-    border-top: 1px solid var(--border);
+.proyeccion__detalle a {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
 }
 
-.proyeccion__paquetes li {
+.proyeccion__detalle a:hover {
+    text-decoration: underline;
+}
+
+/* Cada viaje es una tarjeta: fecha y total arriba, paquetes abajo */
+.proyeccion__viajes {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.proyeccion__viajes > li:first-child,
-.proyeccion__paquetes li:first-child {
-    border-top: 0;
+.proyeccion__viaje {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+    border-radius: 0.75rem;
+    scroll-margin-top: 1rem;
+}
+
+.proyeccion__viaje--mejor {
+    border-left-color: var(--estado-ok);
 }
 
 .proyeccion__viaje-cabecera > div {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+}
+
+.proyeccion__viaje-fecha {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.proyeccion__viaje-fecha strong {
+    font-size: 1.05rem;
+}
+
+.proyeccion__chip {
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--estado-ok) !important;
+    background: color-mix(in srgb, var(--estado-ok) 14%, transparent);
+}
+
+.proyeccion__monto {
+    color: var(--estado-ok);
+    font-size: 1.15rem;
+    white-space: nowrap;
+}
+
+/* Paquetes en 3 columnas fijas para que queden alineados */
+.proyeccion__paquetes li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 12rem 6rem;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.proyeccion__paquetes li:first-child {
+    border-top: 0;
+}
+
+.proyeccion__paquete {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.proyeccion__paquete span,
+.proyeccion__paquete-datos {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.proyeccion__paquete-monto {
+    text-align: right;
+    font-weight: 700;
 }
 
 @media (max-width: 640px) {
@@ -141,9 +229,17 @@
         width: 100%;
     }
 
-    .proyeccion__paquetes li,
     .proyeccion__viaje-cabecera {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .proyeccion__paquetes li {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.25rem 1rem;
+    }
+
+    .proyeccion__paquete-datos {
+        grid-row: 2;
     }
 }
