@@ -8,6 +8,16 @@
     var viajesConPaquetes = Model.Viajes
         .Where(v => v.Envios.Count > 0)
         .ToList();
+    var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+    // "viernes 20/11" -> "Viernes 20/11"
+    string Dia(DateOnly fecha)
+    {
+        var texto = fecha.ToString("dddd dd/MM", ar);
+        return char.ToUpper(texto[0]) + texto.Substring(1);
+    }
+
+    string IdViaje(ProyeccionViajeDto viaje) => "viaje-" + viaje.ViajeId + "-" + viaje.Fecha.ToString("yyyyMMdd");
 
     string CriterioNombre(CriterioOptimizacion criterio) => criterio switch
     {
@@ -85,9 +95,23 @@
         <div class="proyeccion__semanas">
             @foreach (var semana in Model.Semanas)
             {
-                <div class="proyeccion__semana">
-                    <span>@semana.Desde.ToString("dd/MM") – @semana.Hasta.ToString("dd/MM")</span>
-                    <strong>@semana.GananciaPotencial.ToString("C0", ar)</strong>
+                // Las semanas que ya pasaron no se proyectan: se muestran apagadas en vez de "$ 0"
+                var pasada = semana.Hasta < hoy;
+                var conGanancia = semana.GananciaPotencial > 0;
+                <div class="proyeccion__semana @(conGanancia && !pasada ? "proyeccion__semana--ganancia" : "proyeccion__semana--apagada")">
+                    <span>@(semana.Desde == semana.Hasta ? semana.Desde.ToString("dd/MM") : semana.Desde.ToString("dd/MM") + " – " + semana.Hasta.ToString("dd/MM"))</span>
+                    @if (pasada)
+                    {
+                        <strong>Ya pasó</strong>
+                    }
+                    else if (!conGanancia)
+                    {
+                        <strong>Sin envíos</strong>
+                    }
+                    else
+                    {
+                        <strong>@semana.GananciaPotencial.ToString("C0", ar)</strong>
+                    }
                 </div>
             }
         </div>
@@ -98,23 +122,15 @@
         <section class="panel proyeccion__mejor">
             <div class="proyeccion__titulo">
                 <div>
-                    <h2>Mejor recorrido</h2>
-                    <p>@mejor.Fecha.ToString("dddd dd/MM", ar) · @mejor.Origen → @mejor.Destino</p>
+                    <h2>Mejor recorrido del mes</h2>
+                    <p><strong>@Dia(mejor.Fecha)</strong> · @mejor.Origen → @mejor.Destino</p>
+                    <p class="proyeccion__detalle">
+                        @mejor.Envios.Count paquete(s) · desvío total @mejor.DesvioTotalKm.ToString("0.0", ar) km ·
+                        <a href="#@IdViaje(mejor)">Ver los paquetes</a>
+                    </p>
                 </div>
                 <strong>@mejor.GananciaPotencial.ToString("C0", ar)</strong>
             </div>
-            <p class="proyeccion__detalle">
-                @mejor.Envios.Count paquete(s) · desvío total @mejor.DesvioTotalKm.ToString("0.0", ar) km
-            </p>
-            <ul class="proyeccion__paquetes">
-                @foreach (var envio in mejor.Envios)
-                {
-                    <li>
-                        <span>@envio.Descripcion · @envio.Ruta</span>
-                        <strong>@envio.Ganancia.ToString("C0", ar)</strong>
-                    </li>
-                }
-            </ul>
         </section>
     }
     else
@@ -151,21 +167,33 @@
             <ul class="proyeccion__viajes">
                 @foreach (var viaje in viajesConPaquetes)
                 {
-                    <li>
+                    var esMejor = Model.MejorRecorrido != null
+                        && viaje.ViajeId == Model.MejorRecorrido.ViajeId
+                        && viaje.Fecha == Model.MejorRecorrido.Fecha;
+                    <li id="@IdViaje(viaje)" class="proyeccion__viaje @(esMejor ? "proyeccion__viaje--mejor" : "")">
                         <div class="proyeccion__viaje-cabecera">
                             <div>
-                                <strong>@viaje.Origen → @viaje.Destino</strong>
-                                <span>@viaje.Fecha.ToString("dddd dd/MM", ar) · @viaje.Envios.Count paquete(s)</span>
+                                <div class="proyeccion__viaje-fecha">
+                                    <strong>@Dia(viaje.Fecha)</strong>
+                                    @if (esMejor)
+                                    {
+                                        <span class="proyeccion__chip">Mejor recorrido</span>
+                                    }
+                                </div>
+                                <span>@viaje.Origen → @viaje.Destino · @viaje.Envios.Count paquete(s) · desvío total @viaje.DesvioTotalKm.ToString("0.0", ar) km</span>
                             </div>
-                            <strong>@viaje.GananciaPotencial.ToString("C0", ar)</strong>
+                            <strong class="proyeccion__monto">@viaje.GananciaPotencial.ToString("C0", ar)</strong>
                         </div>
                         <ul class="proyeccion__paquetes">
                             @foreach (var envio in viaje.Envios)
                             {
                                 <li>
-                                    <span>@envio.Descripcion · @envio.Ruta</span>
-                                    <span>@envio.PesoKg.ToString("0.##", ar) kg · desvío @envio.DesvioKm.ToString("0.0", ar) km</span>
-                                    <strong>@envio.Ganancia.ToString("C0", ar)</strong>
+                                    <span class="proyeccion__paquete">
+                                        <strong>@envio.Descripcion</strong>
+                                        <span>@envio.Ruta</span>
+                                    </span>
+                                    <span class="proyeccion__paquete-datos">@envio.PesoKg.ToString("0.##", ar) kg · desvío @envio.DesvioKm.ToString("0.0", ar) km</span>
+                                    <span class="proyeccion__paquete-monto">@envio.Ganancia.ToString("C0", ar)</span>
                                 </li>
                             }
                         </ul>
